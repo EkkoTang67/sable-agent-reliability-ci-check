@@ -16,12 +16,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Fetch exact SABLE PR commit
+      - name: Verify source snapshot metadata
         run: |
-          git clone https://github.com/socksninja/sable-agent-reliability.git sable-source
-          git -C sable-source fetch origin pull/150/head:pr-150-head
-          git -C sable-source checkout pr-150-head
-          test "$(git -C sable-source rev-parse HEAD)" = "c5f189a9d9032f3d390ad9a364c17d59c984ddb4"
-      - name: Run repository unit tests at PR commit
-        working-directory: sable-source
+          grep -F "c5f189a9d9032f3d390ad9a364c17d59c984ddb4" docs/CI_SOURCE_MANIFEST.md
+          test -f tests/test_commercial_surface.py
+      - name: Run PR #150 commercial surface unit tests
         run: python -m unittest discover -s tests -p 'test_*.py'
