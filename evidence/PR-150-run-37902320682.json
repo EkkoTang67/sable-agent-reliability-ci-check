@@ -1,0 +1,54 @@
+{
+  "record_schema": "sable.independent_verification_record.v1",
+  "record_id": "sable-pr-150-independent-run-37902320682",
+  "recorded_at_utc": "2026-10-09T08:04:00Z",
+  "source_pr_state": {
+    "repository": "socksninja/sable-agent-reliability",
+    "pr_number": 150,
+    "url": "https://github.com/socksninja/sable-agent-reliability/pull/150",
+    "state_observed_at_utc": "2026-10-09T08:04:00Z",
+    "state": "open",
+    "merged": false,
+    "draft": false,
+    "base_branch": "main",
+    "base_sha": "56724a0bf2f110275a38aea0055bf6c7a2512ca2",
+    "head_branch": "commercial/buyer-simple-99-entry-20261009",
+    "head_sha": "c5f189a9d9032f3d390ad9a364c17d59c984ddb4",
+    "observation_source": "GitHub PR API read",
+    "note": "This is the original PR state observed separately from the isolated test result. No merge or PR state mutation was performed."
+  },
+  "independent_test": {
+    "status": "PASS",
+    "repository": "EkkoTang67/sable-agent-reliability-ci-check",
+    "workflow_name": "Validate SABLE PR 150",
+    "workflow_file": ".github/workflows/test.yml",
+    "run_id": 37902320682,
+    "run_number": 3,
+    "run_url": "https://github.com/EkkoTang67/sable-agent-reliability-ci-check/actions/runs/37902320682",
+    "run_event": "push",
+    "run_started_at_utc": "2026-10-09T08:00:29Z",
+    "run_completed_at_utc": "2026-10-09T08:00:40Z",
+    "isolated_repo_commit": "a5b6e2de3ad990f5afb5274a0fee2e8bd6064ba9",
+    "tested_source_pr_head_sha": "c5f189a9d9032f3d390ad9a364c17d59c984ddb4",
+    "source_manifest_path": "docs/CI_SOURCE_MANIFEST.md",
+    "source_snapshot_files": 9,
+    "runtime": "CPython 3.11.17 on GitHub Actions ubuntu-24.04",
+    "command": "python -m unittest discover -s tests -p 'test_*.py'",
+    "output_summary": "Ran 7 tests in 0.001s; OK",
+    "job_conclusion": "success",
+    "evidence_log_url": "https://github.com/EkkoTang67/sable-agent-reliability-ci-check/actions/runs/37902320682",
+    "workflow_artifacts": [],
+    "scope": "Isolated unit tests for the mirrored PR #150 commercial/buyer-facing surface: prices and product routing, authorization/data boundaries, documentation consistency, and synthetic receipt disclosures.",
+    "limitations": [
+      "This run is in the independent verification repository, not a GitHub check attached to the original PR.",
+      "The workflow tests a pinned mirror of nine source files and the commercial-surface unit tests; it does not constitute runtime tests of the full SABLE engine or production behavior.",
+      "No workflow artifacts were attached. The run URL and logs are the retained execution evidence.",
+      "A passing result is not authorization to merge, does not change the original PR state, and does not prove any customer outcome or payment."
+    ]
+  },
+  "merge_decision": {
+    "authorized_by_test_result": false,
+    "action_taken": "none",
+    "policy": "Independent test success and original PR state remain separate. Never auto-merge because a test passed."
+  }
+}
