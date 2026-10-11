@@ -35,6 +35,8 @@ SABLE now maintains a source-linked requirements register distilled from the off
 - [Pre-Test Readiness Evidence Gate — focused offer](docs/SABLE_PRETEST_READINESS_GATE_V1.md)
 - [Public requirements dataset + source provenance](data/commissioning_public_requirements/README.md)
 - [SABLE data asset register — provenance and evidence classes](data/SABLE_DATA_ASSET_REGISTER_V1.json)
+- [Data moat and public evidence base](docs/SABLE_DATA_MOAT_AND_PUBLIC_EVIDENCE_BASE_V1.md)
+- [Independent Chicago OIG audit extract](data/public_audit_cases/chicago_pbc_commissioning_audit_2021.json)
 - [Source-derived requirements register](data/commissioning_public_requirements/ufgs_01_91_00_15_source_profile.json)
 - [Adversarial benchmark cases](data/commissioning_evidence_benchmark_v0/cases.json)
 - [Benchmark runner](data/commissioning_evidence_benchmark_v0/run_benchmark.py)
