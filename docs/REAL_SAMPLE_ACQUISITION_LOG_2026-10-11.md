@@ -19,10 +19,12 @@ Public research references:
 
 - Public normative/reference layer: UFGS 01 91 00.15 source-linked requirement register, plus a source catalog entry for the public USACE Japan Edited Specifications (JES 1.6) and USACE ER 1110-345-723. These are requirement/specification references, not evidence that a customer project followed them.
 - Public operational benchmark reference: LBNL Fault Detection and Diagnostics data catalog, with labeled fault/fault-free HVAC series across seven equipment classes and a mixture of simulation, lab and field measurements. The data has not been downloaded or incorporated, and it is not ground truth for document readiness closure.
+- Independent public audit data: Chicago OIG (2021) examined five completed projects; it named four with reasonably complete commissioning documentation and one (Williams Park Fieldhouse) missing most required commissioning documentation. It separately found delivery/accessibility failures, including an engineer unable to access a shared platform. Structured extract is in `data/public_audit_cases/chicago_pbc_commissioning_audit_2021.json`.
+- Public project-specification references: NPS DETO 228872 (2025) and USDA ARS Gainesville HVAC repair solicitation 1232SA26Q0704 (2026, inactive since 2026-10-08; award status unknown). They specify possible evidence gates, but do not establish project execution or a present buyer.
 - Executable benchmark: 16 authored synthetic graph cases, checked in CI; these test only declared mutation behavior.
 - Critical missing asset: a customer-authorized historical subsystem sample plus independent review labels.
 
-See [SABLE data asset register](../data/SABLE_DATA_ASSET_REGISTER_V1.json) for provenance, evidence class, rights caution and relevance. No class may be presented as another.
+See [SABLE data asset register](../data/SABLE_DATA_ASSET_REGISTER_V1.json) and [data moat / evidence base](SABLE_DATA_MOAT_AND_PUBLIC_EVIDENCE_BASE_V1.md) for provenance, evidence class, rights caution and relevance. No class may be presented as another.
 
 ## Sample acceptance gate
 
