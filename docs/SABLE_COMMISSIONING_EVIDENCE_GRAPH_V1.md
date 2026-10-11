@@ -12,7 +12,7 @@ It is not a commissioning management system, building automation system, control
 
 Supported node kinds: asset, drawing, procedure, test, test_result, deficiency, corrective_action, retest, witness, turnover_package.
 
-Supported directed relations: contains_asset, contains_evidence, tests_asset, uses_drawing, uses_procedure, has_result, evidence_for, corrected_by, retests, follows_result, witnesses.
+Supported directed relations: contains_asset, contains_evidence, tests_asset, uses_drawing, uses_procedure, has_result, evidence_for, corrected_by, retests, follows_result, witnesses (witness record to test result).
 
 Each evidence-bearing node must include a relative local source_ref and declared SHA-256 digest. The validator reads bytes locally and computes the digest. It never follows URLs or network paths. Missing files and incomplete authority metadata result in UNKNOWN; digest mismatch, explicit failed tests, unapproved/outdated governing documents, open deficiencies, unsigned required witness evidence, or reversed retest time result in NOT_VERIFIED.
 
