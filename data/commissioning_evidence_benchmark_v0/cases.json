@@ -174,6 +174,87 @@
         "UFGS-CX-TEST-PROCEDURE-001"
       ],
       "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-011",
+      "name": "pre-test readiness certificate is not linked to package",
+      "mutation": {
+        "op": "remove_edge",
+        "source": "PKG-01",
+        "relation": "contains_evidence",
+        "target": "RDY-01"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "READINESS_CERTIFICATE_MISSING",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-012",
+      "name": "test scheduled before readiness certificate approval",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "FPT-AHU-01",
+        "field": "scheduled_at",
+        "value": "2026-10-11T07:00:00Z"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "TEST_SCHEDULED_BEFORE_READINESS_APPROVAL",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-013",
+      "name": "readiness certificate says inspections incomplete",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "RDY-01",
+        "field": "inspections_complete",
+        "value": false
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "READINESS_PRECONDITION_FAILED",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-014",
+      "name": "readiness certificate is not linked to a covered asset",
+      "mutation": {
+        "op": "remove_edge",
+        "source": "RDY-01",
+        "relation": "readiness_for",
+        "target": "AHU-01"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "READINESS_ASSET_LINK_MISSING",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-015",
+      "name": "readiness certificate conflicts with an open issue",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "DEF-04",
+        "field": "status",
+        "value": "open"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "READINESS_CONTRADICTS_OPEN_ISSUE",
+      "requirement_ids": [
+        "UFGS-CX-ISSUE-LOG-001",
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
     }
   ],
   "scoring": {
