@@ -1,0 +1,54 @@
+{
+  "case_id": "PUBLIC-AUDIT-CHICAGO-PBC-CX-2021",
+  "dataset_type": "public_independent_audit_summary",
+  "source": {
+    "publisher": "City of Chicago Office of Inspector General",
+    "title": "Audit of the Public Building Commission's Administration of Building Commissioning",
+    "published": "2021-09-23",
+    "url": "https://igchicago.org/publications/audit-of-the-public-building-commissions-administration-of-building-commissioning/",
+    "source_sections": [
+      "Executive Summary A. Conclusion",
+      "Executive Summary B. Finding",
+      "Executive Summary C. Recommendations"
+    ],
+    "independent_reviewer": "City of Chicago Office of Inspector General"
+  },
+  "sample": {
+    "unit": "public building construction/renovation projects",
+    "sample_size": 5,
+    "project_period": "projects completed in 2018 and 2019",
+    "sample_record_level_files_included": false
+  },
+  "observations": [
+    {
+      "observation_id": "CHI-PBC-CX-OBS-001",
+      "label": "documentation_completeness_access_gap",
+      "summary": "The OIG said commissioning teams had created reasonably complete documentation for four of the five reviewed projects; it also found the documentation was not always accessible to building maintenance staff.",
+      "evidence_pointer": "Official OIG page, Executive Summary B. Finding.",
+      "data_kind": "independent_aggregate_audit_finding",
+      "confidence_boundary": "Reported aggregate audit conclusion; no per-document graph or raw project package is attached to this machine-readable extract."
+    },
+    {
+      "observation_id": "CHI-PBC-CX-OBS-002",
+      "label": "recipient_access_not_confirmed",
+      "summary": "Maintenance staff at all five projects told the OIG they were still waiting to receive complete commissioning documents, although PBC reported that two projects received electronic copies and three received hard copies.",
+      "evidence_pointer": "Official OIG page, Executive Summary B. Finding.",
+      "data_kind": "independent_aggregate_audit_finding",
+      "confidence_boundary": "This is the report's summarized interview result, not a complete row-level document inventory for each project."
+    },
+    {
+      "observation_id": "CHI-PBC-CX-OBS-003",
+      "label": "document_delivery_process_required",
+      "summary": "The OIG recommended a process to collect required commissioning documentation, provide each document to client agencies within specified time frames, and confirm that building maintenance staff can access it.",
+      "evidence_pointer": "Official OIG page, Executive Summary C. Recommendations.",
+      "data_kind": "independent_audit_recommendation",
+      "confidence_boundary": "Recommendation is evidence of an oversight concern, not proof it remains unresolved today or that a specific buyer will pay SABLE."
+    }
+  ],
+  "relevance_to_sable": {
+    "supported_hypothesis": "Document existence, package completeness, delivery/accessibility, and the recipient's ability to locate required records can be distinct states. A handover proof layer may need to verify both 'record exists' and 'the authorized recipient can access the required record.'",
+    "not_supported": "This report does not demonstrate that SABLE detects the issue, that the finding was caused by cross-system linkage, that a present-day problem exists, or that money was withheld.",
+    "product_implication": "Consider a future, separately validated handover-access closure after the pre-test readiness gate. Do not expand v1 scope without a buyer-confirmed case and appropriate permission.",
+    "reuse_guardrail": "Use the public summary and source pointer for research and product hypothesis. Do not scrape or republish the full copyrighted report or imply the five projects are SABLE customers."
+  }
+}
