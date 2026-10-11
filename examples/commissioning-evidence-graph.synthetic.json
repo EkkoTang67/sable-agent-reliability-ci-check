@@ -2,7 +2,8 @@
   "schema": "sable.commissioning-evidence-graph.v1",
   "synthetic": true,
   "requirements": {
-    "witness_required": true
+    "witness_required": true,
+    "pre_test_readiness_required": true
   },
   "nodes": [
     {
@@ -43,7 +44,8 @@
     {
       "id": "FPT-AHU-01",
       "kind": "test",
-      "label": "AHU-01 functional performance test"
+      "label": "AHU-01 functional performance test",
+      "scheduled_at": "2026-10-11T08:30:00Z"
     },
     {
       "id": "TR-1001",
@@ -108,6 +110,24 @@
       "id": "PKG-01",
       "kind": "turnover_package",
       "label": "Synthetic turnover package for AHU-01"
+    },
+    {
+      "id": "RDY-01",
+      "kind": "readiness_certificate",
+      "label": "Synthetic approved pre-test readiness certificate",
+      "inspections_complete": true,
+      "open_issues_resolved": true,
+      "approved": true,
+      "approver_role": "commissioning readiness authority",
+      "approved_at": "2026-10-11T08:00:00Z",
+      "source_ref": "evidence/commissioning-demo/readiness-certificate-RDY-01.txt",
+      "sha256": "46f90866f3e30d8197d91960f791f18bd506ef6b84e65298228927d3483b3ba1",
+      "source_fields": {
+        "inspections_complete": "Inspections complete",
+        "open_issues_resolved": "Open issues resolved",
+        "approved": "Approval",
+        "approved_at": "Approved at"
+      }
     }
   ],
   "edges": [
@@ -200,6 +220,16 @@
       "source": "WS-01",
       "relation": "witnesses",
       "target": "TR-1001"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "RDY-01"
+    },
+    {
+      "source": "RDY-01",
+      "relation": "readiness_for",
+      "target": "AHU-01"
     }
   ]
 }
