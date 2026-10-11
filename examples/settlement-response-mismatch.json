@@ -1,0 +1,26 @@
+{
+  "fixture_type": "synthetic_only",
+  "case_id": "next-response-null-body-after-settlement",
+  "claim": "A successful settlement callback proves the buyer received the intended resource",
+  "observations": {
+    "settlement": {
+      "status": "success",
+      "source": "synthetic_facilitator_fixture",
+      "authoritative": true,
+      "reference": "settle_fixture_001"
+    },
+    "delivery": {
+      "http_status": 402,
+      "body": "{}",
+      "receipt_header_present": false,
+      "source": "synthetic_http_fixture",
+      "authoritative": true
+    }
+  },
+  "expected_verdict": "SETTLEMENT_CONFIRMED_DELIVERY_UNCONFIRMED",
+  "notes": [
+    "Synthetic fixture only; no real provider, chain, wallet, or funds involved.",
+    "An HTTP 402 response after a settlement success does not by itself establish whether the buyer received the resource.",
+    "Do not automatically retry or charge again based on this verdict."
+  ]
+}
