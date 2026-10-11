@@ -24,6 +24,7 @@ Provide one small record of each available type:
 - Retest record (linked issue ID, prior result, outcome and time).
 - Witness/approval record if required by the owner's checklist.
 - A package-level index that states which of the above belong together.
+- If this is a pre-test readiness sample: readiness certificate, covered equipment/system IDs, inspection-completion assertion, open-issues-resolved assertion, approver role/authority reference, timezone-aware approval timestamp, and the planned/scheduled test time. Include the linked issue register so any 'all issues resolved' claim can be independently cross-checked.
 
 Use consistent pseudonymous IDs across all records. Preserve relationships and revision differences that are relevant to the evaluation; redact names, project codes, exact locations, customer identifiers, IPs, hostnames, access details and unrelated commercial terms.
 
