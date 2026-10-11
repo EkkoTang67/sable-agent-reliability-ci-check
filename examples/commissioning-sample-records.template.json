@@ -1,0 +1,97 @@
+{
+  "schema": "sable.commissioning-sample-intake.v1",
+  "template_only": true,
+  "notice": "Replace placeholders only with data-owner-authorized, redacted records. Never put real customer evidence in this public repository.",
+  "package": {
+    "id": "PKG-REDACTED-001",
+    "acceptance_checklist_ref": "CHECKLIST-REDACTED-001",
+    "witness_required": true
+  },
+  "records": [
+    {
+      "id": "ASSET-REDACTED-001",
+      "kind": "asset",
+      "fields": {
+        "asset_tag": "ASSET-REDACTED-001"
+      }
+    },
+    {
+      "id": "DRAWING-REDACTED-001",
+      "kind": "drawing",
+      "fields": {
+        "document_id": "DRAWING-REDACTED-001",
+        "revision": "B",
+        "approved": true,
+        "current": true
+      }
+    },
+    {
+      "id": "PROCEDURE-REDACTED-001",
+      "kind": "procedure",
+      "fields": {
+        "document_id": "PROCEDURE-REDACTED-001",
+        "revision": "C",
+        "approved": true,
+        "current": true
+      }
+    },
+    {
+      "id": "TEST-REDACTED-001",
+      "kind": "test",
+      "fields": {
+        "test_id": "TEST-REDACTED-001",
+        "asset_id": "ASSET-REDACTED-001",
+        "drawing_id": "DRAWING-REDACTED-001",
+        "procedure_id": "PROCEDURE-REDACTED-001"
+      }
+    },
+    {
+      "id": "RESULT-REDACTED-001",
+      "kind": "test_result",
+      "fields": {
+        "test_id": "TEST-REDACTED-001",
+        "outcome": "PASS",
+        "observed_at": "2026-01-01T10:00:00Z"
+      }
+    },
+    {
+      "id": "ISSUE-REDACTED-001",
+      "kind": "deficiency",
+      "fields": {
+        "issue_id": "ISSUE-REDACTED-001",
+        "status": "closed"
+      }
+    },
+    {
+      "id": "ACTION-REDACTED-001",
+      "kind": "corrective_action",
+      "fields": {
+        "issue_id": "ISSUE-REDACTED-001",
+        "status": "completed"
+      }
+    },
+    {
+      "id": "RETEST-REDACTED-001",
+      "kind": "retest",
+      "fields": {
+        "issue_id": "ISSUE-REDACTED-001",
+        "prior_result_id": "RESULT-REDACTED-001",
+        "outcome": "PASS",
+        "observed_at": "2026-01-01T11:00:00Z"
+      }
+    },
+    {
+      "id": "WITNESS-REDACTED-001",
+      "kind": "witness",
+      "fields": {
+        "test_result_id": "RESULT-REDACTED-001",
+        "signature_state": "recorded"
+      }
+    }
+  ],
+  "expected_review": {
+    "known_gaps_or_conflicts": "Data owner/reviewer to describe separately after redaction.",
+    "expected_findings": [],
+    "reviewer_role": "authorized commissioning reviewer"
+  }
+}
