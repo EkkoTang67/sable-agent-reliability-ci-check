@@ -1,4 +1,5 @@
 SYNTHETIC FIXTURE ONLY
 Procedure: FPT-17 Revision B
+Revision: B
 Approval: approved
 Current: yes
