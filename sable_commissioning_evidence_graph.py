@@ -220,6 +220,12 @@ def validate_graph(document: Any, evidence_root: str | Path | None = None) -> di
                 elif cert.get(flag) is not True:
                     add("gap", "READINESS_PRECONDITION_UNKNOWN",
                         flag + " is not explicitly true on the readiness certificate.", cid)
+            package_issues = [n for n in nodes.values() if n.get("kind") == "deficiency" and
+                              any(e["source"] == pid and e["relation"] == "contains_evidence" and e["target"] == n["id"] for e in edges)]
+            open_issues = [n["id"] for n in package_issues if str(n.get("status", "")).lower() in {"open", "in_progress", "reopened"}]
+            if cert.get("open_issues_resolved") is True and open_issues:
+                add("critical", "READINESS_CONTRADICTS_OPEN_ISSUE",
+                    "Certificate claims all issues resolved, but package issue(s) remain open: " + ", ".join(open_issues), cid)
             approved_at = _parse_time(cert.get("approved_at"))
             if approved_at is None:
                 add("gap", "READINESS_APPROVAL_TIME_UNKNOWN",
