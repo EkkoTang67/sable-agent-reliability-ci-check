@@ -1,0 +1,48 @@
+{
+  "dataset_id": "SABLE-PUBLIC-PROJECT-REQUIREMENTS-USDA-ARS-1232SA26Q0704",
+  "version": "0.1.0",
+  "evidence_class": "public_project_specification_reference",
+  "not_customer_execution_records": true,
+  "source": {
+    "project_title": "Repair HVAC Systems, Gainesville, FL",
+    "solicitation_id": "1232SA26Q0704",
+    "agency": "U.S. Department of Agriculture, Agricultural Research Service",
+    "work_scope": "HVAC repairs for Buildings 1 and 11 at the Gainesville facility",
+    "latest_publication_date": "2026-09-17",
+    "offers_due": "2026-09-23T12:00:00-06:00",
+    "current_procurement_status_as_of_2026_10_11": "SAM.gov entry was inactive as of 2026-10-08; awardee/award status not confirmed in this research pass.",
+    "official_sam_notice": "https://sam.gov/opp/9e2194aa6d3b46a8bab981f469ee6c44/view",
+    "official_notice_id": "9e2194aa6d3b46a8bab981f469ee6c44",
+    "indexed_attachment": "ASI-002 Revised Commissioning Spec.pdf",
+    "attachment_issue_date": "2026-07-10",
+    "attachment_mirror": "https://govtribe.com/file/government-file/1232sa26q0704-asi-002-revised-commissioning-spec-dot-pdf",
+    "provenance_note": "Official SAM.gov notice establishes the public solicitation and its dates; clause summaries below were found in a publicly indexed third-party mirror of the attached revised specification. Prefer the official solicitation attachment and awarded contract for any future contractual interpretation.",
+    "applicability_warning": "This was a public bid package with a September 23, 2026 offer deadline, not a live opportunity as of October 11, 2026. It is not evidence that a customer currently has a blocked test, missing evidence, withheld money, or appetite for SABLE."
+  },
+  "requirements": [
+    {
+      "requirement_id": "USDA-1232-CX-READINESS-001",
+      "section": "23 08 00, 1.6 Certificate of Readiness",
+      "summary": "The publicly indexed revised commissioning specification includes a Certificate of Readiness section.",
+      "machine_checkable_expectation": "A project-specific readiness profile should require the applicable certificate, exact system scope, approval authority, source reference and time relation to testing.",
+      "mapping_to_current_v1": "partial_readiness_certificate_gate",
+      "limit": "The current product does not verify the award contract's final clause version or automatically map the project specification."
+    },
+    {
+      "requirement_id": "USDA-1232-CX-TEST-SEQUENCE-001",
+      "section": "23 08 00",
+      "summary": "The revised specification's contents identify pre-functional checklists, functional performance testing, retesting requirements, system acceptance, seasonal tests, full-load tests and commissioning reporting.",
+      "machine_checkable_expectation": "Map each applicable project-stage deliverable to a version-pinned requirement and its evidence; require human review for project applicability.",
+      "mapping_to_current_v1": "some_graph_relationships_only",
+      "limit": "The v1 implementation does not cover all commissioning stages or system-specific engineering acceptance."
+    }
+  ],
+  "data_and_commercial_notes": {
+    "public_requirement_profile_created": true,
+    "operational_test_records_downloaded": false,
+    "awardee_identified": false,
+    "current_payer_or_project_deadline_confirmed": false,
+    "paid_demand_confirmed": false,
+    "interpretation": "Useful as a recent, project-specific publicly issued requirements reference. Not a customer case, buyer lead proven to have a live need, or current payment path."
+  }
+}
