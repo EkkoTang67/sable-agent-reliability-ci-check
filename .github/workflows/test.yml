@@ -1,8 +1,9 @@
-name: Validate SABLE PR 150
+name: Validate SABLE evidence and product contracts
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
