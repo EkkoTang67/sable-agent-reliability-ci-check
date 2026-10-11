@@ -232,7 +232,8 @@ def validate_graph(document: Any, evidence_root: str | Path | None = None) -> di
                     add("gap", "RESULT_TIME_UNKNOWN", "Test result needs a timezone-aware observed_at timestamp.", rid)
                 requirements = document.get("requirements", {})
                 if isinstance(requirements, dict) and requirements.get("witness_required") is True:
-                    witnesses = related(rid, "witnesses", "witness")
+                    witnesses = [w for w in nodes.values() if w.get("kind") == "witness" and
+                                 any(e["source"] == w["id"] and e["relation"] == "witnesses" and e["target"] == rid for e in edges)]
                     if not witnesses:
                         add("gap", "WITNESS_MISSING", "Package requires a witness record for each test result.", rid)
                     for witness in witnesses:
