@@ -11,10 +11,16 @@ def read(path: str) -> str:
 
 
 class CommercialSurfaceTests(unittest.TestCase):
-    def test_primary_buy_page_leads_with_micro_closure(self):
+    def test_primary_buy_page_leads_with_pretest_readiness_gate(self):
         page = read("buy/index.html")
-        self.assertLess(page.index("$99"), page.index("$299"))
-        self.assertIn("Did the action actually produce the result?", page)
+        self.assertLess(page.index("$2,500"), page.index("$99"))
+        self.assertIn("Before the test window: prove the evidence package is ready.", page)
+        self.assertIn("https://paypal.me/tang665/2500USD", page)
+        self.assertIn("PRODUCT=PRETEST_READINESS_AUDIT", page)
+        self.assertIn("authorized subsystem", page)
+        self.assertIn("source-linked evidence graph", page)
+        self.assertIn("If a safe, mutually agreed scope cannot be established within five business days", page)
+        self.assertIn("does not automatically determine contract applicability", page.lower())
         self.assertIn("https://paypal.me/tang665/99USD", page)
         self.assertIn("https://paypal.me/tang665/299USD", page)
         self.assertIn("PRODUCT=MICRO_CLOSURE", page)
