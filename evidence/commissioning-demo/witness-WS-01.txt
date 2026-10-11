@@ -1,0 +1,4 @@
+SYNTHETIC FIXTURE ONLY
+Witness record: WS-01
+Test result: TR-1001
+Signature state: signed

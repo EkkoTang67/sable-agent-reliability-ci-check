@@ -12,6 +12,43 @@ A success message is not the same as a proven outcome. SABLE binds one exact cla
 
 **The technical boundary:** the action system reports; the system of record answers. SABLE produces a bounded, reviewable evidence receipt. It does not claim universal exactly-once execution or production certification.
 
+## Critical infrastructure: Commissioning Evidence Graph (experimental)
+
+SABLE now includes a read-only prototype for linking commissioning evidence across asset, governing drawing/procedure revision, test, test result, deficiency, corrective action, retest, witness record, and turnover package. The prototype checks local evidence-file SHA-256 digests, source-bound metadata fields, required relationships, revision approval/current flags, deficiency closure, retest order, and required witness linkage. It returns VERIFIED / NOT_VERIFIED / UNKNOWN and does not connect to facility control networks.
+
+This is an evidence-integrity prototype, not a safety certification or commissioning sign-off. The included fixture is synthetic. Binary drawing parsing, semantic interpretation of engineering measurements, cryptographic signature verification, and source-system adapters are not implemented yet.
+
+~~~bash
+python3 sable_commissioning_evidence_graph.py --file examples/commissioning-evidence-graph.synthetic.json --root . --out commissioning-evidence-receipt.json
+~~~
+
+- [Commissioning Evidence Graph v1.0 specification](docs/SABLE_COMMISSIONING_EVIDENCE_GRAPH_V1.md)
+- [Synthetic commissioning graph](examples/commissioning-evidence-graph.synthetic.json)
+- [First authorized real-sample intake protocol](docs/REAL_COMMISSIONING_SAMPLE_INTAKE_V1.md)
+- [Redacted sample mapping template — placeholders only](examples/commissioning-sample-records.template.json)
+- [Real-sample acquisition log and FACT/UNKNOWN ledger](docs/REAL_SAMPLE_ACQUISITION_LOG_2026-10-11.md)
+
+## Public requirements baseline and adversarial benchmark (not customer data)
+
+SABLE now maintains a source-linked requirements register distilled from the official public UFGS Building Commissioning guide, with a version/page/section trace and an explicit project-tailoring warning. It also contains 11 labeled benchmark cases: one complete synthetic baseline and ten authored mutations. This is a repeatable engineering baseline, not real operational commissioning data and not evidence of performance on a customer's project.
+
+- [Pre-Test Readiness Evidence Gate — focused offer](docs/SABLE_PRETEST_READINESS_GATE_V1.md)
+- [Public requirements dataset + source provenance](data/commissioning_public_requirements/README.md)
+- [SABLE data asset register — provenance and evidence classes](data/SABLE_DATA_ASSET_REGISTER_V1.json)
+- [Data moat and public evidence base](docs/SABLE_DATA_MOAT_AND_PUBLIC_EVIDENCE_BASE_V1.md)
+- [Independent Chicago OIG audit extract](data/public_audit_cases/chicago_pbc_commissioning_audit_2021.json)
+- [Source-derived requirements register](data/commissioning_public_requirements/ufgs_01_91_00_15_source_profile.json)
+- [Adversarial benchmark cases](data/commissioning_evidence_benchmark_v0/cases.json)
+- [Benchmark runner](data/commissioning_evidence_benchmark_v0/run_benchmark.py)
+
+Run the benchmark from the repository root:
+
+~~~bash
+python3 data/commissioning_evidence_benchmark_v0/run_benchmark.py
+~~~
+
+- [Validator source](sable_commissioning_evidence_graph.py)
+
 ## Run the synthetic example
 
 ```bash

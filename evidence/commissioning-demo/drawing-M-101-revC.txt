@@ -1,0 +1,6 @@
+SYNTHETIC FIXTURE ONLY
+Equipment: AHU-01
+Drawing: M-101 Revision C
+Revision: C
+Approval: approved
+Current: yes

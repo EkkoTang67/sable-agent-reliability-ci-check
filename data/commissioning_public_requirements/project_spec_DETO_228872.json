@@ -1,0 +1,82 @@
+{
+  "dataset_id": "SABLE-PUBLIC-PROJECT-REQUIREMENTS-DETO-228872",
+  "version": "0.1.0",
+  "evidence_class": "public_project_specification_reference",
+  "not_customer_execution_records": true,
+  "source": {
+    "title": "Section 01 91 14 — Total Building Commissioning",
+    "project_reference": "DETO 228872 — Replace Obsolete Housing with Multip[le]",
+    "issuing_context": "National Park Service federal contract opportunity attachment",
+    "issue_date": "2025-08-27",
+    "source_url": "https://govtribe.com/file/government-file/140p2025r0002-a0003-att-01-91-14-total-building-commissioning-0003-dot-pdf",
+    "source_page": "https://govtribe.com/file/government-file/140p2025r0002-a0003-att-01-91-14-total-building-commissioning-0003-dot-pdf",
+    "evidence_note": "Publicly indexed text of a project-specific solicitation attachment, including the section's issue date and project reference. The file host is a third-party government-opportunity mirror; verify against the actual awarded contract and official attachment before treating any clause as binding.",
+    "rights_note": "This profile stores short paraphrases and section references only; no bulk PDF text is redistributed.",
+    "applicability_warning": "A public solicitation attachment is not proof that the same clause survived award or amendments, nor proof the project completed the work. In any live engagement, use the actual executed contract, approved submittals, changes, and owner's requirements."
+  },
+  "requirements": [
+    {
+      "requirement_id": "DETO228872-CX-DOC-001",
+      "section": "1.5 Commissioning Documentation",
+      "source_observation": "The section lists the commissioning plan, identification of commissioned systems/equipment, a certificate of readiness, test and inspection reports/certificates, corrective action documents, and testing/adjusting/balancing reports among commissioning documentation.",
+      "machine_checkable_expectation": "Build a project-specific required-artifact manifest; every required artifact must have a source reference or an explicit UNKNOWN/non-applicable decision from the responsible reviewer.",
+      "mapped_capability": "requirements_manifest_concept_only",
+      "not_implemented_warning": "The current v1 engine does not yet check a general required-artifact manifest."
+    },
+    {
+      "requirement_id": "DETO228872-CX-FPT-READY-001",
+      "section": "1.6 J, Closeout Documentation; 3.5 Start-Up/Pre-Functional Checklists",
+      "source_observation": "The indexed specification states that closeout documentation—including record documents/drawings, startup certificates, systems manual, and TAB/startup/control-system checkout reports—must be submitted before functional performance testing. It also calls for startup/pre-functional checklists before testing can be scheduled.",
+      "machine_checkable_expectation": "Map the selected clause and actual test schedule; check required documents are present and current before the scheduled test. If clause applicability or due time is unconfirmed, verdict UNKNOWN.",
+      "mapped_capability": "partial_readiness_certificate_gate",
+      "not_implemented_warning": "The current v1 gate checks readiness certificate and schedule chronology, but does not yet prove every listed closeout artifact is present."
+    },
+    {
+      "requirement_id": "DETO228872-CX-FPT-FORMS-001",
+      "section": "1.6 G, Functional Performance Test Forms",
+      "source_observation": "The indexed specification says functional performance test forms are to be submitted at least 30 calendar days before testing.",
+      "machine_checkable_expectation": "Only where the clause is confirmed in the executed project requirements, compare the approval/submission timestamp to the scheduled test timestamp and the required lead time.",
+      "mapped_capability": "not_implemented",
+      "not_implemented_warning": "No general deadline calculation exists in the current engine. This requirement is a roadmap/data mapping, not a delivered feature."
+    },
+    {
+      "requirement_id": "DETO228872-CX-ISSUE-001",
+      "section": "1.6 I, Deficiency Report and Resolution Record",
+      "source_observation": "The indexed specification calls for recording nonconformances against drawings/specifications, required adjustments or alterations, and the person responsible for corrective changes, with updates during the work.",
+      "machine_checkable_expectation": "Check issue identity, cited requirement, source drawing/spec revision, assigned responsible party, corrective action and retained history.",
+      "mapped_capability": "partial_issue_and_corrective_action_links",
+      "not_implemented_warning": "The current v1 prototype checks declared issue/action/retest links but does not verify a complete owner/responsibility history."
+    },
+    {
+      "requirement_id": "DETO228872-CX-ISSUE-UPDATE-001",
+      "section": "1.6 I",
+      "source_observation": "The indexed specification says the deficiency report and resolution record is updated as work progresses and submitted monthly.",
+      "machine_checkable_expectation": "If the actual clause and report dates are provided, check update/submission chronology and flag missing dated versions.",
+      "mapped_capability": "not_implemented",
+      "not_implemented_warning": "No monthly report cadence enforcement exists in v1."
+    },
+    {
+      "requirement_id": "DETO228872-CX-CALIBRATION-001",
+      "section": "2.1 Test Equipment",
+      "source_observation": "The indexed specification describes calibrated instrumentation, calibration records, validity ranges and due date for next calibration.",
+      "machine_checkable_expectation": "For each test using an instrument, link instrument ID, calibration certificate, calibration range, validity dates and applicable test period.",
+      "mapped_capability": "not_implemented",
+      "not_implemented_warning": "The current graph does not implement instrument-calibration evidence gates."
+    },
+    {
+      "requirement_id": "DETO228872-CX-REPORT-CHAIN-001",
+      "section": "2.5 Report Format and Organization",
+      "source_observation": "The indexed specification describes a report organized per test, including test specification, pre-startup reports, approved procedures, completed/signed test data forms, and issue reports/resolution documents grouped with each test repetition.",
+      "machine_checkable_expectation": "Retain a test-to-procedure/result/issue-resolution/retest relationship and flag missing iteration-level documentation.",
+      "mapped_capability": "partially_covered_by_graph_v1",
+      "not_implemented_warning": "The current v1 graph covers a narrow subset; it does not fully verify all report formatting, signed form authenticity, or every closeout artifact."
+    }
+  ],
+  "commercial_signals": {
+    "readiness_and_closeout_have_explicit_sequence": "Source-derived from the cited solicitation attachment.",
+    "active_delay_or_withheld_money_confirmed": false,
+    "current_buyer_deadline_confirmed": false,
+    "customer_purchase_intent_confirmed": false,
+    "note": "The specification provides a concrete requirements profile, not evidence of a currently delayed customer project or a payable SABLE contract."
+  }
+}

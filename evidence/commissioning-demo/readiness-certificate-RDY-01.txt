@@ -1,0 +1,8 @@
+SYNTHETIC FIXTURE ONLY
+Certificate: RDY-01
+System: AHU-01
+Inspections complete: yes
+Open issues resolved: yes
+Approval: approved
+Approver role: commissioning readiness authority
+Approved at: 2026-10-11T08:00:00Z

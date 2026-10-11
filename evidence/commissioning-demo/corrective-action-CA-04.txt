@@ -1,0 +1,4 @@
+SYNTHETIC FIXTURE ONLY
+Corrective action: CA-04
+Resolves: DEF-04
+Status: completed

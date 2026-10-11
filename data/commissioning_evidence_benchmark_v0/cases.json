@@ -1,0 +1,264 @@
+{
+  "benchmark_id": "SABLE-CX-EVIDENCE-GAP-BENCHMARK",
+  "version": "0.1.0",
+  "benchmark_type": "synthetic_mutations_against_a_real_public_requirement_taxonomy",
+  "customer_project_data": false,
+  "base_fixture": "examples/commissioning-evidence-graph.synthetic.json",
+  "source_register": "data/commissioning_public_requirements/ufgs_01_91_00_15_source_profile.json",
+  "cases": [
+    {
+      "case_id": "BASE-001",
+      "name": "complete synthetic graph",
+      "mutation": {
+        "op": "none"
+      },
+      "expected_verdict": "VERIFIED",
+      "expected_finding_code": null,
+      "requirement_ids": [],
+      "label_source": "synthetic_fixture_baseline"
+    },
+    {
+      "case_id": "GAP-001",
+      "name": "test graph assertion contradicts source result",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "TR-1001",
+        "field": "outcome",
+        "value": "FAIL"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "SOURCE_FIELD_MISMATCH",
+      "requirement_ids": [
+        "UFGS-CX-TEST-PROCEDURE-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-002",
+      "name": "test has no linked result",
+      "mutation": {
+        "op": "remove_edge",
+        "source": "FPT-AHU-01",
+        "relation": "has_result",
+        "target": "TR-1001"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "TEST_RESULT_MISSING",
+      "requirement_ids": [
+        "UFGS-CX-TEST-PROCEDURE-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-003",
+      "name": "governing drawing explicitly outdated",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "M-101-C",
+        "field": "current",
+        "value": false
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "DOCUMENT_GATE_FAILED",
+      "requirement_ids": [
+        "UFGS-CX-TEST-PROCEDURE-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-004",
+      "name": "deficiency still open at readiness gate",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "DEF-04",
+        "field": "status",
+        "value": "open"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "DEFICIENCY_NOT_CLOSED",
+      "requirement_ids": [
+        "UFGS-CX-ISSUE-LOG-001",
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-005",
+      "name": "retest timestamp predates prior result",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "RT-04",
+        "field": "observed_at",
+        "value": "2026-10-11T08:00:00Z"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "RETEST_TIME_REVERSAL",
+      "requirement_ids": [
+        "UFGS-CX-RETEST-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-006",
+      "name": "required witness record missing from result chain",
+      "mutation": {
+        "op": "remove_edge",
+        "source": "WS-01",
+        "relation": "witnesses",
+        "target": "TR-1001"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "WITNESS_MISSING",
+      "requirement_ids": [
+        "UFGS-CX-WITNESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-007",
+      "name": "evidence source path escapes permitted root",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "WS-01",
+        "field": "source_ref",
+        "value": "../../outside.txt"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "UNSAFE_SOURCE_REFERENCE",
+      "requirement_ids": [
+        "UFGS-CX-ISSUE-LOG-001"
+      ],
+      "label_source": "authored_security_boundary_mutation"
+    },
+    {
+      "case_id": "GAP-008",
+      "name": "deficiency has no linked corrective action",
+      "mutation": {
+        "op": "remove_edge",
+        "source": "DEF-04",
+        "relation": "corrected_by",
+        "target": "CA-04"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "CORRECTIVE_ACTION_LINK_MISSING",
+      "requirement_ids": [
+        "UFGS-CX-RETEST-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-009",
+      "name": "governing document currency is not evidenced",
+      "mutation": {
+        "op": "unset_node_field",
+        "node_id": "M-101-C",
+        "field": "current"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "DOCUMENT_GATE_UNKNOWN",
+      "requirement_ids": [
+        "UFGS-CX-TEST-PROCEDURE-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-010",
+      "name": "test points to an asset outside the package",
+      "mutation": {
+        "op": "add_unlinked_asset_and_repoint_test",
+        "node_id": "ASSET-OUTSIDE-PACKAGE"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "TEST_ASSET_MISMATCH",
+      "requirement_ids": [
+        "UFGS-CX-TEST-PROCEDURE-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-011",
+      "name": "pre-test readiness certificate is not linked to package",
+      "mutation": {
+        "op": "remove_edge",
+        "source": "PKG-01",
+        "relation": "contains_evidence",
+        "target": "RDY-01"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "READINESS_CERTIFICATE_MISSING",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-012",
+      "name": "test scheduled before readiness certificate approval",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "FPT-AHU-01",
+        "field": "scheduled_at",
+        "value": "2026-10-11T07:00:00Z"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "TEST_SCHEDULED_BEFORE_READINESS_APPROVAL",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-013",
+      "name": "readiness certificate says inspections incomplete",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "RDY-01",
+        "field": "inspections_complete",
+        "value": false
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "READINESS_PRECONDITION_FAILED",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-014",
+      "name": "readiness certificate is not linked to a covered asset",
+      "mutation": {
+        "op": "remove_edge",
+        "source": "RDY-01",
+        "relation": "readiness_for",
+        "target": "AHU-01"
+      },
+      "expected_verdict": "UNKNOWN",
+      "expected_finding_code": "READINESS_ASSET_LINK_MISSING",
+      "requirement_ids": [
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    },
+    {
+      "case_id": "GAP-015",
+      "name": "readiness certificate conflicts with an open issue",
+      "mutation": {
+        "op": "set_node_field",
+        "node_id": "DEF-04",
+        "field": "status",
+        "value": "open"
+      },
+      "expected_verdict": "NOT_VERIFIED",
+      "expected_finding_code": "READINESS_CONTRADICTS_OPEN_ISSUE",
+      "requirement_ids": [
+        "UFGS-CX-ISSUE-LOG-001",
+        "UFGS-CX-READINESS-001"
+      ],
+      "label_source": "authored_adversarial_mutation"
+    }
+  ],
+  "scoring": {
+    "pass_condition": "Each mutation produces the expected verdict and at least the expected finding code.",
+    "meaning": "This measures deterministic detection of these authored mutations only; it is not sensitivity/precision on real commissioning evidence and is not customer validation."
+  }
+}
