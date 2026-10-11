@@ -126,7 +126,8 @@
         "inspections_complete": "Inspections complete",
         "open_issues_resolved": "Open issues resolved",
         "approved": "Approval",
-        "approved_at": "Approved at"
+        "approved_at": "Approved at",
+        "approver_role": "Approver role"
       }
     }
   ],
