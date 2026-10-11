@@ -1,0 +1,130 @@
+{
+  "dataset_id": "SABLE-PUBLIC-COMMISSIONING-REQUIREMENTS-001",
+  "dataset_version": "0.1.0",
+  "retrieved_on": "2026-10-11",
+  "dataset_type": "public_requirements_reference",
+  "not_customer_operational_data": true,
+  "source": {
+    "publisher": "Whole Building Design Guide (WBDG) / U.S. federal Unified Facilities Guide Specifications",
+    "authoring_organizations": [
+      "USACE",
+      "NAVFAC",
+      "AFCEC"
+    ],
+    "document_id": "UFGS 01 91 00.15",
+    "title": "Building Commissioning",
+    "document_revision": "May 2023, Change 3 dated August 2024",
+    "url": "https://www.wbdg.org/FFC/DOD/UFGS/UFGS%2001%2091%2000.15.pdf",
+    "landing_page": "https://stg.wbdg.org/dod/ufgs/ufgs-01-91-00-15",
+    "source_version_note": "The public document states UFGS-01 91 00.15, May 2023, Change 3 - 08/24, and supersedes earlier 2019/2021 sections.",
+    "rights_and_provenance": "Publicly accessible source; this dataset stores authored summaries and source pointers, not a redistributed copy of the source PDF. Reuse permissions for derivative redistribution have not been separately adjudicated.",
+    "applicability_warning": "This is a guide specification, not a project-specific executed contract. Its instructions require tailoring to the project, including choosing applicable options and removing requirements not used by the project. Never treat a generic UFGS clause as binding on a live project without checking the actual project specification, approved submittal requirements, owner's checklist, and contract amendments."
+  },
+  "requirements": [
+    {
+      "requirement_id": "UFGS-CX-TAILOR-001",
+      "section": "introductory notes before Part 1",
+      "printed_page": 3,
+      "pdf_page_index": 2,
+      "summary": "The guide specification tells the editor to adapt the text to the specific project, select relevant options, and remove requirements that do not apply.",
+      "machine_checkable_expectation": "Every enabled rule in a real-project assessment must cite the project's own requirement source and an applicability decision; unresolved applicability is UNKNOWN.",
+      "status": "design_guardrail",
+      "implementation_status": "policy_guardrail_only",
+      "failure_mode": "GENERIC_RULE_MISTAKEN_FOR_PROJECT_OBLIGATION"
+    },
+    {
+      "requirement_id": "UFGS-CX-ISSUE-LOG-001",
+      "section": "1.15 Issues Log",
+      "printed_page": 19,
+      "pdf_page_index": 18,
+      "summary": "An issues log tracks each commissioning issue from identification through resolution. The described record includes a unique reference, requirement reference, equipment/location, first observation, proposed resolution, subsequent observations and final resolution confirmation; issues are not to be deleted.",
+      "machine_checkable_expectation": "Check unique issue identity, link to applicable requirement and equipment, observation/resolution chronology, explicit final resolution, and retained history.",
+      "status": "source_derived_control",
+      "implementation_status": "partially_covered_by_graph_v1",
+      "failure_mode": "ISSUE_WITHOUT_PROVENANCE_OR_CLOSURE"
+    },
+    {
+      "requirement_id": "UFGS-CX-READINESS-001",
+      "section": "1.16 Certificate of Readiness",
+      "printed_page": 20,
+      "pdf_page_index": 19,
+      "summary": "Before commissioning tests are scheduled for a system, the specification calls for a readiness certificate stating inspections are complete, open issues are resolved, and the system is ready; it calls for Government approval before scheduling.",
+      "machine_checkable_expectation": "For a project profile that includes this clause, block the readiness verdict if inspection completion, open-issue closure, certificate evidence, approver identity/authority, or approval time cannot be evidenced.",
+      "status": "source_derived_control",
+      "implementation_status": "benchmark_and_intake_profile_only",
+      "failure_mode": "TEST_SCHEDULED_WITHOUT_APPROVED_READINESS"
+    },
+    {
+      "requirement_id": "UFGS-CX-TEST-PROCEDURE-001",
+      "section": "3.10.2 Testing Procedures",
+      "printed_page": 28,
+      "pdf_page_index": 27,
+      "summary": "Commissioning tests must follow the commissioning standard named in the project and relevant technical specification sections; examples include functional-performance and integrated-systems tests.",
+      "machine_checkable_expectation": "Each declared test links to its applicable approved project procedure/standard and records the applicable requirement revision.",
+      "status": "source_derived_control",
+      "implementation_status": "partially_covered_by_graph_v1",
+      "failure_mode": "TEST_RESULT_WITHOUT_GOVERNING_PROCEDURE"
+    },
+    {
+      "requirement_id": "UFGS-CX-RETEST-001",
+      "section": "3.10.3.1 and 3.10.4 Aborted Tests and Re-Testing",
+      "printed_page": 29,
+      "pdf_page_index": 28,
+      "summary": "When a deficiency is found, the specification describes correcting it and retesting to confirm correction without negatively affecting the rest of the system. Tests should be aborted when a deficiency prevents successful completion or a required team member is absent.",
+      "machine_checkable_expectation": "Require a trace from original failed/aborted result to documented corrective action and a later retest, with explicit retest outcome; do not infer resolution from a changed status alone.",
+      "status": "source_derived_control",
+      "implementation_status": "partially_covered_by_graph_v1",
+      "failure_mode": "DEFICIENCY_CLOSED_WITHOUT_LINKED_RETEST"
+    },
+    {
+      "requirement_id": "UFGS-CX-PAYMENT-CONSEQUENCE-001",
+      "section": "3.10.4 Aborted Tests and Re-Testing",
+      "printed_page": 30,
+      "pdf_page_index": 29,
+      "summary": "The guide states the Contracting Officer may withhold costs equivalent to time lost and retesting/aborted tests under the described circumstances.",
+      "machine_checkable_expectation": "Use as a commercial qualification trigger only after confirming the actual project's applicable clause, actual economic consequence, accountable decision owner, deadline and payer. A generic guide alone is not evidence that money is currently withheld.",
+      "status": "source_derived_economic_signal",
+      "implementation_status": "commercial_discovery_only",
+      "failure_mode": "RETEST_OR_ABORT_COST_EXPOSURE"
+    },
+    {
+      "requirement_id": "UFGS-CX-REPORT-CONTENT-001",
+      "section": "3.14 Commissioning Report",
+      "printed_page": 32,
+      "pdf_page_index": 31,
+      "summary": "The final commissioning report may need to include outstanding deficiencies and resolutions, completed checklists, functional/integrated test records, the construction-phase plan, issues log, training attendance and design/submittal review reports as set by the project specification.",
+      "machine_checkable_expectation": "Compare submitted report manifest with the specific project's required artifact list; distinguish absent required artifacts from items not applicable to this project.",
+      "status": "source_derived_control",
+      "implementation_status": "manifest_profile_not_yet_implemented",
+      "failure_mode": "TURNOVER_PACKAGE_MISSING_REQUIRED_ARTIFACT"
+    },
+    {
+      "requirement_id": "UFGS-CX-REPORT-TIMING-001",
+      "section": "3.14 Commissioning Report",
+      "printed_page": 32,
+      "pdf_page_index": 31,
+      "summary": "The guide describes submission timelines for an initial/final commissioning report after team validation of the relevant tests, with conditions and tailoring options.",
+      "machine_checkable_expectation": "Only enable a deadline check when the project-specific contract version confirms the applicable deadline and triggering event.",
+      "status": "source_derived_control",
+      "implementation_status": "policy_guardrail_only",
+      "failure_mode": "REPORT_SUBMITTED_AFTER_APPLICABLE_DEADLINE"
+    },
+    {
+      "requirement_id": "UFGS-CX-WITNESS-001",
+      "section": "3.10 Commissioning Tests",
+      "printed_page": 28,
+      "pdf_page_index": 27,
+      "summary": "The guide includes commissioning-team presence and Government witness rights; project-specific roles and witness requirements must be checked.",
+      "machine_checkable_expectation": "Require witness linkage only where the applicable project checklist/contract says a witness is required; missing scope or authority makes the check UNKNOWN.",
+      "status": "source_derived_conditional_control",
+      "implementation_status": "partially_covered_by_graph_v1",
+      "failure_mode": "REQUIRED_WITNESS_EVIDENCE_MISSING"
+    }
+  ],
+  "known_limits": [
+    "These records are authored paraphrases for traceability, not a substitute for reading the source document.",
+    "The source is a generalized federal guide specification, not actual project execution evidence.",
+    "No claim is made that any real project had a defect, withheld payment, delay, or readiness failure.",
+    "Rules marked as not implemented are research/data requirements, not claims about the current executable's capability."
+  ]
+}
