@@ -17,7 +17,7 @@ class CommissioningEvidenceGraphTests(unittest.TestCase):
         self.assertEqual(r["verdict"], "VERIFIED")
         self.assertEqual(r["summary"]["gaps"], 0)
         self.assertEqual(r["summary"]["critical"], 0)
-        self.assertEqual(r["summary"]["locally_hash_verified_sources"], 7)
+        self.assertEqual(r["summary"]["locally_hash_verified_sources"], 8)
 
     def test_hash_mismatch_is_not_verified(self):
         g = copy.deepcopy(self.graph)
@@ -75,6 +75,29 @@ class CommissioningEvidenceGraphTests(unittest.TestCase):
         r = validate_graph(g, ROOT)
         self.assertEqual(r["verdict"], "UNKNOWN")
         self.assertIn("UNSAFE_SOURCE_REFERENCE", {f["code"] for f in r["findings"]})
+
+    def test_missing_readiness_certificate_is_unknown(self):
+        g = copy.deepcopy(self.graph)
+        g["edges"] = [e for e in g["edges"] if not (
+            e["source"] == "PKG-01" and e["relation"] == "contains_evidence" and e["target"] == "RDY-01"
+        )]
+        r = validate_graph(g, ROOT)
+        self.assertEqual(r["verdict"], "UNKNOWN")
+        self.assertIn("READINESS_CERTIFICATE_MISSING", {f["code"] for f in r["findings"]})
+
+    def test_test_scheduled_before_readiness_approval_is_not_verified(self):
+        g = copy.deepcopy(self.graph)
+        next(n for n in g["nodes"] if n["id"] == "FPT-AHU-01")["scheduled_at"] = "2026-10-11T07:00:00Z"
+        r = validate_graph(g, ROOT)
+        self.assertEqual(r["verdict"], "NOT_VERIFIED")
+        self.assertIn("TEST_SCHEDULED_BEFORE_READINESS_APPROVAL", {f["code"] for f in r["findings"]})
+
+    def test_readiness_claim_conflicts_with_open_package_issue(self):
+        g = copy.deepcopy(self.graph)
+        next(n for n in g["nodes"] if n["id"] == "DEF-04")["status"] = "open"
+        r = validate_graph(g, ROOT)
+        self.assertEqual(r["verdict"], "NOT_VERIFIED")
+        self.assertIn("READINESS_CONTRADICTS_OPEN_ISSUE", {f["code"] for f in r["findings"]})
 
     def test_duplicate_node_id_is_not_verified(self):
         g = copy.deepcopy(self.graph)
