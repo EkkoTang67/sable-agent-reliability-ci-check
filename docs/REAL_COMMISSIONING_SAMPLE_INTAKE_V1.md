@@ -6,13 +6,13 @@ Validate the evidence graph against one real, authorized, redacted commissioning
 
 ## Request
 
-One historically completed subsystem package with approximately 8–15 redacted text records, ideally including one known, already-adjudicated documentation gap or mismatch. The data owner must have authority to share the sample for this evaluation and must expressly approve the use.
+One historically completed subsystem package with approximately 8–15 redacted UTF-8 text sidecars plus one JSON graph manifest, ideally including one known, already-adjudicated documentation gap or mismatch. The data owner must have authority to share the sample for this evaluation and must expressly approve the use.
 
 Preferred starting scope: a non-sensitive subsystem such as a cooling skid, an AHU, or a non-live lab/commissioning package. The sample must not contain live controls access or instructions to operate equipment.
 
 ## Supported intake format in v1
 
-UTF-8 text, CSV, or JSON export/sidecars only. The current prototype does not parse binary PDFs, native CAD files, vendor portals, or engineering drawings. Do not upload sensitive originals in order to test a format this prototype does not support.
+The executable v1 directly reads a JSON graph manifest plus local UTF-8 text sidecars whose key/value fields are explicitly mapped in the graph. It does not directly ingest raw CSV/JSON exports, binary PDFs, native CAD files, vendor portals, or engineering drawings. A source CSV/JSON may be considered only if the authorized data owner and SABLE agree a manual, documented redacted-field normalization step; no automatic parser or platform adapter is implied. Do not upload sensitive originals in order to test an unsupported format.
 
 Provide one small record of each available type:
 - Asset/equipment index (pseudonymous asset IDs).
