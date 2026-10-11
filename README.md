@@ -12,6 +12,20 @@ A success message is not the same as a proven outcome. SABLE binds one exact cla
 
 **The technical boundary:** the action system reports; the system of record answers. SABLE produces a bounded, reviewable evidence receipt. It does not claim universal exactly-once execution or production certification.
 
+## Critical infrastructure: Commissioning Evidence Graph (experimental)
+
+SABLE now includes a read-only prototype for linking commissioning evidence across asset, governing drawing/procedure revision, test, test result, deficiency, corrective action, retest, witness record, and turnover package. The prototype checks local evidence-file SHA-256 digests, source-bound metadata fields, required relationships, revision approval/current flags, deficiency closure, retest order, and required witness linkage. It returns VERIFIED / NOT_VERIFIED / UNKNOWN and does not connect to facility control networks.
+
+This is an evidence-integrity prototype, not a safety certification or commissioning sign-off. The included fixture is synthetic. Binary drawing parsing, semantic interpretation of engineering measurements, cryptographic signature verification, and source-system adapters are not implemented yet.
+
+~~~bash
+python3 sable_commissioning_evidence_graph.py --file examples/commissioning-evidence-graph.synthetic.json --root . --out commissioning-evidence-receipt.json
+~~~
+
+- [Commissioning Evidence Graph v1.0 specification](docs/SABLE_COMMISSIONING_EVIDENCE_GRAPH_V1.md)
+- [Synthetic commissioning graph](examples/commissioning-evidence-graph.synthetic.json)
+- [Validator source](sable_commissioning_evidence_graph.py)
+
 ## Run the synthetic example
 
 ```bash
