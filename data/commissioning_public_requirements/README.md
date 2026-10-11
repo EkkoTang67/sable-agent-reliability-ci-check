@@ -12,3 +12,10 @@ Excluded sources: ACG material is not used as training or dataset input because 
 
 
 A separate public LBNL/DOE fault-detection dataset contains labeled operational HVAC series (including simulation, laboratory and field measurements). It is tracked only as an adjacent operational-data resource, not as a validation set for readiness-certificate/document-link detection; see the data asset register for the distinction. Source: https://faultdetection.lbl.gov/data/ .
+
+
+## Project-specific public specification profile
+
+- [NPS DETO 228872 project commissioning specification profile](project_spec_DETO_228872.json) — public solicitation attachment, issued 2025-08-27; not proof of final award-contract terms or project execution.
+- [USDA ARS 1232SA26Q0704 revised commissioning specification profile](project_spec_USDA_ARS_1232SA26Q0704.json) — public solicitation attachment for the Gainesville HVAC repair scope, notice updated September 17, 2026 and inactive since October 8, 2026. The offer deadline has passed; awardee/award status was not confirmed, so this is a requirements reference, not a current buyer lead.
+- [Chicago OIG independent audit extract](../public_audit_cases/chicago_pbc_commissioning_audit_2021.json) — independent summary of five completed public-building projects and the finding that document completeness and recipient access were separate issues.
