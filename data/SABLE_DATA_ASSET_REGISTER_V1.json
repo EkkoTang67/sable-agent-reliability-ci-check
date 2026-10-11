@@ -130,6 +130,19 @@
       "extraction_mode": "Authored structured summary of named project-level aggregate findings, recipient-access observations and recommendations; the underlying project files are not present.",
       "use_guardrail": "Historical audit data supports a problem hypothesis and baseline taxonomy, not a current customer's problem, a SABLE detection result, or current spending authority. Don't infer document-level missing IDs or causal facts beyond the report.",
       "license_status": "No full report redistributed; only authored summaries and source pointers."
+    },
+    {
+      "source_id": "USDA-ARS-1232SA26Q0704",
+      "title": "Repair HVAC Systems, Gainesville, FL — revised commissioning specification",
+      "publisher": "U.S. Department of Agriculture, Agricultural Research Service; public SAM.gov solicitation attachment",
+      "revision": "Public notice updated 2026-09-17; offers due 2026-09-23; notice inactive 2026-10-08",
+      "url": "https://sam.gov/opp/9e2194aa6d3b46a8bab981f469ee6c44/view",
+      "attachment_reference": "ASI-002 Revised Commissioning Spec.pdf (third-party indexed copy)",
+      "evidence_class": "public_project_specification_reference",
+      "relevance": "Recent public solicitation with a revised HVAC commissioning specification; references readiness certificate, pre-functional checklists, FPT and retesting. Supports project-specific profile design.",
+      "local_representation": "data/commissioning_public_requirements/project_spec_USDA_ARS_1232SA26Q0704.json",
+      "use_guardrail": "This opportunity is inactive and its offer deadline has passed. Awardee/award status was not confirmed; it is not a present SABLE buyer. Confirm the executed contract and final amendments before treating clauses as binding.",
+      "license_status": "Authored summaries only; no full PDF reproduced."
     }
   ],
   "current_truth": {
