@@ -28,3 +28,7 @@ jobs:
           python -m py_compile sable_commissioning_evidence_graph.py
           python3 sable_commissioning_evidence_graph.py --file examples/commissioning-evidence-graph.synthetic.json --root . --out /tmp/commissioning-evidence-receipt.json
           grep -F '"verdict": "VERIFIED"' /tmp/commissioning-evidence-receipt.json
+      - name: Evaluate source-traceable adversarial benchmark
+        run: |
+          python3 data/commissioning_evidence_benchmark_v0/run_benchmark.py > /tmp/commissioning-benchmark.json
+          grep -F '"failed": 0' /tmp/commissioning-benchmark.json
