@@ -103,6 +103,33 @@
       "extraction_mode": "Pending customer-authorized sample and reviewer.",
       "use_guardrail": "Do not train on or reuse labels beyond the explicitly licensed scope. Keep reviewer decisions independent from SABLE-produced predictions.",
       "license_status": "Not applicable until specific permission/contract is obtained."
+    },
+    {
+      "source_id": "DETO-228872-01-91-14",
+      "title": "Section 01 91 14 — Total Building Commissioning, DETO 228872",
+      "publisher": "Public federal contract-opportunity attachment; source host is GovTribe",
+      "revision": "Issued 2025-08-27",
+      "url": "https://govtribe.com/file/government-file/140p2025r0002-a0003-att-01-91-14-total-building-commissioning-0003-dot-pdf",
+      "evidence_class": "public_project_specification_reference",
+      "relevance": "A project-specific public specification profile lists readiness certificates, closeout documents before functional performance testing, test-form lead time, defect-resolution records, calibration evidence and per-test report organization.",
+      "local_representation": "data/commissioning_public_requirements/project_spec_DETO_228872.json",
+      "extraction_mode": "Authored paraphrases and section/page references from publicly indexed PDF text.",
+      "use_guardrail": "The document is an attachment to a public contract opportunity, not proof of an executed final contract or project completion. Check the awarded contract and amendments before treating clauses as binding.",
+      "license_status": "No bulk source text redistributed; rights for derivative reuse not separately adjudicated."
+    },
+    {
+      "source_id": "CHICAGO-PBC-OIG-2021",
+      "title": "Audit of the Public Building Commission's Administration of Building Commissioning",
+      "publisher": "City of Chicago Office of Inspector General",
+      "revision": "Published 2021-09-23; OIG file 20-0830",
+      "url": "https://igchicago.org/publications/audit-of-the-public-building-commissions-administration-of-building-commissioning/",
+      "report_pdf": "https://igchicago.org/wp-content/uploads/2023/08/OIG-Audit-of-the-PBCs-Administration-of-Building-Commissioning.pdf",
+      "evidence_class": "public_independent_audit_summary",
+      "relevance": "Independent audit of five completed projects: four with reasonably complete documentation and one missing most commissioning documentation; separate findings about delivery/accessibility despite claims documents had been supplied.",
+      "local_representation": "data/public_audit_cases/chicago_pbc_commissioning_audit_2021.json",
+      "extraction_mode": "Authored structured summary of named project-level aggregate findings, recipient-access observations and recommendations; the underlying project files are not present.",
+      "use_guardrail": "Historical audit data supports a problem hypothesis and baseline taxonomy, not a current customer's problem, a SABLE detection result, or current spending authority. Don't infer document-level missing IDs or causal facts beyond the report.",
+      "license_status": "No full report redistributed; only authored summaries and source pointers."
     }
   ],
   "current_truth": {
