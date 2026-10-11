@@ -43,7 +43,7 @@
 - Message ID: <010001a12981792c-3afd60ef-f097-4f3f-983e-1718b9624fd8-000000@email.amazonses.com>
 - Public trigger: invoice, COI, lien-waiver and ongoing subcontractor admin services; published $499/month starting point.
 - Ask: recurring evidence-chasing/rework bottleneck; $1,500 three-package test.
-- State: mail provider accepted send; delivery/read/reply unknown.
+- State: **BOUNCED**. The mail provider returned a delivery failure stating the address could not be found or cannot receive mail. Do not retry this address without a verified alternate route.
 
 ## 7. Cartwheel Funding — contractor pay-app / retainage advances
 - To: alex@cartwheelfunding.com
@@ -51,12 +51,12 @@
 - Message ID: <010001a129828419-8aa21bf1-7939-4489-b19c-1553a9f34f5b-000000@email.amazonses.com>
 - Public trigger: Cartwheel describes a flow of submitted documents, verification of project/GC/contract terms, advances for pay apps/materials/retainage, and collection when owner/GC pays.
 - Offer under test: US$2,500 for five redacted cases; source-linked evidence matrix, amount tie-out, chronology and unresolved questions. No credit decision or funds handling.
-- State: mail provider accepted send; delivery/read/reply unknown.
+- State: **BOUNCED**. The mail provider returned a delivery failure stating the address could not be found or cannot receive mail. Do not retry this address without a verified alternate route.
 
 ## Reply check
 An inbox query for the first four exact senders returned only outbound sent threads; no inbound reply was present at that check. A later query of the configured inbox by exact sender returned no inbound messages for all six prior prospects. This is not evidence of refusal and does not establish delivery.
 
 ## What is proven / not proven
-- Proven: seven targeted email-send operations were accepted by the configured mail connector; each used a specific public workflow trigger and a bounded paid-pilot ask.
+- Proven: seven targeted send operations were accepted by the configured mail connector; two later generated explicit bounce notifications (Clearline Admin and Cartwheel Funding). Five remain without confirmed delivery or reply.
 - Not proven: inbox delivery, read, customer interest, budget, payment authority, acceptance, order, delivery results, repeat intent, or funds received.
 - R3 remains unchanged. Settled revenue remains unconfirmed.
