@@ -32,6 +32,7 @@ class CommissioningEvidenceGraphTests(unittest.TestCase):
         r = validate_graph(g, ROOT)
         self.assertEqual(r["verdict"], "NOT_VERIFIED")
         self.assertIn("TEST_FAILED", {f["code"] for f in r["findings"]})
+        self.assertIn("SOURCE_FIELD_MISMATCH", {f["code"] for f in r["findings"]})
 
     def test_unapproved_drawing_is_not_verified(self):
         g = copy.deepcopy(self.graph)
