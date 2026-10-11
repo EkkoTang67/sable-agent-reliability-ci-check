@@ -51,7 +51,7 @@
       "summary": "Before commissioning tests are scheduled for a system, the specification calls for a readiness certificate stating inspections are complete, open issues are resolved, and the system is ready; it calls for Government approval before scheduling.",
       "machine_checkable_expectation": "For a project profile that includes this clause, block the readiness verdict if inspection completion, open-issue closure, certificate evidence, approver identity/authority, or approval time cannot be evidenced.",
       "status": "source_derived_control",
-      "implementation_status": "benchmark_and_intake_profile_only",
+      "implementation_status": "implemented_in_graph_v1_when_project_applicability_is_manually_confirmed",
       "failure_mode": "TEST_SCHEDULED_WITHOUT_APPROVED_READINESS"
     },
     {
