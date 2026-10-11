@@ -18,7 +18,7 @@ class CommercialSurfaceTests(unittest.TestCase):
         self.assertIn("https://paypal.me/tang665/2500USD", page)
         self.assertIn("PRODUCT=PRETEST_READINESS_AUDIT", page)
         self.assertIn("one authorized commissioning subsystem", page)
-        self.assertIn("source-linked evidence graph", page)
+        self.assertIn("Source-linked evidence graph", page)
         self.assertIn("If a safe mutually agreed scope cannot be established within five business days", page)
         self.assertIn("does not automatically determine whether a generic or public requirement applies", page.lower())
         self.assertIn("explicitly open issues", page)
