@@ -143,6 +143,43 @@ def validate_graph(document: Any, evidence_root: str | Path | None = None) -> di
         if actual.lower() != expected.lower():
             add("critical", "SHA256_MISMATCH", "Local evidence bytes do not match the declared SHA-256 digest.", nid)
             continue
+        try:
+            raw_text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            add("gap", "SOURCE_TEXT_UNREADABLE", "v1 requires a UTF-8 text sidecar; binary/PDF parsing is not implemented.", nid)
+            continue
+        source_fields = {}
+        for line in raw_text.splitlines():
+            if ":" in line:
+                key, value = line.split(":", 1)
+                source_fields[key.strip()] = value.strip()
+        bindings = node.get("source_fields")
+        if not isinstance(bindings, dict) or not bindings:
+            add("gap", "SOURCE_FIELD_BINDINGS_MISSING", "Evidence node must bind decision-relevant metadata to named source fields.", nid)
+        else:
+            for attribute, field_name in bindings.items():
+                if not isinstance(attribute, str) or not isinstance(field_name, str) or not field_name:
+                    add("gap", "SOURCE_FIELD_BINDING_INVALID", "Each source field binding must map an attribute to a source field name.", nid)
+                    continue
+                if attribute not in node:
+                    add("gap", "SOURCE_ASSERTION_MISSING", "Bound graph attribute is absent: " + attribute, nid)
+                    continue
+                if field_name not in source_fields:
+                    add("gap", "SOURCE_FIELD_MISSING", "Required field is absent from the local evidence text: " + field_name, nid)
+                    continue
+                expected_value = node[attribute]
+                if attribute == "approved":
+                    expected_value = "approved" if expected_value is True else ("not approved" if expected_value is False else str(expected_value))
+                elif attribute == "current":
+                    expected_value = "yes" if expected_value is True else ("no" if expected_value is False else str(expected_value))
+                elif attribute == "signed":
+                    expected_value = "signed" if expected_value is True else ("not signed" if expected_value is False else str(expected_value))
+                else:
+                    expected_value = str(expected_value)
+                actual_value = source_fields[field_name]
+                if actual_value.casefold() != expected_value.casefold():
+                    add("critical", "SOURCE_FIELD_MISMATCH",
+                        "Graph assertion for " + attribute + " disagrees with source field " + field_name + ".", nid)
         verified_sources.append({"node_id": nid, "source_ref": source_ref, "sha256": actual})
 
     packages = [n for n in nodes.values() if n.get("kind") == "turnover_package"]
