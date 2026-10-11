@@ -197,9 +197,9 @@
       "target": "TR-1001"
     },
     {
-      "source": "TR-1001",
+      "source": "WS-01",
       "relation": "witnesses",
-      "target": "WS-01"
+      "target": "TR-1001"
     }
   ]
 }
