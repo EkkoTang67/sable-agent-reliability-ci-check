@@ -1,0 +1,5 @@
+SYNTHETIC FIXTURE ONLY
+Retest: RT-04
+Deficiency: DEF-04
+Outcome: PASS
+Observed: 2026-10-11T10:00:00Z
