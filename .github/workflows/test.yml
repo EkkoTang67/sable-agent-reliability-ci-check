@@ -23,3 +23,8 @@ jobs:
           test -f tests/test_commercial_surface.py
       - name: Run PR #150 commercial surface unit tests
         run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Execute synthetic commissioning evidence graph
+        run: |
+          python -m py_compile sable_commissioning_evidence_graph.py
+          python3 sable_commissioning_evidence_graph.py --file examples/commissioning-evidence-graph.synthetic.json --root . --out /tmp/commissioning-evidence-receipt.json
+          grep -F '"verdict": "VERIFIED"' /tmp/commissioning-evidence-receipt.json
