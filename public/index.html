@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A fixed-price, code-first way to buy one bounded independent outcome check. See the evidence model, define the scope, pay online.">
+<title>SABLE — Buy an Outcome Check</title>
+<style>
+:root{color-scheme:dark;--bg:#080a0d;--panel:#11161d;--panel2:#151c24;--fg:#f6f8fb;--muted:#a6b0be;--line:#293442;--accent:#d8f36a;--ok:#a4e2bd;--bad:#ffb9b9;--warn:#f5d68a;--radius:18px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(90rem 60rem at 20% -20%,#1d2b39 0,transparent 55%),var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit}button,input,select,textarea{font:inherit}button{cursor:pointer}main{max-width:1080px;margin:auto;padding:28px 20px 84px}
+nav{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:8px 0 30px;color:var(--muted);font-size:14px}.brand{font-weight:900;letter-spacing:.17em;color:var(--fg)}
+.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--accent);font-weight:750}
+h1{font-size:clamp(42px,7vw,76px);line-height:.99;letter-spacing:-.055em;max-width:870px;margin:14px 0 20px}
+h2{font-size:clamp(26px,4vw,38px);line-height:1.1;letter-spacing:-.035em;margin:0 0 14px}
+h3{font-size:19px;line-height:1.2;margin:0 0 9px}
+.lede{font-size:clamp(18px,2.4vw,23px);line-height:1.45;max-width:780px;color:#d5dce6}.muted{color:var(--muted)}.small{font-size:13px;color:var(--muted)}
+.hero{padding:30px 0 42px}.flow{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0}
+.pill{border:1px solid var(--line);background:#10151b;border-radius:999px;padding:8px 12px;font-size:13px;color:#e1e7ee}
+.section{padding:44px 0;border-top:1px solid var(--line)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.card{background:linear-gradient(165deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:var(--radius);padding:23px}
+.card p{color:var(--muted);margin:8px 0}.price{font-size:45px;font-weight:900;letter-spacing:-.055em;line-height:1;margin:5px 0 13px}
+.tag{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--accent);font-weight:800}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:9px;min-height:48px;padding:12px 18px;border:1px solid var(--accent);border-radius:10px;background:var(--accent);color:#12180a;text-decoration:none;font-weight:850;text-align:center}
+.btn.secondary{background:transparent;color:var(--fg);border-color:#52606f}.btn:disabled{opacity:.45;cursor:not-allowed}
+.paypal-slot{margin-top:14px;min-height:45px}.direct-pay{width:100%;margin-top:12px}
+.demo{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:20px;align-items:stretch}
+.demo-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.demo-buttons button{background:#111820;color:var(--fg);border:1px solid #3a4757;border-radius:9px;padding:10px 12px}
+.verdict{border:1px solid var(--line);border-radius:14px;padding:22px;background:#0d1116}.verdict-label{display:inline-block;font-weight:900;font-size:24px;letter-spacing:-.02em}.verdict-detail{font-size:14px;color:var(--muted);margin-top:8px}
+form{display:grid;gap:14px}.field{display:grid;gap:6px}label{font-size:14px;color:#e4e9f0;font-weight:650}input,select,textarea{width:100%;background:#090d12;border:1px solid #354252;border-radius:9px;color:var(--fg);padding:12px 13px;min-width:0}textarea{min-height:90px;resize:vertical}input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.checkrow{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:14px}.checkrow input{width:18px;min-width:18px;margin-top:3px}
+.scope-status{margin:0;padding:10px 12px;border-radius:8px;background:#171e27;color:var(--muted);font-size:14px}.scope-status.ok{color:var(--ok)}.scope-status.bad{color:var(--bad)}
+.receipt{display:none;margin-top:20px;border:1px solid #48765e;background:#101d17;border-radius:14px;padding:20px}.receipt.show{display:block}.receipt h3{color:var(--ok)}.receipt code{overflow-wrap:anywhere;font-size:13px}
+.waiting{display:none;margin-top:16px;padding:14px;background:#251d11;border:1px solid #6e5728;border-radius:12px;color:var(--warn)}.waiting.show{display:block}
+footer{border-top:1px solid var(--line);padding-top:26px;color:var(--muted);font-size:13px}
+@media(max-width:740px){main{padding:16px 15px 60px}.demo{grid-template-columns:1fr}.section{padding:32px 0}.card{padding:18px}nav{padding-bottom:18px}}
+.sandbox-banner{border:1px solid #927a3c;background:#271f13;color:#f5d68a;border-radius:16px;padding:18px 20px;margin:8px 0 30px;font-weight:700;font-size:15px}button:disabled{opacity:.55;cursor:not-allowed}
+</style>
+</head>
+<body>
+<main>
+<nav><div class="brand">SABLE</div><div>Independent outcome evidence <span aria-hidden="true">↗</span></div></nav>
+<div class="sandbox-banner" role="status"><strong>SANDBOX PREVIEW — </strong>Direct live PayPal.Me payments are disabled here. Automated checkout remains off until sandbox credentials and webhook settings are configured.</div>
+
+<header class="hero">
+  <div class="kicker">Buy a specific result check. No sales call required.</div>
+  <h1>Your system says it worked.<br>Prove what actually happened.</h1>
+  <p class="lede">Pick one consequential claim, define the authorized boundary, inspect the evidence model, and pay online. SABLE returns VERIFIED, NOT VERIFIED, or UNKNOWN—with the evidence and limitations stated plainly.</p>
+  <div class="flow">
+    <span class="pill">01 · Define the claim</span><span class="pill">02 · Inspect the method</span><span class="pill">03 · Pay a fixed price</span><span class="pill">04 · Verify the receipt</span>
+  </div>
+</header>
+
+<section class="section">
+  <div class="grid">
+    <article class="card">
+      <div class="tag">One claim · primary entry</div>
+      <div class="price">$99</div>
+      <h3>One-Claim Outcome Check</h3>
+      <p>One claim, one authorized boundary, one bounded failure mode, one independent observation, one evidence receipt.</p>
+      <p class="small">Best for a single acceptance question: did the intended state actually happen?</p>
+      <div id="paypal-99" class="paypal-slot" aria-label="PayPal checkout for the $99 offer"></div>
+      <button class="btn direct-pay" type="button" disabled aria-disabled="true" data-direct-sku="decision-rescue-99">Live payment disabled in preview</button>
+      <a class="small" data-direct-sku="decision-rescue-99" href="#live-payment-disabled" aria-disabled="true" onclick="return false">Direct payment disabled in sandbox preview</a>
+    </article>
+    <article class="card">
+      <div class="tag">Wider bounded sequence</div>
+      <div class="price">$299</div>
+      <h3>Decision Closure</h3>
+      <p>For a broader replay, multi-state, or provenance question where several linked transitions must be checked.</p>
+      <p class="small">Not production-wide assurance, an open-ended audit, or a promise of a positive result.</p>
+      <div id="paypal-299" class="paypal-slot" aria-label="PayPal checkout for the $299 offer"></div>
+      <button class="btn secondary direct-pay" type="button" disabled aria-disabled="true" data-direct-sku="decision-closure-299">Live payment disabled in preview</button>
+      <a class="small" data-direct-sku="decision-closure-299" href="#live-payment-disabled" aria-disabled="true" onclick="return false">Direct payment disabled in sandbox preview</a>
+    </article>
+  </div>
+  <p id="checkout-status" class="scope-status" role="status" style="margin-top:14px">Checking instant checkout availability… If automated checkout is not configured, the direct PayPal.Me option remains available.</p>
+</section>
+
+<section class="section">
+  <div class="demo">
+    <div>
+      <div class="kicker">Try the logic before buying</div>
+      <h2>See what an evidence-based verdict means.</h2>
+      <p class="muted">This is a synthetic example—not a customer result, not connected to any live payment provider, and not a claim about your system.</p>
+      <div class="demo-buttons">
+        <button type="button" data-demo="verified">Show VERIFIED</button>
+        <button type="button" data-demo="not_verified">Show NOT VERIFIED</button>
+        <button type="button" data-demo="unknown">Show UNKNOWN</button>
+      </div>
+    </div>
+    <div class="verdict" aria-live="polite">
+      <div class="tag">Synthetic evidence fixture</div>
+      <div id="demo-verdict" class="verdict-label" style="color:var(--ok)">VERIFIED</div>
+      <p id="demo-detail" class="verdict-detail">One test order ID → one completed capture → matching entitlement in the authoritative test record.</p>
+      <p class="small">A successful API response alone is not proof of the business outcome.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="scope">
+  <div class="kicker">Scope gate</div>
+  <h2>Pay now. Define the exact boundary before work begins.</h2>
+  <p class="muted">This form is kept in your browser. It is not sent to SABLE until you open the prepared scope email after payment; the first version does not store your scope in a server database.</p>
+  <form id="scope-form">
+    <div class="field"><label for="decision">What decision must this evidence support?</label><select id="decision" name="decision" required><option value="">Choose a decision</option><option>Release or deployment acceptance</option><option>Payment / settlement integrity</option><option>Refund or cancellation outcome</option><option>Entitlement or customer access</option><option>Migration / cutover</option><option>AI agent action / authorization</option><option>Other bounded decision</option></select></div>
+    <div class="field"><label for="claim">Exact claim to prove (one sentence)</label><textarea id="claim" name="claim" required maxlength="800" placeholder="Example: one logical order produced exactly one completed charge and the expected entitlement."></textarea></div>
+    <div class="field"><label for="boundary">Authorized boundary (test / staging URL, build, fixture, or sandbox)</label><input id="boundary" name="boundary" required maxlength="500" placeholder="Identify only the system and data you are authorized to expose."></div>
+    <div class="field"><label for="evidence">Available authoritative evidence source</label><input id="evidence" name="evidence" required maxlength="500" placeholder="Example: sandbox order readback + entitlement record in test tenant."></div>
+    <div class="field"><label for="deadline">Decision deadline (optional)</label><input id="deadline" name="deadline" maxlength="100" placeholder="e.g. 2026-10-14 17:00 UTC"></div>
+    <label class="checkrow"><input type="checkbox" id="authorized" required><span>I have authority to authorize this exact test boundary and will not provide production/customer data or credentials without explicit written scope. I understand SABLE may return NOT VERIFIED or UNKNOWN; payment does not guarantee a positive result.</span></label>
+    <p id="scope-validation" class="scope-status" role="status">The fixed-price checkout is available now. Complete the scope before work begins; authorization is required before any test is executed.</p>
+    <button class="btn" type="submit" id="prepare-scope">Validate scope</button>
+  </form>
+  <div id="manual-intake" class="card" style="display:none;margin-top:18px">
+    <h3>Direct PayPal.Me follow-up</h3>
+    <p class="small">This direct payment path has no automatic server confirmation. After you pay, enter the PayPal transaction reference here. SABLE must verify it manually before treating the order as paid.</p>
+    <div class="field"><label for="manual-transaction">PayPal transaction reference</label><input id="manual-transaction" maxlength="180" placeholder="Paste the PayPal transaction ID / reference"></div>
+    <button type="button" id="prepare-manual-email" class="btn secondary">Prepare manual payment + scope email</button>
+  </div>
+  <div id="payment-receipt" class="receipt" aria-live="polite">
+    <h3>Payment verified with PayPal</h3>
+    <p>The server has read back a completed capture matching the selected product and configured merchant. This confirms payment—not that work has started or the technical claim is true.</p>
+    <div id="receipt-details"></div>
+    <button type="button" id="send-scope-email" class="btn">Prepare scope email</button>
+    <p class="small">The email draft includes the verified order reference and the scope you entered. You still need to send it. Work starts after SABLE confirms the exact claim, evidence boundary and required access.</p>
+  </div>
+  <div id="payment-waiting" class="waiting" role="status"></div>
+  <div id="recover-orders" class="card" style="display:none;margin-top:18px">
+    <h3>Recover a checkout from this browser</h3>
+    <p class="small">If you approved payment but closed the tab before seeing a receipt, the signed order reference remains in this browser session. Check it against PayPal again; no success is assumed.</p>
+    <div id="recover-list"></div>
+  </div>
+</section>
+
+<section class="section">
+  <h2>What the API checkout enforces when configured</h2>
+  <p class="small">These server-side checks run only after the reviewed API routes are deployed and the PayPal app, recipient merchant, and signed webhook are configured. This storefront deployment currently uses the manual PayPal.Me fallback; the live page status above reports whether automated checkout is available.</p>
+  <div class="grid">
+    <article class="card"><h3>Fixed-price order</h3><p>When automated checkout is enabled, the browser selects a published SKU; the server chooses the amount. A client cannot set the price in the API request.</p></article>
+    <article class="card"><h3>Server-side capture</h3><p>When automated checkout is enabled, the server reads PayPal's order, binds the SKU, amount, currency, invoice and merchant, then captures the approved order.</p></article>
+    <article class="card"><h3>Receipt, not a success toast</h3><p>When automated checkout is enabled, a payment receipt appears only after PayPal's order readback shows a completed capture matching the configured offer and merchant.</p></article>
+  </div>
+  <p class="small">Automated checkout becomes available only after the server-side PayPal credentials, merchant identity and webhook are configured. The direct PayPal.Me fallback does not provide automatic server confirmation; it requires manual transaction verification.</p>
+</section>
+
+<footer>
+  <p><strong>Bounded service, clear limits.</strong> No production-wide certification, legal/accounting opinion, customer-data enumeration, implementation guarantee, or promise of a positive verdict. No live payment or production access is initiated as part of the synthetic demo.</p>
+  <p>Questions: <a href="mailto:sable-verification@agentmail.to">sable-verification@agentmail.to</a> · Evidence code: <a href="https://github.com/socksninja/sable-agent-reliability">public repository</a></p>
+  <p class="small">Version: code-to-cash checkout pilot. If checkout is unavailable, no API payment is assumed; use the direct PayPal.Me link only if it works for your account and region.</p>
+</footer>
+</main>
+<script>
+(function(){
+  const API_BASE = "";
+  const $ = (selector) => document.querySelector(selector);
+  const form = $("#scope-form");
+  const checkoutStatus = $("#checkout-status");
+  const validation = $("#scope-validation");
+  const receiptPanel = $("#payment-receipt");
+  const receiptDetails = $("#receipt-details");
+  const waitingPanel = $("#payment-waiting");
+  const directButtons = [...document.querySelectorAll("[data-direct-sku]")];
+  const products = {
+    "decision-rescue-99": {label:"One-Claim Outcome Check", amount:"99.00", currency:"USD", direct:"https://paypal.me/tang665/99USD"},
+    "decision-closure-299": {label:"Decision Closure", amount:"299.00", currency:"USD", direct:"https://paypal.me/tang665/299USD"}
+  };
+  let activeSku = "decision-rescue-99";
+  let checkoutConfig = null;
+  let scopeValid = false;
+  let lastReceipt = null;
+
+  function getScope(){
+    return {
+      decision: $("#decision").value.trim(),
+      claim: $("#claim").value.trim(),
+      boundary: $("#boundary").value.trim(),
+      evidence: $("#evidence").value.trim(),
+      deadline: $("#deadline").value.trim(),
+      authorized: $("#authorized").checked
+    };
+  }
+  function scopeIsValid(){
+    const s=getScope();
+    return Boolean(s.decision && s.claim.length>=12 && s.boundary.length>=3 && s.evidence.length>=3 && s.authorized);
+  }
+  function updateScopeState(){
+    scopeValid=scopeIsValid();
+    validation.className="scope-status "+(scopeValid?"ok":"");
+    validation.textContent=scopeValid
+      ?"Scope is ready in this browser. If you have already paid, you can now prepare the scope email."
+      :"You can pay now. Complete the decision, claim, authorized boundary, evidence source and authorization before execution.";
+    if(lastReceipt) $("#send-scope-email").disabled=!scopeValid;
+    try{sessionStorage.setItem("sable.checkout.scope",JSON.stringify(getScope()));}catch{}
+  }
+  function showWaiting(message,isBad){
+    waitingPanel.textContent=message;
+    waitingPanel.className="waiting show";
+    if(isBad) waitingPanel.style.borderColor="#8c4747";
+    else waitingPanel.style.borderColor="";
+  }
+  function apiUrl(path){return API_BASE+path;}
+  async function postJSON(path,body){
+    const response=await fetch(apiUrl(path),{
+      method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)
+    });
+    let data={};
+    try{data=await response.json();}catch{}
+    if(!response.ok)throw new Error(data.message||data.error||"checkout_request_failed");
+    return data;
+  }
+  function savePendingOrder(orderId,sku,token){
+    const key="sable.paypal.pending";
+    let pending=[];
+    try{pending=JSON.parse(sessionStorage.getItem(key)||"[]");}catch{}
+    pending=pending.filter(x=>x.orderId!==orderId);
+    pending.push({orderId,sku,token,createdAt:new Date().toISOString()});
+    sessionStorage.setItem(key,JSON.stringify(pending.slice(-5)));
+    renderRecoverOrders();
+  }
+  function removePendingOrder(orderId){
+    let pending=[];
+    try{pending=JSON.parse(sessionStorage.getItem("sable.paypal.pending")||"[]");}catch{}
+    pending=pending.filter(x=>x.orderId!==orderId);
+    sessionStorage.setItem("sable.paypal.pending",JSON.stringify(pending));
+    renderRecoverOrders();
+  }
+  function renderRecoverOrders(){
+    const root=$("#recover-orders"),list=$("#recover-list");
+    let pending=[];
+    try{pending=JSON.parse(sessionStorage.getItem("sable.paypal.pending")||"[]");}catch{}
+    list.innerHTML="";
+    if(!Array.isArray(pending)||!pending.length){root.style.display="none";return;}
+    root.style.display="block";
+    pending.forEach(item=>{
+      const row=document.createElement("div");row.style.marginTop="10px";
+      const label=document.createElement("span");label.className="small";
+      label.textContent=item.sku+" · "+item.orderId+" ";
+      const btn=document.createElement("button");btn.className="btn secondary";btn.type="button";btn.textContent="Check / recover receipt";
+      btn.addEventListener("click",async()=>{
+        try{
+          const result=await postJSON("/api/paypal/capture-order",{orderID:item.orderId,sku:item.sku,captureToken:item.token});
+          removePendingOrder(item.orderId);showReceipt(result.receipt,item.sku);
+        }catch(e){showWaiting("No verified completed payment was returned for "+item.orderId+". PayPal may still show an approved or pending order. Do not assume payment or fulfillment. Details: "+e.message,true);}
+      });
+      row.append(label,btn);list.append(row);
+    });
+  }
+  function showReceipt(receipt,sku){
+    lastReceipt={receipt,sku,scope:getScope()};
+    receiptPanel.classList.add("show");
+    waitingPanel.className="waiting";
+    receiptDetails.innerHTML="";
+    const items=[
+      ["Order ID",receipt.orderId],
+      ["Capture ID",receipt.captureId],
+      ["Product",products[sku]?.label||sku],
+      ["Amount",receipt.amount+" "+receipt.currency],
+      ["Paid at",receipt.paidAt||"Returned by PayPal without a timestamp"],
+      ["Verdict","PAYMENT_VERIFIED — technical claim not yet assessed"]
+    ];
+    items.forEach(([k,v])=>{
+      const p=document.createElement("p");p.style.margin="6px 0";
+      const b=document.createElement("strong");b.textContent=k+": ";
+      const code=document.createElement("code");code.textContent=String(v||"unknown");
+      p.append(b,code);receiptDetails.append(p);
+    });
+    $("#send-scope-email").disabled=!scopeIsValid();
+    receiptPanel.scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+  function prepareManualScopeEmail(){
+    const s=getScope();
+    const sku=String(sessionStorage.getItem("sable.checkout.directSku")||"");
+    const ref=$("#manual-transaction").value.trim();
+    if(!scopeIsValid()){showWaiting("Complete the required scope fields before preparing the email.",true);return;}
+    if(!products[sku]){showWaiting("Open a direct PayPal.Me offer first so the email identifies the fixed price.",true);return;}
+    if(ref.length<5){showWaiting("Enter the PayPal transaction reference so payment can be manually reconciled.",true);return;}
+    const subject="[SABLE manual payment reconciliation] "+ref;
+    const body=[
+      "This was paid through the direct PayPal.Me fallback. Please manually reconcile it; this email is not automatic provider verification.",
+      "PayPal transaction reference: "+ref,
+      "Offer: "+products[sku].label+" — "+products[sku].amount+" "+products[sku].currency,
+      "",
+      "Decision: "+s.decision,
+      "Claim: "+s.claim,
+      "Authorized boundary: "+s.boundary,
+      "Authoritative evidence source: "+s.evidence,
+      "Deadline: "+(s.deadline||"Not specified"),
+      "Authorization: confirmed by buyer in the intake page",
+      "",
+      "Please confirm receipt of funds and scope before work starts."
+    ].join("\n");
+    location.href="mailto:sable-verification@agentmail.to?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+  }
+  function prepareScopeEmail(){
+    if(!lastReceipt){showWaiting("No verified PayPal receipt exists yet.",true);return;}
+    const s=getScope();
+    if(!scopeIsValid()){showWaiting("Complete the required scope fields before preparing the email.",true);return;}
+    const subject="[SABLE intake] "+lastReceipt.receipt.orderId+" — "+(products[lastReceipt.sku]?.label||lastReceipt.sku);
+    const body=[
+      "Payment receipt (provider readback):",
+      "PayPal order ID: "+lastReceipt.receipt.orderId,
+      "Capture ID: "+lastReceipt.receipt.captureId,
+      "Offer: "+lastReceipt.receipt.amount+" "+lastReceipt.receipt.currency,
+      "",
+      "Decision: "+s.decision,
+      "Claim: "+s.claim,
+      "Authorized boundary: "+s.boundary,
+      "Authoritative evidence source: "+s.evidence,
+      "Deadline: "+(s.deadline||"Not specified"),
+      "Authorization: confirmed by buyer in the intake page",
+      "",
+      "Please confirm the exact executable boundary and evidence requirements before work begins."
+    ].join("\n");
+    location.href="mailto:sable-verification@agentmail.to?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+  }
+
+  document.querySelectorAll("[data-demo]").forEach(btn=>btn.addEventListener("click",()=>{
+    const mode=btn.dataset.demo;
+    const label=$("#demo-verdict"),detail=$("#demo-detail");
+    if(mode==="verified"){
+      label.textContent="VERIFIED";label.style.color="var(--ok)";
+      detail.textContent="Synthetic evidence: one test order ID → one completed capture → matching entitlement in the authoritative test record.";
+    }else if(mode==="not_verified"){
+      label.textContent="NOT VERIFIED";label.style.color="var(--bad)";
+      detail.textContent="Synthetic evidence: the same logical order has two distinct completed capture IDs. The exactly-one-charge invariant is contradicted.";
+    }else{
+      label.textContent="UNKNOWN";label.style.color="var(--warn)";
+      detail.textContent="Synthetic evidence: a checkout success event exists, but there is no authoritative entitlement readback. The business outcome is not established.";
+    }
+  }));
+
+  form.addEventListener("input",updateScopeState);
+  form.addEventListener("change",updateScopeState);
+  form.addEventListener("submit",event=>{
+    event.preventDefault();updateScopeState();
+    if(!scopeValid){showWaiting("The scope is incomplete. You can still pay now; no work will start until scope and authorization are confirmed.",true);return;}
+    showWaiting("Scope validated locally. It remains in this browser and is not sent to SABLE until you prepare and send the scope email.",false);
+  });
+  $("#send-scope-email").addEventListener("click",prepareScopeEmail);
+  $("#prepare-manual-email").addEventListener("click",prepareManualScopeEmail);
+
+  function openDirectPay(sku){
+    activeSku=sku;
+    try{sessionStorage.setItem("sable.checkout.directSku",sku);}catch{}
+    showWaiting("Opening PayPal.Me for "+products[sku].amount+" USD. Direct PayPal.Me does not return a server-verifiable order ID to this page. After payment, keep the transaction reference and submit the scope email for manual confirmation.",false);
+    window.open(products[sku].direct,"_blank","noopener");
+    $("#manual-intake").style.display="block";
+    $("#manual-intake").scrollIntoView({behavior:"smooth",block:"nearest"});
+  }
+  directButtons.forEach(btn=>btn.addEventListener("click",()=>openDirectPay(btn.dataset.directSku)));
+  document.querySelectorAll("a[data-direct-sku]").forEach(link=>link.addEventListener("click",event=>{
+    event.preventDefault();
+    openDirectPay(link.dataset.directSku);
+  }));
+
+  function loadPayPalSDK(clientId){
+    return new Promise((resolve,reject)=>{
+      if(window.paypal){resolve();return;}
+      const script=document.createElement("script");
+      script.src="https://www.paypal.com/sdk/js?client-id="+encodeURIComponent(clientId)+"&currency=USD&intent=capture&components=buttons";
+      script.onload=()=>window.paypal?resolve():reject(new Error("paypal_sdk_not_available"));
+      script.onerror=()=>reject(new Error("paypal_sdk_failed_to_load"));
+      document.head.append(script);
+    });
+  }
+  function renderPayPalButton(sku,slotId){
+    const slot=$("#"+slotId);
+    slot.innerHTML="";
+    window.paypal.Buttons({
+      style:{layout:"vertical",shape:"rect",label:"pay",height:46},
+      onClick(data,actions){
+        activeSku=sku;
+        return actions.resolve();
+      },
+      async createOrder(){
+        const data=await postJSON("/api/paypal/create-order",{sku});
+        if(!data.id||!data.captureToken)throw new Error("server_order_receipt_missing");
+        try{sessionStorage.setItem("sable.paypal.token."+data.id,data.captureToken);}catch{}
+        savePendingOrder(data.id,sku,data.captureToken);
+        return data.id;
+      },
+      async onApprove(data){
+        try{
+          const token=sessionStorage.getItem("sable.paypal.token."+data.orderID);
+          if(!token)throw new Error("signed_capture_token_missing; use this browser session to recover or contact support");
+          const result=await postJSON("/api/paypal/capture-order",{orderID:data.orderID,sku,captureToken:token});
+          removePendingOrder(data.orderID);
+          showReceipt(result.receipt,sku);
+        }catch(e){
+          showWaiting("The payment has not been independently verified by SABLE yet. Do not assume work has started. Use “Check / recover receipt” below or contact support with the PayPal order reference. "+e.message,true);
+          renderRecoverOrders();
+        }
+      },
+      onCancel(){
+        showWaiting("Checkout cancelled. No completed capture is assumed and no work has started.",false);
+      },
+      onError(error){
+        showWaiting("Checkout did not return a verified receipt. Check PayPal activity before creating another payment. "+(error?.message||"The status is unknown."),true);
+      }
+    }).render(slot);
+  }
+
+  async function initCheckout(){
+    renderRecoverOrders();
+    updateScopeState();
+    try{
+      const response=await fetch(apiUrl("/api/paypal/config"),{cache:"no-store"});
+      if(!response.ok)throw new Error("checkout_backend_unavailable");
+      const config=await response.json();
+      checkoutConfig=config;
+      if(!config.checkoutEnabled||!config.clientId){
+        checkoutStatus.textContent="Automated checkout is not configured yet. Direct live PayPal.Me payments are disabled in this sandbox preview. Configure sandbox credentials and webhook verification to test automated checkout.";
+        return;
+      }
+      await loadPayPalSDK(config.clientId);
+      renderPayPalButton("decision-rescue-99","paypal-99");
+      renderPayPalButton("decision-closure-299","paypal-299");
+      directButtons.forEach(btn=>btn.textContent="Fallback: pay direct via PayPal.Me");
+      checkoutStatus.className="scope-status ok";
+      checkoutStatus.textContent="PayPal checkout is connected. Orders use fixed server-side prices; a receipt is shown only after a completed capture is read back and matched.";
+    }catch(error){
+      checkoutStatus.textContent="Instant automated checkout is not connected at this deployment. Direct PayPal.Me links remain available, but confirmation is manual—not automatic.";
+    }
+  }
+  initCheckout();
+})();
+</script>
+</body>
+</html>
