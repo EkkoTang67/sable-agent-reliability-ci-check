@@ -18,7 +18,12 @@
       "approved": true,
       "current": true,
       "source_ref": "evidence/commissioning-demo/drawing-M-101-revC.txt",
-      "sha256": "8f0d502b54fce852d6021524d4c9ff1db47cfebc15631983dea434b951969e88"
+      "sha256": "eab9f3bf6a0ba535a598ea7dfc0bc4dad82356a9121714d0a362d5a38c360203",
+      "source_fields": {
+        "revision": "Revision",
+        "approved": "Approval",
+        "current": "Current"
+      }
     },
     {
       "id": "FPT-17-B",
@@ -28,7 +33,12 @@
       "approved": true,
       "current": true,
       "source_ref": "evidence/commissioning-demo/procedure-FPT-17-revB.txt",
-      "sha256": "889812c1237104f80c7ea58e6cad514d36553921461f94f5cb4d22afeb63c671"
+      "sha256": "49e8386b753e09f019e1c5ddb1acf99b572dd90426c99b892ef09f3de1f8d5c4",
+      "source_fields": {
+        "revision": "Revision",
+        "approved": "Approval",
+        "current": "Current"
+      }
     },
     {
       "id": "FPT-AHU-01",
@@ -42,7 +52,11 @@
       "outcome": "PASS",
       "observed_at": "2026-10-11T09:00:00Z",
       "source_ref": "evidence/commissioning-demo/test-result-TR-1001.txt",
-      "sha256": "c1d8952c1a12ba5695adf3321feac634ec05c6c8b9805ee2e5e8843cdbb256bd"
+      "sha256": "c1d8952c1a12ba5695adf3321feac634ec05c6c8b9805ee2e5e8843cdbb256bd",
+      "source_fields": {
+        "outcome": "Outcome",
+        "observed_at": "Observed"
+      }
     },
     {
       "id": "DEF-04",
@@ -50,7 +64,10 @@
       "label": "Synthetic deficiency DEF-04",
       "status": "closed",
       "source_ref": "evidence/commissioning-demo/deficiency-DEF-04.txt",
-      "sha256": "e52b3aa6cf2e8251621bf3a04db38df7d6cf3eff1dfe4b8744b8a2e2f2f5a019"
+      "sha256": "e52b3aa6cf2e8251621bf3a04db38df7d6cf3eff1dfe4b8744b8a2e2f2f5a019",
+      "source_fields": {
+        "status": "Status"
+      }
     },
     {
       "id": "CA-04",
@@ -58,7 +75,10 @@
       "label": "Synthetic corrective action CA-04",
       "status": "completed",
       "source_ref": "evidence/commissioning-demo/corrective-action-CA-04.txt",
-      "sha256": "4f36c01bb9deeb7e828d65e560bb867213cd0a19f536342386db809e7d5aeaab"
+      "sha256": "4f36c01bb9deeb7e828d65e560bb867213cd0a19f536342386db809e7d5aeaab",
+      "source_fields": {
+        "status": "Status"
+      }
     },
     {
       "id": "RT-04",
@@ -67,7 +87,11 @@
       "outcome": "PASS",
       "observed_at": "2026-10-11T10:00:00Z",
       "source_ref": "evidence/commissioning-demo/retest-RT-04.txt",
-      "sha256": "68ce6660b6c056defe66dfe9a08fe331e578fd329793cded6e76838da4b33fcc"
+      "sha256": "68ce6660b6c056defe66dfe9a08fe331e578fd329793cded6e76838da4b33fcc",
+      "source_fields": {
+        "outcome": "Outcome",
+        "observed_at": "Observed"
+      }
     },
     {
       "id": "WS-01",
@@ -75,7 +99,10 @@
       "label": "Synthetic witness record WS-01",
       "signed": true,
       "source_ref": "evidence/commissioning-demo/witness-WS-01.txt",
-      "sha256": "1eaf1048b1ee23faffcfa1c3ddb71656201b796f1be7e5aec94ee95e19c8f627"
+      "sha256": "1eaf1048b1ee23faffcfa1c3ddb71656201b796f1be7e5aec94ee95e19c8f627",
+      "source_fields": {
+        "signed": "Signature state"
+      }
     },
     {
       "id": "PKG-01",
