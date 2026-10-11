@@ -27,6 +27,23 @@ python3 sable_commissioning_evidence_graph.py --file examples/commissioning-evid
 - [First authorized real-sample intake protocol](docs/REAL_COMMISSIONING_SAMPLE_INTAKE_V1.md)
 - [Redacted sample mapping template — placeholders only](examples/commissioning-sample-records.template.json)
 - [Real-sample acquisition log and FACT/UNKNOWN ledger](docs/REAL_SAMPLE_ACQUISITION_LOG_2026-10-11.md)
+
+## Public requirements baseline and adversarial benchmark (not customer data)
+
+SABLE now maintains a source-linked requirements register distilled from the official public UFGS Building Commissioning guide, with a version/page/section trace and an explicit project-tailoring warning. It also contains 11 labeled benchmark cases: one complete synthetic baseline and ten authored mutations. This is a repeatable engineering baseline, not real operational commissioning data and not evidence of performance on a customer's project.
+
+- [Pre-Test Readiness Evidence Gate — focused offer](docs/SABLE_PRETEST_READINESS_GATE_V1.md)
+- [Public requirements dataset + source provenance](data/commissioning_public_requirements/README.md)
+- [Source-derived requirements register](data/commissioning_public_requirements/ufgs_01_91_00_15_source_profile.json)
+- [Adversarial benchmark cases](data/commissioning_evidence_benchmark_v0/cases.json)
+- [Benchmark runner](data/commissioning_evidence_benchmark_v0/run_benchmark.py)
+
+Run the benchmark from the repository root:
+
+~~~bash
+python3 data/commissioning_evidence_benchmark_v0/run_benchmark.py
+~~~
+
 - [Validator source](sable_commissioning_evidence_graph.py)
 
 ## Run the synthetic example
