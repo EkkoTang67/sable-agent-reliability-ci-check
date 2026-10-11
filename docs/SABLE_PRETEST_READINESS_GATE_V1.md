@@ -34,7 +34,7 @@ Price test:
 
 ## Current implementation boundary
 
-The current prototype accepts a JSON graph manifest and local UTF-8 text sidecars with explicit key/value field bindings. It does not directly ingest raw CSV/JSON exports, parse PDFs/CAD, connect to source platforms or facility networks, execute tests, validate engineering measurements semantically, authenticate signatures cryptographically, sign a readiness certificate, or authorize test scheduling/energization.
+The current prototype accepts a JSON graph manifest and local UTF-8 text sidecars with explicit key/value field bindings. When the supplied graph explicitly enables the pre-test readiness requirement, v1 checks that a certificate is linked to the package and covered asset, the declared inspections-complete/open-issues-resolved/approved fields are true and source-bound, the approver role and timezone-aware approval time are present, test scheduling occurs after approval, and a certificate's claim that all issues are resolved does not contradict an explicitly open package issue. The project-clause-to-profile mapping still requires human confirmation against the actual contract and owner checklist; v1 does not parse a specification to determine applicability automatically. It does not directly ingest raw CSV/JSON exports, parse PDFs/CAD, connect to source platforms or facility networks, execute tests, validate engineering measurements semantically, authenticate signatures cryptographically, sign a readiness certificate, or authorize test scheduling/energization.
 
 ## Data advantage strategy
 
