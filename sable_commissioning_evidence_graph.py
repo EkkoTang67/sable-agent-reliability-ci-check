@@ -17,12 +17,12 @@ from typing import Any
 
 VERSION = "1.0.0"
 NODE_KINDS = {"asset", "drawing", "procedure", "test", "test_result", "deficiency",
-              "corrective_action", "retest", "witness", "turnover_package"}
+              "corrective_action", "retest", "witness", "readiness_certificate", "turnover_package"}
 RELATIONS = {"contains_asset", "contains_evidence", "tests_asset", "uses_drawing",
              "uses_procedure", "has_result", "evidence_for", "corrected_by",
-             "retests", "follows_result", "witnesses"}
+             "retests", "follows_result", "witnesses", "readiness_for"}
 EVIDENCE_KINDS = {"drawing", "procedure", "test_result", "deficiency",
-                  "corrective_action", "retest", "witness"}
+                  "corrective_action", "retest", "witness", "readiness_certificate"}
 SHA256_RE = re.compile(r"^[0-9a-fA-F]{64}$")
 
 def _parse_time(value: Any) -> datetime | None:
@@ -174,6 +174,8 @@ def validate_graph(document: Any, evidence_root: str | Path | None = None) -> di
                     expected_value = "yes" if expected_value is True else ("no" if expected_value is False else str(expected_value))
                 elif attribute == "signed":
                     expected_value = "signed" if expected_value is True else ("not signed" if expected_value is False else str(expected_value))
+                elif attribute in {"inspections_complete", "open_issues_resolved"}:
+                    expected_value = "yes" if expected_value is True else ("no" if expected_value is False else str(expected_value))
                 else:
                     expected_value = str(expected_value)
                 actual_value = source_fields[field_name]
@@ -194,9 +196,60 @@ def validate_graph(document: Any, evidence_root: str | Path | None = None) -> di
         if not tests:
             add("gap", "PACKAGE_HAS_NO_TESTS", "Turnover package contains no linked test records.", pid)
 
+        requirements = document.get("requirements", {})
+        readiness_required = isinstance(requirements, dict) and requirements.get("pre_test_readiness_required") is True
+        readiness_certificates = related(pid, "contains_evidence", "readiness_certificate")
+        # This is an evidence gate only. It never authorizes a real test or equipment operation.
+        approved_readiness_by_asset: dict[str, list[tuple[str, datetime]]] = {}
+        if readiness_required and not readiness_certificates:
+            add("gap", "READINESS_CERTIFICATE_MISSING",
+                "This declared profile requires a certificate of readiness before tests are scheduled.", pid)
+        for cert in readiness_certificates:
+            cid = cert["id"]
+            cert_assets = related(cid, "readiness_for", "asset")
+            if not cert_assets:
+                add("gap", "READINESS_ASSET_LINK_MISSING",
+                    "Readiness certificate is not linked to the asset it covers.", cid)
+            elif assets and any(a["id"] not in {x["id"] for x in assets} for a in cert_assets):
+                add("critical", "READINESS_ASSET_MISMATCH",
+                    "Readiness certificate covers an asset outside this package.", cid)
+            for flag in ("inspections_complete", "open_issues_resolved", "approved"):
+                if cert.get(flag) is False:
+                    add("critical", "READINESS_PRECONDITION_FAILED",
+                        flag + " is explicitly false on the readiness certificate.", cid)
+                elif cert.get(flag) is not True:
+                    add("gap", "READINESS_PRECONDITION_UNKNOWN",
+                        flag + " is not explicitly true on the readiness certificate.", cid)
+            approved_at = _parse_time(cert.get("approved_at"))
+            if approved_at is None:
+                add("gap", "READINESS_APPROVAL_TIME_UNKNOWN",
+                    "Readiness certificate needs a timezone-aware approved_at timestamp.", cid)
+            approver_role = cert.get("approver_role")
+            if not isinstance(approver_role, str) or not approver_role.strip():
+                add("gap", "READINESS_APPROVER_UNKNOWN",
+                    "Readiness certificate does not identify the approving role.", cid)
+            if approved_at is not None and cert.get("approved") is True:
+                for asset in cert_assets:
+                    approved_readiness_by_asset.setdefault(asset["id"], []).append((cid, approved_at))
+
         for test in tests:
             tid = test["id"]
             test_assets = related(tid, "tests_asset", "asset")
+            if readiness_required:
+                scheduled_at = _parse_time(test.get("scheduled_at"))
+                if scheduled_at is None:
+                    add("gap", "TEST_SCHEDULE_TIME_UNKNOWN",
+                        "Readiness profile requires a timezone-aware scheduled_at timestamp for each test.", tid)
+                else:
+                    for asset in test_assets:
+                        relevant_certificates = approved_readiness_by_asset.get(asset["id"], [])
+                        if not relevant_certificates:
+                            add("gap", "TEST_HAS_NO_APPROVED_READINESS",
+                                "No approved readiness certificate is linked to this test asset.", tid)
+                        for certificate_id, approved_at in relevant_certificates:
+                            if scheduled_at < approved_at:
+                                add("critical", "TEST_SCHEDULED_BEFORE_READINESS_APPROVAL",
+                                    "Test scheduled_at precedes readiness certificate approval.", tid)
             drawings = related(tid, "uses_drawing", "drawing")
             procedures = related(tid, "uses_procedure", "procedure")
             results = related(tid, "has_result", "test_result")
