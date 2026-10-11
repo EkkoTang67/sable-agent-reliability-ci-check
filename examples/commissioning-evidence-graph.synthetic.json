@@ -1,0 +1,178 @@
+{
+  "schema": "sable.commissioning-evidence-graph.v1",
+  "synthetic": true,
+  "requirements": {
+    "witness_required": true
+  },
+  "nodes": [
+    {
+      "id": "AHU-01",
+      "kind": "asset",
+      "label": "Air handling unit AHU-01"
+    },
+    {
+      "id": "M-101-C",
+      "kind": "drawing",
+      "label": "M-101 revision C",
+      "revision": "C",
+      "approved": true,
+      "current": true,
+      "source_ref": "evidence/commissioning-demo/drawing-M-101-revC.txt",
+      "sha256": "8f0d502b54fce852d6021524d4c9ff1db47cfebc15631983dea434b951969e88"
+    },
+    {
+      "id": "FPT-17-B",
+      "kind": "procedure",
+      "label": "Functional performance test FPT-17 revision B",
+      "revision": "B",
+      "approved": true,
+      "current": true,
+      "source_ref": "evidence/commissioning-demo/procedure-FPT-17-revB.txt",
+      "sha256": "889812c1237104f80c7ea58e6cad514d36553921461f94f5cb4d22afeb63c671"
+    },
+    {
+      "id": "FPT-AHU-01",
+      "kind": "test",
+      "label": "AHU-01 functional performance test"
+    },
+    {
+      "id": "TR-1001",
+      "kind": "test_result",
+      "label": "Initial test result",
+      "outcome": "PASS",
+      "observed_at": "2026-10-11T09:00:00Z",
+      "source_ref": "evidence/commissioning-demo/test-result-TR-1001.txt",
+      "sha256": "c1d8952c1a12ba5695adf3321feac634ec05c6c8b9805ee2e5e8843cdbb256bd"
+    },
+    {
+      "id": "DEF-04",
+      "kind": "deficiency",
+      "label": "Synthetic deficiency DEF-04",
+      "status": "closed",
+      "source_ref": "evidence/commissioning-demo/deficiency-DEF-04.txt",
+      "sha256": "e52b3aa6cf2e8251621bf3a04db38df7d6cf3eff1dfe4b8744b8a2e2f2f5a019"
+    },
+    {
+      "id": "CA-04",
+      "kind": "corrective_action",
+      "label": "Synthetic corrective action CA-04",
+      "status": "completed",
+      "source_ref": "evidence/commissioning-demo/corrective-action-CA-04.txt",
+      "sha256": "4f36c01bb9deeb7e828d65e560bb867213cd0a19f536342386db809e7d5aeaab"
+    },
+    {
+      "id": "RT-04",
+      "kind": "retest",
+      "label": "Synthetic retest RT-04",
+      "outcome": "PASS",
+      "observed_at": "2026-10-11T10:00:00Z",
+      "source_ref": "evidence/commissioning-demo/retest-RT-04.txt",
+      "sha256": "68ce6660b6c056defe66dfe9a08fe331e578fd329793cded6e76838da4b33fcc"
+    },
+    {
+      "id": "WS-01",
+      "kind": "witness",
+      "label": "Synthetic witness record WS-01",
+      "signed": true,
+      "source_ref": "evidence/commissioning-demo/witness-WS-01.txt",
+      "sha256": "1eaf1048b1ee23faffcfa1c3ddb71656201b796f1be7e5aec94ee95e19c8f627"
+    },
+    {
+      "id": "PKG-01",
+      "kind": "turnover_package",
+      "label": "Synthetic turnover package for AHU-01"
+    }
+  ],
+  "edges": [
+    {
+      "source": "PKG-01",
+      "relation": "contains_asset",
+      "target": "AHU-01"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "M-101-C"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "FPT-17-B"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "FPT-AHU-01"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "TR-1001"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "DEF-04"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "CA-04"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "RT-04"
+    },
+    {
+      "source": "PKG-01",
+      "relation": "contains_evidence",
+      "target": "WS-01"
+    },
+    {
+      "source": "FPT-AHU-01",
+      "relation": "tests_asset",
+      "target": "AHU-01"
+    },
+    {
+      "source": "FPT-AHU-01",
+      "relation": "uses_drawing",
+      "target": "M-101-C"
+    },
+    {
+      "source": "FPT-AHU-01",
+      "relation": "uses_procedure",
+      "target": "FPT-17-B"
+    },
+    {
+      "source": "FPT-AHU-01",
+      "relation": "has_result",
+      "target": "TR-1001"
+    },
+    {
+      "source": "TR-1001",
+      "relation": "evidence_for",
+      "target": "FPT-AHU-01"
+    },
+    {
+      "source": "DEF-04",
+      "relation": "corrected_by",
+      "target": "CA-04"
+    },
+    {
+      "source": "RT-04",
+      "relation": "retests",
+      "target": "DEF-04"
+    },
+    {
+      "source": "RT-04",
+      "relation": "follows_result",
+      "target": "TR-1001"
+    },
+    {
+      "source": "TR-1001",
+      "relation": "witnesses",
+      "target": "WS-01"
+    }
+  ]
+}
