@@ -11,24 +11,24 @@ def read(path: str) -> str:
 
 
 class CommercialSurfaceTests(unittest.TestCase):
-    def test_primary_buy_page_leads_with_pretest_readiness_gate(self):
+    def test_primary_buy_page_has_one_focused_pretest_readiness_offer(self):
         page = read("buy/index.html")
-        self.assertLess(page.index("$2,500"), page.index("$99"))
-        self.assertIn("Before the test window: prove the evidence package is ready.", page)
+        self.assertIn("Before the test window, prove the evidence package is ready.", page)
+        self.assertIn("US$2,500", page)
         self.assertIn("https://paypal.me/tang665/2500USD", page)
         self.assertIn("PRODUCT=PRETEST_READINESS_AUDIT", page)
-        self.assertIn("authorized subsystem", page)
+        self.assertIn("one authorized commissioning subsystem", page)
         self.assertIn("source-linked evidence graph", page)
-        self.assertIn("If a safe, mutually agreed scope cannot be established within five business days", page)
-        self.assertIn("does not automatically determine contract applicability", page.lower())
-        self.assertIn("https://paypal.me/tang665/99USD", page)
-        self.assertIn("https://paypal.me/tang665/299USD", page)
-        self.assertIn("PRODUCT=MICRO_CLOSURE", page)
-        self.assertIn("PRODUCT=DECISION_CLOSURE", page)
-        self.assertIn("Scope%20fit%20for%20one%20bounded%20SABLE%20check", page)
-        self.assertIn("Payment starts intake", page)
-        self.assertIn("scope and authorization must be confirmed before execution", page.lower())
-        self.assertIn("micro-closure-receipt.md", page)
+        self.assertIn("If a safe mutually agreed scope cannot be established within five business days", page)
+        self.assertIn("does not automatically determine whether a generic or public requirement applies", page.lower())
+        self.assertIn("explicitly open issues", page)
+        self.assertIn("No facility access", page)
+        self.assertIn("https://igchicago.org/wp-content/uploads/2023/08/OIG-Audit-of-the-PBCs-Administration-of-Building-Commissioning.pdf", page)
+        self.assertIn("Do not attach project files", page)
+        self.assertNotIn("https://paypal.me/tang665/99USD", page)
+        self.assertNotIn("https://paypal.me/tang665/299USD", page)
+        self.assertNotIn("PRODUCT=AI_BUYER_CHECK", page)
+        self.assertNotIn("PRODUCT=AI_BUYER_REALITY", page)
 
     def test_docs_buy_page_has_both_offers_and_scope_fit_path(self):
         page = read("docs/buy/index.html")
@@ -75,13 +75,11 @@ class CommercialSurfaceTests(unittest.TestCase):
         self.assertIn("PRODUCT=MICRO_CLOSURE", readme)
         self.assertIn("PRODUCT=DECISION_CLOSURE", readme)
 
-    def test_ai_buyer_offers_have_distinct_payment_product_codes(self):
+    def test_primary_checkout_does_not_mix_unrelated_products(self):
         page = read("buy/index.html")
-        for code in ("PRODUCT=AI_BUYER_CHECK", "PRODUCT=AI_BUYER_REALITY"):
-            with self.subTest(code=code):
-                self.assertIn(code, page)
-        self.assertIn("public website URL", page)
-        self.assertIn("changed page/revision", page)
+        self.assertNotIn("AI Buyer Readiness", page)
+        self.assertNotIn("PRODUCT=AI_BUYER_CHECK", page)
+        self.assertNotIn("PRODUCT=AI_BUYER_REALITY", page)
 
     def test_receipt_example_never_masquerades_as_customer_evidence(self):
         receipt = read("examples/micro-closure-receipt.md")
