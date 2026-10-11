@@ -57,7 +57,7 @@ class CommissioningEvidenceGraphTests(unittest.TestCase):
 
     def test_missing_witness_is_unknown_when_required(self):
         g = copy.deepcopy(self.graph)
-        g["edges"] = [e for e in g["edges"] if not (e["source"] == "TR-1001" and e["relation"] == "witnesses")]
+        g["edges"] = [e for e in g["edges"] if not (e["source"] == "WS-01" and e["relation"] == "witnesses")]
         r = validate_graph(g, ROOT)
         self.assertEqual(r["verdict"], "UNKNOWN")
         self.assertIn("WITNESS_MISSING", {f["code"] for f in r["findings"]})
