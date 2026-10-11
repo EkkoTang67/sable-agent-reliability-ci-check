@@ -15,9 +15,18 @@ Public research references:
 - 2N Mission Critical services/contact: https://2nmissioncritical.com/services
 - JAGS Assurance data center commissioning QA/QC: https://jagsassurance.com/services/data-center-commissioning-qa-qc
 
+## Data assets currently available
+
+- Public normative/reference layer: UFGS 01 91 00.15 source-linked requirement register, plus a source catalog entry for the public USACE Japan Edited Specifications (JES 1.6) and USACE ER 1110-345-723. These are requirement/specification references, not evidence that a customer project followed them.
+- Public operational benchmark reference: LBNL Fault Detection and Diagnostics data catalog, with labeled fault/fault-free HVAC series across seven equipment classes and a mixture of simulation, lab and field measurements. The data has not been downloaded or incorporated, and it is not ground truth for document readiness closure.
+- Executable benchmark: 16 authored synthetic graph cases, checked in CI; these test only declared mutation behavior.
+- Critical missing asset: a customer-authorized historical subsystem sample plus independent review labels.
+
+See [SABLE data asset register](../data/SABLE_DATA_ASSET_REGISTER_V1.json) for provenance, evidence class, rights caution and relevance. No class may be presented as another.
+
 ## Sample acceptance gate
 
-Do not accept or process a real package until the data owner confirms written authority, the permitted purpose and retention/deletion terms are agreed, and a safe transfer channel is agreed. Do not place customer files in this public repository or ordinary email attachments. V1 supports only local UTF-8 text/CSV/JSON sidecars; no binary PDF/CAD parsing or source-system integrations are implemented.
+Do not accept or process a real package until the data owner confirms written authority, the permitted purpose and retention/deletion terms are agreed, and a safe transfer channel is agreed. Do not place customer files in this public repository or ordinary email attachments. V1 directly reads a JSON graph manifest and local UTF-8 text sidecars with key/value fields. It does not directly parse raw CSV/JSON exports, binary PDF/CAD, or source systems; a documented manual normalization step for redacted fields would require prior agreement.
 
 Desired sample:
 - One completed and non-sensitive subsystem package.
@@ -28,8 +37,9 @@ Desired sample:
 
 ## Evidence ledger
 
-- FACT: current prototype is available as draft PR #7 and latest observed CI passed the unit suite and synthetic CLI fixture.
+- FACT: current prototype is available as draft PR #7; latest observed CI run 38118402441 passed 22 unit tests, the synthetic CLI fixture, and the 16-case authored mutation benchmark with `failed: 0`.
 - FACT: outbound requests were created to the three recipients above.
+- FACT: as of the latest inbox read in this turn, those target threads show outbound-only messages; no recipient reply is visible. ETHYCO's thread retains a `delayed` label. Delivery/read state is unconfirmed.
 - UNKNOWN: whether any recipient received/read the messages, whether any will authorize sample sharing, whether any real evidence gap exists in their workflow, and whether a payer would buy a pilot.
 - FACT: no authorized real project sample has been received; no customer evaluation has been completed; R3 remains 0.
 
