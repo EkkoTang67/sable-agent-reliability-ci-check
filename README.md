@@ -26,6 +26,7 @@ python3 sable_commissioning_evidence_graph.py --file examples/commissioning-evid
 - [Synthetic commissioning graph](examples/commissioning-evidence-graph.synthetic.json)
 - [First authorized real-sample intake protocol](docs/REAL_COMMISSIONING_SAMPLE_INTAKE_V1.md)
 - [Redacted sample mapping template — placeholders only](examples/commissioning-sample-records.template.json)
+- [Real-sample acquisition log and FACT/UNKNOWN ledger](docs/REAL_SAMPLE_ACQUISITION_LOG_2026-10-11.md)
 - [Validator source](sable_commissioning_evidence_graph.py)
 
 ## Run the synthetic example
