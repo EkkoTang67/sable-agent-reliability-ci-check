@@ -34,21 +34,29 @@
 - Subject: Testing a second-line evidence check for AIA billing packages
 - Message ID: <010001a1298171a4-73de5886-5178-48d3-a529-927413c50a5c-000000@email.amazonses.com>
 - Public trigger: PayAppUSA publishes $300/$400/$500 per-application service tiers including preparation, support documents and follow-up.
-- Ask: whether independent QA catches any remaining issues after its current preparation service; $1,500 three-package test.
+- Ask: remaining QA gap after current process; $1,500 three-package test.
 - State: mail provider accepted send; delivery/read/reply unknown.
 
 ## 6. Clearline Admin — subcontractor back-office services
 - To: hello@clearlineadmin.com
 - Subject: A bounded evidence QA pilot for subcontractor back-office workflows
 - Message ID: <010001a12981792c-3afd60ef-f097-4f3f-983e-1718b9624fd8-000000@email.amazonses.com>
-- Public trigger: firm's site describes invoice, COI, lien-waiver and ongoing subcontractor admin services; publishes a $499/month starting point.
-- Ask: whether package evidence-chasing/rework remains a recurring bottleneck; $1,500 three-package test.
+- Public trigger: invoice, COI, lien-waiver and ongoing subcontractor admin services; published $499/month starting point.
+- Ask: recurring evidence-chasing/rework bottleneck; $1,500 three-package test.
+- State: mail provider accepted send; delivery/read/reply unknown.
+
+## 7. Cartwheel Funding — contractor pay-app / retainage advances
+- To: alex@cartwheelfunding.com
+- Subject: Evidence QA for pay-app / retainage advances — 5-case paid pilot
+- Message ID: <010001a129828419-8aa21bf1-7939-4489-b19c-1553a9f34f5b-000000@email.amazonses.com>
+- Public trigger: Cartwheel describes a flow of submitted documents, verification of project/GC/contract terms, advances for pay apps/materials/retainage, and collection when owner/GC pays.
+- Offer under test: US$2,500 for five redacted cases; source-linked evidence matrix, amount tie-out, chronology and unresolved questions. No credit decision or funds handling.
 - State: mail provider accepted send; delivery/read/reply unknown.
 
 ## Reply check
-A query for incoming messages from the first four recipients returned only the outbound sent threads; no inbound reply was present at the time of that check. The two newest messages have not been separately checked for incoming replies yet. This is not evidence of refusal.
+An inbox query for the first four exact senders returned only outbound sent threads; no inbound reply was present at that check. A later query of the configured inbox by exact sender returned no inbound messages for all six prior prospects. This is not evidence of refusal and does not establish delivery.
 
 ## What is proven / not proven
-- Proven: six targeted email-send operations were accepted by the configured mail connector; each referenced a specific public workflow and a bounded paid pilot.
+- Proven: seven targeted email-send operations were accepted by the configured mail connector; each used a specific public workflow trigger and a bounded paid-pilot ask.
 - Not proven: inbox delivery, read, customer interest, budget, payment authority, acceptance, order, delivery results, repeat intent, or funds received.
 - R3 remains unchanged. Settled revenue remains unconfirmed.
