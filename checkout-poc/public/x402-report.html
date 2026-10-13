@@ -138,7 +138,8 @@ async function handlePayPalReturn(){
     cleanPayPalParams();
     return true;
   }
-  return true && await reconcileOrder(orderID,rawCase);
+  await reconcileOrder(orderID,rawCase);
+  return true;
 }
 async function init(){
   try{
