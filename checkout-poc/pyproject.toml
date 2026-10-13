@@ -3,7 +3,7 @@ name = "sable-x402-checkout-poc"
 version = "0.1.0"
 description = "Sandbox-only fixed-price SABLE x402 public evidence report checkout"
 requires-python = ">=3.12"
-dependencies = ["cryptography>=50.0.2,<51", "rfc8785==0.1.4"]
+dependencies = ["cryptography>=50.0.2,<51", "rfc8785==0.1.4", "eth-account>=0.13.7,<0.14"]
 
 [tool.vercel]
 entrypoint = "api.index:handler"
