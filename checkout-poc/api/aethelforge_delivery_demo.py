@@ -106,12 +106,14 @@ def _response_hash_claims(value: Any, prefix: str = "$") -> list[dict[str, str]]
         "body_sha256", "bodySha256", "body_hash", "bodyHash",
         "response_sha256", "responseSha256", "response_hash", "responseHash",
         "response_body_sha256", "responseBodySha256", "content_sha256", "contentSha256",
-        "content_hash", "contentHash", "sha256",
+        "content_hash", "contentHash", "content_digest", "contentDigest",
     }
+    generic_hash_names = {"sha256", "hash", "digest"}
     found: list[dict[str, str]] = []
     if isinstance(value, dict):
         for key, nested in value.items():
-            if key in names and isinstance(nested, str):
+            response_context = any(marker in prefix.lower() for marker in (".response", ".body", ".content", ".resource"))
+            if (key in names or (response_context and key.lower() in generic_hash_names)) and isinstance(nested, str):
                 found.append({"path": prefix + "." + key, "value": nested})
             else:
                 found.extend(_response_hash_claims(nested, prefix + "." + key))
