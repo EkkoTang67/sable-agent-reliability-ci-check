@@ -71,5 +71,26 @@ class ServiceBindingSnapshotTests(unittest.TestCase):
         self.assertEqual(report["components"]["service_binding"]["verdict"], "NOT_VERIFIED")
 
 
+    def test_latest_snapshot_for_different_transaction_stays_unknown_with_reason(self):
+        latest_hash = "0x" + "88" * 32
+        dossier = self.base_case({
+            "slug": "feeds",
+            "valid": True,
+            "match_score": 1,
+            "latest": {
+                "tx": latest_hash,
+                "endpoint": "/feeds/api/query",
+                "price_usd": 0.05,
+            },
+        })
+        report = assess(dossier)
+        binding = report["components"]["service_binding"]
+        self.assertEqual(binding["verdict"], "UNKNOWN")
+        self.assertEqual(binding["latest_transaction_hash"], latest_hash)
+        self.assertEqual(binding["scope"], "latest_metadata_not_transaction_bound")
+        self.assertIn("different latest transaction", binding["reason"])
+        self.assertEqual(report["overall_verdict"], "UNKNOWN")
+
+
 if __name__ == "__main__":
     unittest.main()
