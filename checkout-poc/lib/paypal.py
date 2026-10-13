@@ -221,10 +221,20 @@ def paypal_api_request(method: str, path: str, payload: dict[str, Any] | None = 
     return _request_json(f"{base}{path}", method=method.upper(), headers=headers, body=data)
 
 
-def create_order(case: dict[str, str], api_call: Callable[..., dict[str, Any]] | None = None) -> dict[str, str]:
+def create_order(
+    case: dict[str, str],
+    api_call: Callable[..., dict[str, Any]] | None = None,
+    *,
+    return_url: str | None = None,
+    cancel_url: str | None = None,
+) -> dict[str, str]:
+    """Create a fixed-price order and return only a validated PayPal approval link."""
+    if bool(return_url) != bool(cancel_url):
+        raise CheckoutError(400, "RETURN_URL_PAIR_REQUIRED", "Both return_url and cancel_url must be supplied together.")
     call = api_call or paypal_api_request
+    mode = paypal_mode()
     signed_custom_id = sign_case(case)
-    payload = {
+    payload: dict[str, Any] = {
         "intent": "CAPTURE",
         "purchase_units": [{
             "custom_id": signed_custom_id,
@@ -232,15 +242,57 @@ def create_order(case: dict[str, str], api_call: Callable[..., dict[str, Any]] |
             "amount": {"currency_code": "USD", "value": FIXED_PRICE_USD, "breakdown": {"item_total": {"currency_code": "USD", "value": FIXED_PRICE_USD}}},
             "items": [{"name": "SABLE x402 public evidence report", "quantity": "1", "unit_amount": {"currency_code": "USD", "value": FIXED_PRICE_USD}, "category": "DIGITAL_GOODS"}],
         }],
-        "application_context": {"brand_name": "SABLE", "landing_page": "BILLING", "user_action": "PAY_NOW", "shipping_preference": "NO_SHIPPING"},
     }
+    if return_url and cancel_url:
+        payload["payment_source"] = {
+            "paypal": {
+                "experience_context": {
+                    "brand_name": "SABLE",
+                    "landing_page": "LOGIN",
+                    "user_action": "PAY_NOW",
+                    "shipping_preference": "NO_SHIPPING",
+                    "return_url": return_url,
+                    "cancel_url": cancel_url,
+                }
+            }
+        }
+    else:
+        # Backward-compatible SDK flow for older preview pages.
+        payload["application_context"] = {
+            "brand_name": "SABLE",
+            "landing_page": "BILLING",
+            "user_action": "PAY_NOW",
+            "shipping_preference": "NO_SHIPPING",
+        }
+
     response = call("POST", "/v2/checkout/orders", payload)
     order_id = response.get("id")
     if not isinstance(order_id, str) or not ORDER_RE.fullmatch(order_id):
         raise CheckoutError(502, "PAYPAL_ORDER_ID_MISSING", "PayPal did not return a valid order ID.")
     if response.get("status") not in {"CREATED", "PAYER_ACTION_REQUIRED", "APPROVED", "COMPLETED"}:
         raise CheckoutError(502, "PAYPAL_ORDER_STATUS_UNEXPECTED", "PayPal returned an unexpected order status.")
-    return {"orderID": order_id, "mode": paypal_mode()}
+
+    approval_url = ""
+    links = response.get("links")
+    allowed_hosts = {"www.sandbox.paypal.com", "sandbox.paypal.com"} if mode == "sandbox" else {"www.paypal.com", "paypal.com"}
+    if isinstance(links, list):
+        for link in links:
+            if not isinstance(link, dict) or link.get("rel") not in {"approve", "payer-action"}:
+                continue
+            href = link.get("href")
+            if not isinstance(href, str):
+                continue
+            parsed = urllib.parse.urlsplit(href)
+            if (
+                parsed.scheme == "https"
+                and parsed.hostname in allowed_hosts
+                and parsed.path.rstrip("/") == "/checkoutnow"
+                and not parsed.username
+                and not parsed.password
+            ):
+                approval_url = href
+                break
+    return {"orderID": order_id, "mode": mode, "approvalUrl": approval_url}
 
 
 def extract_purchase_unit(order: dict[str, Any]) -> dict[str, Any]:

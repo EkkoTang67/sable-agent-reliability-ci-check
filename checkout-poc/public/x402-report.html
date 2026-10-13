@@ -14,27 +14,156 @@
 <div class="field"><label for="recipient">Expected recipient address</label><input id="recipient" required pattern="0x[0-9a-fA-F]{40}" maxlength="42" value="0x367F1b3D8Ca90D1e087481a9A40d585Bf3451a03"></div>
 <div class="field"><label for="endpoint">Expected paid endpoint path</label><input id="endpoint" required maxlength="190" value="/feeds/api/query"></div>
 <button type="submit">Validate inputs</button></form>
-<div id="status" role="status" aria-live="polite">Checking checkout configuration…</div><div id="paypal-buttons"></div>
+<div id="status" role="status" aria-live="polite">Checking checkout configuration…</div><button type="button" id="checkout-button" disabled>Continue to PayPal — $9.00 USD</button><p class="muted">Mobile checkout uses a full-page redirect. Sandbox testing only; no real funds.</p>
 </section>
 <section class="panel"><h2>What this can prove</h2><p>Settlement and service metadata are separate evidence components. Actual delivery is VERIFIED only with a transaction-bound authoritative receipt or downstream readback. Missing evidence remains UNKNOWN.</p></section>
 <footer><p><a href="/terms.html">Terms</a> · <a href="/refunds.html">Refund policy</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:sable-verification@agentmail.to?subject=SABLE%20report%20support">Support</a></p><p>Policy pages are templates for this sandbox prototype and are not approved for live sales.</p></footer>
 </main>
 <script>
 (() => {
-const statusEl=document.getElementById('status'), form=document.getElementById('case-form'), btns=document.getElementById('paypal-buttons');
-let lastCreateOrderError = '';
+const statusEl=document.getElementById('status');
+const form=document.getElementById('case-form');
+const checkoutButton=document.getElementById('checkout-button');
+const pendingCaseKey='sable.pending-case.v1';
+const pendingOrderKey='sable.pending-order-id.v1';
+const params=new URLSearchParams(window.location.search);
+let checkoutConfig=null;
 const setStatus=(text,kind='')=>{statusEl.textContent=text;statusEl.dataset.kind=kind};
 const getCase=()=>({transaction_hash:document.getElementById('transaction_hash').value.trim(),slug:document.getElementById('slug').value.trim().toLowerCase(),expected_amount:document.getElementById('expected_amount').value.trim(),recipient:document.getElementById('recipient').value.trim(),asset:'USDC',endpoint:document.getElementById('endpoint').value.trim(),network:'eip155:8453'});
-async function post(path,data){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',body:JSON.stringify(data)});const p=await r.json().catch(()=>({}));if(!r.ok)throw new Error(p.message||p.error||('HTTP '+r.status));return p}
-function deliver(payload){const report=payload.report;const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(report.case_id||'sable-report')+'.json';a.click();URL.revokeObjectURL(url);const c=report.components||{};setStatus('Report delivered: '+report.overall_verdict+'\nSettlement: '+(c.settlement?.verdict||'UNKNOWN')+'\nService metadata: '+(c.service_binding?.verdict||'UNKNOWN')+'\nDelivery: '+(c.delivery?.verdict||'UNKNOWN')+'\nA positive verdict is not promised.','warn')}
-form.addEventListener('submit',e=>{e.preventDefault();if(form.reportValidity())setStatus('Inputs are syntactically valid. Payment starts only after checkout is configured and a buyer approves the order.')});
-async function init(){try{const r=await fetch('/api/paypal/config',{cache:'no-store',credentials:'same-origin'}),c=await r.json();if(!r.ok||!c.enabled){setStatus('Checkout is disabled. Configuration gate: '+(c.reason||('HTTP '+r.status))+'. No payment can be taken by this deployment.','warn');return}
-setStatus(c.mode==='sandbox'?'PayPal Sandbox is configured. Sandbox activity is not revenue.':'Live mode unexpectedly enabled; stop and review configuration.','warn');
-const s=document.createElement('script'),q=new URLSearchParams({'client-id':c.client_id,currency:c.currency,intent:'capture',components:'buttons'});s.src='https://www.paypal.com/sdk/js?'+q.toString();
-s.onload=()=>{if(!window.paypal?.Buttons){setStatus('PayPal SDK did not load; checkout unavailable.','error');return}
-window.paypal.Buttons({style:{layout:'vertical',shape:'rect',label:'paypal'},createOrder:async()=>{lastCreateOrderError='';if(!form.reportValidity())throw new Error('Complete all valid inputs first.');try{return (await post('/api/paypal/create_order',getCase())).orderID}catch(err){lastCreateOrderError=err.message||String(err);throw err}},onApprove:async d=>{try{const p=await post('/api/paypal/capture_order',{orderID:d.orderID,case:getCase()});deliver(p)}catch(err){setStatus('Payment/report status needs reconciliation: '+err.message+'. Do not pay again; keep the PayPal order reference: '+d.orderID,'error')}},onCancel:()=>setStatus('Checkout cancelled; no report delivered.','warn'),onError:(err)=>{const detail=lastCreateOrderError||(err&&err.message)||'PayPal SDK error without details';setStatus('Checkout could not start: '+detail+'\\nNo report has been delivered. Check Sandbox account activity before another attempt; do not use real funds.','error')}}).render('#paypal-buttons').catch((err)=>setStatus('PayPal buttons could not be rendered: '+((err&&err.message)||'unknown error'),'error'))};
-s.onerror=()=>setStatus('PayPal SDK could not be loaded.','error');document.head.appendChild(s)
-}catch(e){setStatus('Could not load checkout configuration. No payment can be taken.','error')}}
+async function post(path,data){
+  const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',body:JSON.stringify(data)});
+  const p=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(p.message||p.error||('HTTP '+r.status));
+  return p;
+}
+function cleanPayPalParams(){
+  const u=new URL(window.location.href);
+  ['paypal_return','paypal_cancelled','token','PayerID','orderID'].forEach(k=>u.searchParams.delete(k));
+  history.replaceState({},document.title,u.pathname+(u.search?u.search:'')+u.hash);
+}
+function callbackUrl(flag){
+  const u=new URL(window.location.href);
+  ['paypal_return','paypal_cancelled','token','PayerID','orderID'].forEach(k=>u.searchParams.delete(k));
+  u.searchParams.set(flag,'1');
+  if(u.origin!==window.location.origin||u.pathname!='/x402-report.html')throw new Error('Checkout must be opened from the official preview URL.');
+  return u.toString();
+}
+function deliver(payload){
+  const report=payload.report;
+  const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=(report.case_id||'sable-report')+'.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  const c=report.components||{};
+  setStatus('Report delivered: '+report.overall_verdict+'\nSettlement: '+(c.settlement?.verdict||'UNKNOWN')+'\nService metadata: '+(c.service_binding?.verdict||'UNKNOWN')+'\nDelivery: '+(c.delivery?.verdict||'UNKNOWN')+'\nA positive verdict is not promised.','warn');
+}
+async function handlePayPalReturn(){
+  if(params.get('paypal_cancelled')==='1'){
+    sessionStorage.removeItem(pendingCaseKey);
+    sessionStorage.removeItem(pendingOrderKey);
+    cleanPayPalParams();
+    setStatus('Checkout cancelled. No report was delivered and no new order was created by this page.','warn');
+    return true;
+  }
+  if(params.get('paypal_return')!=='1')return false;
+  const orderID=params.get('token')||params.get('orderID')||'';
+  const expectedOrder=sessionStorage.getItem(pendingOrderKey)||'';
+  const rawCase=sessionStorage.getItem(pendingCaseKey)||'';
+  if(!orderID||!rawCase){
+    setStatus('PayPal returned, but the order reference or original report inputs are missing. Do not pay again. Order reference: '+(orderID||expectedOrder||'not available')+'. Payment/report status is UNKNOWN.','error');
+    cleanPayPalParams();
+    checkoutButton.disabled=true;
+    return true;
+  }
+  if(expectedOrder&&expectedOrder!==orderID){
+    setStatus('Returned order does not match the pending order. Do not pay again. Returned reference: '+orderID+'; pending reference: '+expectedOrder+'.','error');
+    cleanPayPalParams();
+    checkoutButton.disabled=true;
+    return true;
+  }
+  let caseData;
+  try{caseData=JSON.parse(rawCase)}catch(e){
+    setStatus('Saved report inputs could not be read. Do not pay again. Order reference: '+orderID+'.','error');
+    cleanPayPalParams();
+    checkoutButton.disabled=true;
+    return true;
+  }
+  checkoutButton.disabled=true;
+  setStatus('PayPal returned to SABLE. Verifying the order directly with PayPal before releasing any report…');
+  try{
+    const p=await post('/api/paypal/capture_order',{orderID,case:caseData});
+    deliver(p);
+    sessionStorage.removeItem(pendingCaseKey);
+    sessionStorage.removeItem(pendingOrderKey);
+    cleanPayPalParams();
+  }catch(err){
+    setStatus('Payment/report status needs reconciliation: '+(err.message||String(err))+'. Do not pay again. Order reference: '+orderID+'. The report has not been delivered by this attempt.','error');
+    cleanPayPalParams();
+  }
+  return true;
+}
+async function init(){
+  try{
+    if(await handlePayPalReturn())return;
+    const r=await fetch('/api/paypal/config',{cache:'no-store',credentials:'same-origin'});
+    const c=await r.json();
+    if(!r.ok||!c.enabled){
+      setStatus('Checkout is disabled. Configuration gate: '+(c.reason||('HTTP '+r.status))+'. No payment can be taken by this deployment.','warn');
+      return;
+    }
+    if(c.mode!=='sandbox'){
+      setStatus('Unexpected checkout mode. Stop: this preview must remain Sandbox-only.','error');
+      return;
+    }
+    checkoutConfig=c;
+    const pendingOrder=sessionStorage.getItem(pendingOrderKey);
+    if(pendingOrder){
+      setStatus('A previous Sandbox order is still pending reconciliation. Do not create another order. Reference: '+pendingOrder+'. Check Sandbox account activity before proceeding.','error');
+      checkoutButton.disabled=true;
+      return;
+    }
+    setStatus('PayPal Sandbox is configured. The page will redirect in this tab; confirm the total is $9.00 USD and use only a Sandbox buyer account. Sandbox activity is not revenue.','warn');
+    checkoutButton.disabled=false;
+    checkoutButton.addEventListener('click',async()=>{
+      if(checkoutButton.disabled)return;
+      if(!form.reportValidity())return;
+      checkoutButton.disabled=true;
+      const caseData=getCase();
+      sessionStorage.setItem(pendingCaseKey,JSON.stringify(caseData));
+      setStatus('Creating one $9.00 USD Sandbox order…');
+      let orderID='';
+      try{
+        const order=await post('/api/paypal/create_order',Object.assign({},caseData,{
+          return_url:callbackUrl('paypal_return'),
+          cancel_url:callbackUrl('paypal_cancelled')
+        }));
+        orderID=order.orderID||'';
+        if(orderID)sessionStorage.setItem(pendingOrderKey,orderID);
+        if(!order.approvalUrl)throw new Error('PayPal did not return a valid Sandbox approval link.');
+        const approval=new URL(order.approvalUrl);
+        const allowedHosts=['www.sandbox.paypal.com','sandbox.paypal.com'];
+        if(approval.protocol!=='https:'||!allowedHosts.includes(approval.hostname)||approval.pathname.replace(/\/$/,'')!='/checkoutnow'){
+          throw new Error('PayPal approval link failed the Sandbox URL safety check.');
+        }
+        setStatus('Redirecting to PayPal Sandbox. Confirm the total is $9.00 USD. Do not enter real account or card details.','warn');
+        window.location.assign(approval.toString());
+      }catch(err){
+        if(orderID){
+          setStatus('A Sandbox order was created but checkout could not continue. Do not create another order. Reference: '+orderID+'. Details: '+(err.message||String(err)), 'error');
+        }else{
+          sessionStorage.removeItem(pendingCaseKey);
+          setStatus('Checkout could not start: '+(err.message||String(err))+'. No report was delivered.','error');
+          checkoutButton.disabled=false;
+        }
+      }
+    });
+  }catch(e){
+    setStatus('Could not load checkout configuration. Do not retry payment.','error');
+  }
+}
 init();
 })();
 </script></body></html>
