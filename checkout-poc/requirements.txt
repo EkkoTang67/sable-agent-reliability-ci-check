@@ -1,1 +1,3 @@
-# Standard-library-only prototype; no third-party Python dependencies.
+# Runtime dependencies for the experimental x402ev/1 receipt verifier.
+cryptography>=50.0.2,<51
+rfc8785==0.1.4
