@@ -1,3 +1,4 @@
-# Runtime dependencies for the experimental x402ev/1 receipt verifier.
+# Runtime dependencies for receipt signature and evidence-bundle verification.
 cryptography>=50.0.2,<51
 rfc8785==0.1.4
+eth-account>=0.13.7,<0.14
