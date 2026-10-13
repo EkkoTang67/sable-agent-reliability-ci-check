@@ -8,6 +8,50 @@ from sable_x402_closure import assess
 from sable_x402_collect import BASE, BASE_RPC_URLS, SETTLEMENTS_URL, SNAPSHOT_URL, fetch_base_rpc_evidence, fetch_json, normalize_live_case
 
 
+
+def _service_snapshot_probe(value: Any, tx_hash: str) -> dict[str, Any]:
+    """Expose a minimal public-source shape summary so UNKNOWN results are actionable."""
+    if value is None:
+        return {"available": False, "reason": "capability snapshot could not be fetched"}
+    root_keys = sorted(str(k) for k in value.keys())[:40] if isinstance(value, dict) else []
+    matches = []
+    candidates = []
+    hash_keys = ("hash", "tx", "tx_hash", "transaction_hash", "transaction")
+    for item in _iter_public_dicts(value):
+        observed_tx = next((item.get(key) for key in hash_keys if isinstance(item.get(key), str)), None)
+        if isinstance(observed_tx, str) and observed_tx.lower() == tx_hash.lower():
+            matches.append(item)
+        if any(key in item for key in ("endpoint", "resource", "path", "url", "price_usd", "valid")):
+            candidate = {}
+            for key in ("hash", "tx", "tx_hash", "transaction_hash", "transaction", "endpoint", "resource", "path", "url", "price_usd", "valid", "match_score", "slug"):
+                val = item.get(key)
+                if isinstance(val, (str, int, float, bool)) or val is None:
+                    if key in item and isinstance(val, str):
+                        val = val[:180]
+                    if key in item:
+                        candidate[key] = val
+            candidates.append(candidate)
+    latest = value.get("latest") if isinstance(value, dict) else None
+    return {
+        "available": True,
+        "root_type": type(value).__name__,
+        "top_level_keys": root_keys,
+        "matching_transaction_record_count": len(matches),
+        "latest_record_keys": sorted(str(k) for k in latest.keys())[:30] if isinstance(latest, dict) else [],
+        "public_service_record_candidates": candidates[:8],
+    }
+
+
+def _iter_public_dicts(value: Any):
+    if isinstance(value, dict):
+        yield value
+        for nested in value.values():
+            yield from _iter_public_dicts(nested)
+    elif isinstance(value, list):
+        for nested in value:
+            yield from _iter_public_dicts(nested)
+
+
 def collect_report(case: dict[str, str], fetcher: Callable[[str], Any] | None = None) -> dict[str, Any]:
     get_json = fetcher or (lambda url: fetch_json(url, timeout=3.5))
     urls = {
@@ -57,7 +101,7 @@ def collect_report(case: dict[str, str], fetcher: Callable[[str], Any] | None = 
     )
     report = assess(dossier)
     report["mode"] = "live_public_sources_read_only" if sources else "public_source_fetch_failed"
-    report["collector"] = {"read_only": True, "paid_endpoint_called": False, "submitted_payment": False, "fetched_sources": list(sources.keys()), "source_errors": errors, "automatic_fulfillment": True}
+    report["collector"] = {"read_only": True, "paid_endpoint_called": False, "submitted_payment": False, "fetched_sources": list(sources.keys()), "source_errors": errors, "automatic_fulfillment": True, "service_snapshot_probe": _service_snapshot_probe(sources.get("capability_snapshot"), case["transaction_hash"])}
     report.pop("report_sha256", None)
     report["delivery_policy"] = {"if_no_public_sources": "refund_required", "verdict_does_not_promise_positive_outcome": True, "historical_paid_response_not_proven_without_receipt": True}
     canonical = json.dumps(report, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
