@@ -229,7 +229,7 @@ def create_order(case: dict[str, str], api_call: Callable[..., dict[str, Any]] |
         "purchase_units": [{
             "custom_id": signed_custom_id,
             "description": PRODUCT_DESCRIPTION,
-            "amount": {"currency_code": "USD", "value": FIXED_PRICE_USD},
+            "amount": {"currency_code": "USD", "value": FIXED_PRICE_USD, "breakdown": {"item_total": {"currency_code": "USD", "value": FIXED_PRICE_USD}}},
             "items": [{"name": "SABLE x402 public evidence report", "quantity": "1", "unit_amount": {"currency_code": "USD", "value": FIXED_PRICE_USD}, "category": "DIGITAL_GOODS"}],
         }],
         "application_context": {"brand_name": "SABLE", "landing_page": "BILLING", "user_action": "PAY_NOW", "shipping_preference": "NO_SHIPPING"},
