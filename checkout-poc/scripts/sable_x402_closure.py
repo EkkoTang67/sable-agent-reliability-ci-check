@@ -64,6 +64,17 @@ def assess_service_binding(expected: dict[str, Any], observed: dict[str, Any] | 
     if not observed:
         return _status("UNKNOWN", "No service-side record supplied.")
     if not observed.get("transaction_hash"):
+        latest_hash = observed.get("latest_transaction_hash")
+        if isinstance(latest_hash, str) and latest_hash:
+            return _status(
+                "UNKNOWN",
+                "The service snapshot advertises metadata for a different latest transaction; no service-side record binds the requested transaction to this endpoint.",
+                source_url=observed.get("source_url"),
+                latest_transaction_hash=latest_hash,
+                advertised_endpoint=observed.get("endpoint"),
+                advertised_price_usd=observed.get("price_usd"),
+                scope="latest_metadata_not_transaction_bound",
+            )
         return _status("UNKNOWN", "Service-side record does not expose a transaction hash.", source_url=observed.get("source_url"))
     if _field_mismatch(expected.get("transaction_hash"), observed.get("transaction_hash")):
         return _status("NOT_VERIFIED", "Service-side metadata points to a different transaction.", source_url=observed.get("source_url"))
