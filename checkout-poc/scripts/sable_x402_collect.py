@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Callable
@@ -24,6 +25,9 @@ from sable_x402_closure import assess
 
 TX_RE = re.compile(r"^0x[0-9a-fA-F]{64}$")
 BASE = "https://base.blockscout.com/api/v2"
+BASE_RPC_URLS = ("https://mainnet.base.org", "https://base-rpc.publicnode.com")
+BASE_CHAIN_ID = "0x2105"
+TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 SETTLEMENTS_URL = "https://x402-agent-pay.com/facilitator/recent-settlements"
 SNAPSHOT_URL = "https://agentpaystore.com/api/agent/capability-snapshot"
 BASE_NATIVE_USDC = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
@@ -101,6 +105,118 @@ def recipient_of(transfer: dict[str, Any]) -> str | None:
     return value if isinstance(value, str) else None
 
 
+
+def fetch_json_rpc(url: str, method: str, params: list[Any], timeout: float = 3.5) -> Any:
+    """Call one public JSON-RPC method without external dependencies."""
+    payload = json.dumps({"jsonrpc": "2.0", "id": 1, "method": method, "params": params}).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=payload,
+        headers={"Accept": "application/json", "Content-Type": "application/json", "User-Agent": "SABLE-x402-readonly-auditor/0.1"},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        body = response.read(1_000_001)
+        if len(body) > 1_000_000:
+            raise ValueError("JSON-RPC response exceeded 1 MB safety limit")
+        document = json.loads(body.decode("utf-8"))
+    if not isinstance(document, dict) or document.get("jsonrpc") != "2.0":
+        raise ValueError("invalid JSON-RPC response")
+    error = document.get("error")
+    if isinstance(error, dict):
+        raise RuntimeError(f"JSON-RPC {method} failed: {str(error.get('code', 'error'))} {str(error.get('message', 'provider error'))[:180]}")
+    if "result" not in document:
+        raise ValueError("JSON-RPC response omitted result")
+    return document["result"]
+
+
+def fetch_base_rpc_evidence(
+    tx_hash: str,
+    endpoint: str,
+    timeout: float = 3.5,
+    rpc_call: Callable[..., Any] | None = None,
+) -> dict[str, Any]:
+    """Build Blockscout-shaped read-only transaction and USDC-transfer observations from Base JSON-RPC."""
+    if not TX_RE.fullmatch(tx_hash):
+        raise ValueError("transaction hash must be 0x-prefixed 32-byte hex")
+    call = rpc_call or fetch_json_rpc
+    methods = {
+        "chain_id": ("eth_chainId", []),
+        "transaction": ("eth_getTransactionByHash", [tx_hash]),
+        "receipt": ("eth_getTransactionReceipt", [tx_hash]),
+    }
+    results: dict[str, Any] = {}
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        tasks = {pool.submit(call, endpoint, method, params, timeout): name
+                 for name, (method, params) in methods.items()}
+        for future in tasks:
+            results[tasks[future]] = future.result()
+
+    if str(results["chain_id"]).lower() != BASE_CHAIN_ID:
+        raise ValueError(f"RPC endpoint returned unexpected chain ID {results['chain_id']!r}; expected Base {BASE_CHAIN_ID}")
+    transaction = results["transaction"]
+    receipt = results["receipt"]
+    if not isinstance(transaction, dict) or not isinstance(receipt, dict):
+        raise ValueError("transaction or receipt is not yet available from the RPC endpoint")
+    observed_tx = str(transaction.get("hash", "")).lower()
+    receipt_tx = str(receipt.get("transactionHash", "")).lower()
+    if observed_tx != tx_hash.lower() or receipt_tx != tx_hash.lower():
+        raise ValueError("RPC transaction hash did not match the requested hash")
+
+    raw_status = str(receipt.get("status", "")).lower()
+    status = "success" if raw_status == "0x1" else ("reverted" if raw_status == "0x0" else "unknown")
+    chain_transaction = {
+        "hash": observed_tx,
+        "status": status,
+        "block_number": receipt.get("blockNumber"),
+        "source_url": endpoint,
+        "independent_source": True,
+    }
+
+    transfers: list[dict[str, Any]] = []
+    logs = receipt.get("logs", [])
+    if isinstance(logs, list):
+        for log in logs:
+            if not isinstance(log, dict):
+                continue
+            contract = str(log.get("address", "")).lower()
+            topics = log.get("topics")
+            data = log.get("data")
+            if contract != BASE_NATIVE_USDC or not isinstance(topics, list) or len(topics) < 3:
+                continue
+            if str(topics[0]).lower() != TRANSFER_TOPIC or not isinstance(data, str) or not data.startswith("0x"):
+                continue
+            from_topic, to_topic = str(topics[1]), str(topics[2])
+            if not re.fullmatch(r"0x[0-9a-fA-F]{64}", from_topic) or not re.fullmatch(r"0x[0-9a-fA-F]{64}", to_topic):
+                continue
+            try:
+                raw_value = int(data, 16)
+            except ValueError:
+                continue
+            transfers.append({
+                "transaction_hash": observed_tx,
+                "from": {"hash": "0x" + from_topic[-40:].lower()},
+                "to": {"hash": "0x" + to_topic[-40:].lower()},
+                "token": {"address_hash": contract, "decimals": 6, "symbol": "USDC"},
+                "total": {"value": str(raw_value)},
+            })
+
+    observation = {
+        "provider": endpoint,
+        "chain_id": str(results["chain_id"]).lower(),
+        "transaction_hash": observed_tx,
+        "receipt_status": raw_status or None,
+        "block_number": receipt.get("blockNumber"),
+        "log_count": len(logs) if isinstance(logs, list) else None,
+        "usdc_transfer_log_count": len(transfers),
+    }
+    return {
+        "chain_transaction": chain_transaction,
+        "token_transfers": {"items": transfers, "source_url": endpoint, "independent_source": True},
+        "chain_rpc_observation": observation,
+    }
+
+
 def normalize_live_case(*, tx_hash: str, slug: str, expected_amount: str, recipient: str,
                         asset: str, asset_contract: str, endpoint: str, network: str,
                         sources: dict[str, Any], source_errors: dict[str, str],
@@ -138,7 +254,7 @@ def normalize_live_case(*, tx_hash: str, slug: str, expected_amount: str, recipi
             amount = normalized_amount(transfer)
             status_text = str(status or "").lower()
             settled_status = "success" if status_text in {"ok", "success", "confirmed"} else ("reverted" if status_text in {"error", "reverted", "failed"} else str(status or "unknown"))
-            settlement = {"transaction_hash": chain_hash, "status": settled_status, "network": network, "recipient": recipient_of(transfer), "amount": amount, "asset": token.get("symbol"), "asset_contract": token_contract_of(transfer), "source_url": f"{BASE}/transactions/{tx_hash}", "independent_source": True}
+            settlement = {"transaction_hash": chain_hash, "status": settled_status, "network": network, "recipient": recipient_of(transfer), "amount": amount, "asset": token.get("symbol"), "asset_contract": token_contract_of(transfer), "source_url": chain_data.get("source_url") or f"{BASE}/transactions/{tx_hash}", "independent_source": bool(chain_data.get("independent_source", True))}
     service = None
     if service_data is not None:
         latest = service_data.get("latest") if isinstance(service_data, dict) else None

@@ -5,7 +5,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable
 from sable_x402_closure import assess
-from sable_x402_collect import BASE, SETTLEMENTS_URL, SNAPSHOT_URL, fetch_json, normalize_live_case
+from sable_x402_collect import BASE, BASE_RPC_URLS, SETTLEMENTS_URL, SNAPSHOT_URL, fetch_base_rpc_evidence, fetch_json, normalize_live_case
 
 
 def collect_report(case: dict[str, str], fetcher: Callable[[str], Any] | None = None) -> dict[str, Any]:
@@ -26,6 +26,29 @@ def collect_report(case: dict[str, str], fetcher: Callable[[str], Any] | None = 
                 sources[name] = future.result()
             except Exception as exc:
                 errors[name] = f"{type(exc).__name__}: {str(exc)[:400]}"
+
+    # If the explorer API is blocked, try keyless Base JSON-RPC providers instead.
+    # Preserve the original explorer error as evidence about coverage.
+    if fetcher is None and any(name not in sources for name in ("chain_transaction", "token_transfers")):
+        blockscout_tx_error = errors.pop("chain_transaction", None)
+        blockscout_transfer_error = errors.pop("token_transfers", None)
+        if blockscout_tx_error:
+            errors["blockscout_chain_transaction"] = blockscout_tx_error
+        if blockscout_transfer_error:
+            errors["blockscout_token_transfers"] = blockscout_transfer_error
+        rpc_errors: list[str] = []
+        for endpoint in BASE_RPC_URLS:
+            try:
+                rpc_sources = fetch_base_rpc_evidence(case["transaction_hash"], endpoint, timeout=3.5)
+                sources["chain_transaction"] = rpc_sources["chain_transaction"]
+                sources["token_transfers"] = rpc_sources["token_transfers"]
+                sources["chain_rpc_observation"] = rpc_sources["chain_rpc_observation"]
+                break
+            except Exception as exc:
+                rpc_errors.append(f"{endpoint}: {type(exc).__name__}: {str(exc)[:220]}")
+        if "chain_rpc_observation" not in sources:
+            errors["base_rpc_fallback"] = " | ".join(rpc_errors)[:900] or "No Base RPC fallback was attempted."
+
     dossier = normalize_live_case(
         tx_hash=case["transaction_hash"], slug=case["slug"], expected_amount=case["expected_amount"],
         recipient=case["recipient"], asset=case["asset"], asset_contract=case["asset_contract"],
