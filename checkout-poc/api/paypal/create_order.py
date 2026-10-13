@@ -12,21 +12,24 @@ from lib.paypal import CheckoutError, canonical_case, create_order
 
 def _validated_callback_url(value: object, *, origin: str | None, flag: str) -> str:
     """Accept only an HTTPS return/cancel URL on this exact approved preview origin."""
+    import re
     from urllib.parse import parse_qs, urlsplit
     if not isinstance(value, str) or not value or len(value) > 4096 or not origin:
         raise CheckoutError(400, "INVALID_RETURN_URL", "A valid same-origin PayPal return/cancel URL is required.")
     parsed = urlsplit(value)
     candidate_origin = f"{parsed.scheme}://{parsed.netloc}"
     query = parse_qs(parsed.query, keep_blank_values=True)
+    session_ids = query.get("sable_session", [])
     if (
         parsed.scheme != "https"
         or candidate_origin != origin
         or parsed.path != "/x402-report.html"
         or parsed.username
         or parsed.password
-        or query.get(flag) != ["1"]
+        or len(session_ids) != 1
+        or not re.fullmatch(r"[a-f0-9]{32}", session_ids[0])
     ):
-        raise CheckoutError(400, "INVALID_RETURN_URL", "PayPal return/cancel URL must point to this HTTPS checkout page.")
+        raise CheckoutError(400, "INVALID_RETURN_URL", "PayPal return/cancel URL must be this HTTPS checkout page with a unique session identifier.")
     return value
 
 
@@ -44,8 +47,10 @@ class handler(BaseHTTPRequestHandler):
             payload = read_json(self)
             case = canonical_case(payload)
             if "return_url" in payload or "cancel_url" in payload:
-                return_url = _validated_callback_url(payload.get("return_url"), origin=origin, flag="paypal_return")
-                cancel_url = _validated_callback_url(payload.get("cancel_url"), origin=origin, flag="paypal_cancelled")
+                return_url = _validated_callback_url(payload.get("return_url"), origin=origin, flag="sable_session")
+                cancel_url = _validated_callback_url(payload.get("cancel_url"), origin=origin, flag="sable_session")
+                if return_url != cancel_url:
+                    raise CheckoutError(400, "RETURN_CANCEL_URLS_MUST_MATCH", "Mobile PayPal return and cancel URLs must be identical.")
                 order = create_order(case, return_url=return_url, cancel_url=cancel_url)
             else:
                 order = create_order(case)

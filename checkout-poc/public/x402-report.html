@@ -24,8 +24,11 @@
 const statusEl=document.getElementById('status');
 const form=document.getElementById('case-form');
 const checkoutButton=document.getElementById('checkout-button');
-const pendingCaseKey='sable.pending-case.v1';
-const pendingOrderKey='sable.pending-order-id.v1';
+const pendingCaseKey='sable.pending-case.v2';
+const pendingOrderKey='sable.pending-order-id.v2';
+const pendingSessionKey='sable.pending-session.v2';
+const legacyCaseKey='sable.pending-case.v1';
+const legacyOrderKey='sable.pending-order-id.v1';
 const params=new URLSearchParams(window.location.search);
 let checkoutConfig=null;
 const setStatus=(text,kind='')=>{statusEl.textContent=text;statusEl.dataset.kind=kind};
@@ -36,16 +39,38 @@ async function post(path,data){
   if(!r.ok)throw new Error(p.message||p.error||('HTTP '+r.status));
   return p;
 }
+function readPending(key,legacyKey){
+  return localStorage.getItem(key)||sessionStorage.getItem(legacyKey)||'';
+}
+function migrateLegacyPending(){
+  if(!localStorage.getItem(pendingCaseKey)){
+    const v=sessionStorage.getItem(legacyCaseKey);
+    if(v)localStorage.setItem(pendingCaseKey,v);
+  }
+  if(!localStorage.getItem(pendingOrderKey)){
+    const v=sessionStorage.getItem(legacyOrderKey);
+    if(v)localStorage.setItem(pendingOrderKey,v);
+  }
+}
+function clearPending(){
+  [pendingCaseKey,pendingOrderKey,pendingSessionKey].forEach(k=>localStorage.removeItem(k));
+  [legacyCaseKey,legacyOrderKey].forEach(k=>sessionStorage.removeItem(k));
+}
 function cleanPayPalParams(){
   const u=new URL(window.location.href);
-  ['paypal_return','paypal_cancelled','token','PayerID','orderID'].forEach(k=>u.searchParams.delete(k));
+  ['paypal_return','paypal_cancelled','sable_session','token','PayerID','orderID'].forEach(k=>u.searchParams.delete(k));
   history.replaceState({},document.title,u.pathname+(u.search?u.search:'')+u.hash);
 }
-function callbackUrl(flag){
+function sessionId(){
+  const bytes=new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+}
+function callbackUrl(id){
   const u=new URL(window.location.href);
-  ['paypal_return','paypal_cancelled','token','PayerID','orderID'].forEach(k=>u.searchParams.delete(k));
-  u.searchParams.set(flag,'1');
-  if(u.origin!==window.location.origin||u.pathname!='/x402-report.html')throw new Error('Checkout must be opened from the official preview URL.');
+  ['paypal_return','paypal_cancelled','sable_session','token','PayerID','orderID'].forEach(k=>u.searchParams.delete(k));
+  u.searchParams.set('sable_session',id);
+  if(u.origin!==window.location.origin||u.pathname!='/x402-report.html'||u.hash)throw new Error('Checkout must use the official HTTPS preview URL without a URL fragment.');
   return u.toString();
 }
 function deliver(payload){
@@ -60,58 +85,64 @@ function deliver(payload){
   a.download=(report.case_id||'sable-report')+'.json';
   a.textContent='Download JSON evidence report';
   downloads.appendChild(a);
-  // Try immediate download; leave a visible link in case the browser blocks it after redirect.
   a.click();
   const c=report.components||{};
-  setStatus('Report ready: '+report.overall_verdict+'\\nSettlement: '+(c.settlement?.verdict||'UNKNOWN')+'\\nService metadata: '+(c.service_binding?.verdict||'UNKNOWN')+'\\nDelivery: '+(c.delivery?.verdict||'UNKNOWN')+'\\nUse the download link below if the browser does not start the download automatically.','warn');
+  setStatus('Report ready: '+report.overall_verdict+'\nSettlement: '+(c.settlement?.verdict||'UNKNOWN')+'\nService metadata: '+(c.service_binding?.verdict||'UNKNOWN')+'\nDelivery: '+(c.delivery?.verdict||'UNKNOWN')+'\nUse the download link below if the browser does not start the download automatically.','warn');
 }
-async function handlePayPalReturn(){
-  if(params.get('paypal_cancelled')==='1'){
-    sessionStorage.removeItem(pendingCaseKey);
-    sessionStorage.removeItem(pendingOrderKey);
-    cleanPayPalParams();
-    setStatus('Checkout cancelled. No report was delivered and no new order was created by this page.','warn');
-    return true;
-  }
-  if(params.get('paypal_return')!=='1')return false;
-  const orderID=params.get('token')||params.get('orderID')||'';
-  const expectedOrder=sessionStorage.getItem(pendingOrderKey)||'';
-  const rawCase=sessionStorage.getItem(pendingCaseKey)||'';
-  if(!orderID||!rawCase){
-    setStatus('PayPal returned, but the order reference or original report inputs are missing. Do not pay again. Order reference: '+(orderID||expectedOrder||'not available')+'. Payment/report status is UNKNOWN.','error');
-    cleanPayPalParams();
-    checkoutButton.disabled=true;
-    return true;
-  }
-  if(expectedOrder&&expectedOrder!==orderID){
-    setStatus('Returned order does not match the pending order. Do not pay again. Returned reference: '+orderID+'; pending reference: '+expectedOrder+'.','error');
-    cleanPayPalParams();
-    checkoutButton.disabled=true;
-    return true;
-  }
+async function reconcileOrder(orderID,rawCase){
   let caseData;
   try{caseData=JSON.parse(rawCase)}catch(e){
-    setStatus('Saved report inputs could not be read. Do not pay again. Order reference: '+orderID+'.','error');
-    cleanPayPalParams();
+    setStatus('Saved report inputs could not be read. Do not pay again. Existing order reference: '+orderID+'.','error');
     checkoutButton.disabled=true;
-    return true;
+    return false;
   }
   checkoutButton.disabled=true;
-  setStatus('PayPal returned to SABLE. Verifying the order directly with PayPal before releasing any report…');
+  setStatus('Checking the existing PayPal Sandbox order with PayPal. No new order will be created…');
   try{
     const p=await post('/api/paypal/capture_order',{orderID,case:caseData});
     deliver(p);
-    sessionStorage.removeItem(pendingCaseKey);
-    sessionStorage.removeItem(pendingOrderKey);
+    clearPending();
     cleanPayPalParams();
+    return true;
   }catch(err){
-    setStatus('Payment/report status needs reconciliation: '+(err.message||String(err))+'. Do not pay again. Order reference: '+orderID+'. The report has not been delivered by this attempt.','error');
+    setStatus('Existing order not yet confirmed for report delivery: '+(err.message||String(err))+'. Do not pay again. Order reference: '+orderID+'. Pending order details are retained so we can reconcile this same order.','error');
     cleanPayPalParams();
+    checkoutButton.disabled=true;
+    return false;
   }
-  return true;
+}
+async function handlePayPalReturn(){
+  const legacyReturn=params.get('paypal_return')==='1';
+  const returnedSession=params.get('sable_session')||'';
+  if(!legacyReturn&&!returnedSession)return false;
+  migrateLegacyPending();
+  const expectedSession=localStorage.getItem(pendingSessionKey)||'';
+  if(returnedSession&&(!expectedSession||returnedSession!==expectedSession)){
+    setStatus('PayPal returned with a session identifier that does not match this pending checkout. No report was delivered. Do not pay again; check the same order in Sandbox activity.','error');
+    checkoutButton.disabled=true;
+    cleanPayPalParams();
+    return true;
+  }
+  const orderID=params.get('token')||params.get('orderID')||localStorage.getItem(pendingOrderKey)||sessionStorage.getItem(legacyOrderKey)||'';
+  const rawCase=localStorage.getItem(pendingCaseKey)||sessionStorage.getItem(legacyCaseKey)||'';
+  if(!orderID||!rawCase){
+    setStatus('PayPal returned, but this browser cannot find the original order reference or report inputs. Payment status is UNKNOWN. Do not pay again; inspect Sandbox account activity.','error');
+    checkoutButton.disabled=true;
+    cleanPayPalParams();
+    return true;
+  }
+  const expectedOrder=localStorage.getItem(pendingOrderKey)||sessionStorage.getItem(legacyOrderKey)||'';
+  if(expectedOrder&&params.get('token')&&expectedOrder!==params.get('token')){
+    setStatus('Returned order does not match the pending order. Do not pay again. The payment/report status is UNKNOWN.','error');
+    checkoutButton.disabled=true;
+    cleanPayPalParams();
+    return true;
+  }
+  return true && await reconcileOrder(orderID,rawCase);
 }
 async function init(){
   try{
+    migrateLegacyPending();
     if(await handlePayPalReturn())return;
     const r=await fetch('/api/paypal/config',{cache:'no-store',credentials:'same-origin'});
     const c=await r.json();
@@ -124,29 +155,38 @@ async function init(){
       return;
     }
     checkoutConfig=c;
-    const pendingOrder=sessionStorage.getItem(pendingOrderKey);
-    if(pendingOrder){
-      setStatus('A previous Sandbox order is still pending reconciliation. Do not create another order. Reference: '+pendingOrder+'. Check Sandbox account activity before proceeding.','error');
+    const pendingOrder=localStorage.getItem(pendingOrderKey);
+    const pendingCase=localStorage.getItem(pendingCaseKey);
+    if(pendingOrder&&pendingCase){
+      await reconcileOrder(pendingOrder,pendingCase);
+      return;
+    }
+    // Old draft sessions with only one of the two values are not safe to restart automatically.
+    if(pendingOrder||pendingCase){
+      setStatus('A previous Sandbox checkout is incomplete in this browser. Do not start another order. Reconcile the order manually first.','error');
       checkoutButton.disabled=true;
       return;
     }
-    setStatus('PayPal Sandbox is configured. The page will redirect in this tab; confirm the total is $9.00 USD and use only a Sandbox buyer account. Sandbox activity is not revenue.','warn');
+    setStatus('PayPal Sandbox is configured. Mobile checkout redirects in this tab and uses the same unique return URL for both completion and cancellation. Confirm the amount is $9.00 USD. Sandbox activity is not revenue.','warn');
     checkoutButton.disabled=false;
     checkoutButton.addEventListener('click',async()=>{
-      if(checkoutButton.disabled)return;
+      if(checkoutButton.disabled||localStorage.getItem(pendingOrderKey))return;
       if(!form.reportValidity())return;
       checkoutButton.disabled=true;
       const caseData=getCase();
-      sessionStorage.setItem(pendingCaseKey,JSON.stringify(caseData));
+      const id=sessionId();
+      localStorage.setItem(pendingCaseKey,JSON.stringify(caseData));
+      localStorage.setItem(pendingSessionKey,id);
       setStatus('Creating one $9.00 USD Sandbox order…');
       let orderID='';
       try{
+        const sameCallback=callbackUrl(id);
         const order=await post('/api/paypal/create_order',Object.assign({},caseData,{
-          return_url:callbackUrl('paypal_return'),
-          cancel_url:callbackUrl('paypal_cancelled')
+          return_url:sameCallback,
+          cancel_url:sameCallback
         }));
         orderID=order.orderID||'';
-        if(orderID)sessionStorage.setItem(pendingOrderKey,orderID);
+        if(orderID)localStorage.setItem(pendingOrderKey,orderID);
         if(!order.approvalUrl)throw new Error('PayPal did not return a valid Sandbox approval link.');
         const approval=new URL(order.approvalUrl);
         const allowedHosts=['www.sandbox.paypal.com','sandbox.paypal.com'];
@@ -159,7 +199,8 @@ async function init(){
         if(orderID){
           setStatus('A Sandbox order was created but checkout could not continue. Do not create another order. Reference: '+orderID+'. Details: '+(err.message||String(err)), 'error');
         }else{
-          sessionStorage.removeItem(pendingCaseKey);
+          localStorage.removeItem(pendingCaseKey);
+          localStorage.removeItem(pendingSessionKey);
           setStatus('Checkout could not start: '+(err.message||String(err))+'. No report was delivered.','error');
           checkoutButton.disabled=false;
         }
