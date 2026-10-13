@@ -18,6 +18,7 @@ from urllib.parse import urlsplit
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+import rfc8785
 
 from api.common import json_response, method_not_allowed, origin_is_allowed
 
@@ -131,6 +132,76 @@ def _find_verifier_result(value: Any) -> bool | None:
     return None
 
 
+def _local_verify_embedded_receipt(receipt: dict[str, Any], jwks: dict[str, Any]) -> dict[str, Any]:
+    """Try exact, explicit JSON encodings locally with the published Ed25519 key."""
+    payload = receipt.get("payload")
+    kid = receipt.get("kid")
+    if not isinstance(payload, dict) or not isinstance(kid, str) or not isinstance(receipt.get("signature"), str):
+        return {"verdict": "NOT_VERIFIED", "reason": "Receipt is missing payload, kid, or signature."}
+    keys = jwks.get("keys")
+    matches = [item for item in keys if isinstance(item, dict) and item.get("kid") == kid] if isinstance(keys, list) else []
+    if len(matches) != 1:
+        return {"verdict": "UNKNOWN", "reason": "Receipt kid did not match exactly one published JWK."}
+    jwk = matches[0]
+    if jwk.get("kty") != "OKP" or jwk.get("crv") != "Ed25519" or jwk.get("alg") != "EdDSA" or not isinstance(jwk.get("x"), str):
+        return {"verdict": "NOT_VERIFIED", "reason": "Published JWK is not an Ed25519 signing key."}
+    try:
+        public_key = Ed25519PublicKey.from_public_bytes(_b64url_decode(jwk["x"]))
+        signature = _b64url_decode(receipt["signature"])
+    except Exception as exc:
+        return {"verdict": "NOT_VERIFIED", "reason": f"Could not parse the published key or signature: {type(exc).__name__}."}
+
+    candidates: list[tuple[str, bytes]] = []
+    try:
+        insertion_order = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        sorted_order = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        canonical = rfc8785.dumps(payload)
+        candidates.extend([
+            ("compact_json_payload_insertion_order", insertion_order),
+            ("compact_json_payload_sorted_keys", sorted_order),
+            ("rfc8785_jcs_payload", canonical),
+            ("sha256_compact_json_payload_insertion_order", hashlib.sha256(insertion_order).digest()),
+            ("sha256_rfc8785_jcs_payload", hashlib.sha256(canonical).digest()),
+        ])
+        envelope = {"alg": receipt.get("alg"), "kid": kid, "payload": payload}
+        envelope_insertion = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        envelope_sorted = json.dumps(envelope, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        candidates.extend([
+            ("compact_json_envelope_alg_kid_payload", envelope_insertion),
+            ("compact_json_envelope_sorted_keys", envelope_sorted),
+            ("sha256_compact_json_envelope_alg_kid_payload", hashlib.sha256(envelope_insertion).digest()),
+        ])
+    except Exception as exc:
+        return {"verdict": "UNKNOWN", "reason": f"Could not prepare local verification encodings: {type(exc).__name__}."}
+
+    matching_methods: list[str] = []
+    for name, message in candidates:
+        try:
+            public_key.verify(signature, message)
+            matching_methods.append(name)
+        except InvalidSignature:
+            pass
+        except Exception:
+            pass
+    if matching_methods:
+        return {
+            "verdict": "VERIFIED",
+            "reason": "Ed25519 signature verified locally under the site's published public key.",
+            "verification_source": "local cryptographic verification",
+            "independent_verification": True,
+            "matching_serializations": matching_methods,
+            "kid": kid,
+        }
+    return {
+        "verdict": "UNKNOWN",
+        "reason": "The signature did not verify under the tested JSON encodings; no signing serialization is assumed.",
+        "verification_source": "local cryptographic verification",
+        "independent_verification": True,
+        "tested_serializations": [name for name, _ in candidates],
+        "kid": kid,
+    }
+
+
 def _verify_embedded_receipt(receipt: Any, jwks: Any, key_status: int) -> dict[str, Any]:
     """Use the issuer's public verify_receipt tool for its non-JWS receipt envelope."""
     if not isinstance(receipt, dict) or not isinstance(receipt.get("payload"), dict):
@@ -143,8 +214,8 @@ def _verify_embedded_receipt(receipt: Any, jwks: Any, key_status: int) -> dict[s
     matches = [item for item in keys if isinstance(item, dict) and item.get("kid") == receipt.get("kid")] if isinstance(keys, list) else []
     if len(matches) != 1:
         return {"verdict": "NOT_VERIFIED", "reason": "Receipt kid did not match exactly one published JWK.", "matching_jwk_count": len(matches)}
-    # The published site exposes its own verification tool for this envelope. Record
-    # that this is an issuer-side check, not an independent signature implementation.
+    local_signature = _local_verify_embedded_receipt(receipt, jwks)
+    # Also ask the published verifier as corroboration; local verification remains separate.
     status, verifier_response = _post_json(
         "https://aethelforge.ai/mcp",
         {
@@ -168,13 +239,31 @@ def _verify_embedded_receipt(receipt: Any, jwks: Any, key_status: int) -> dict[s
             "independent_verification": False,
             "payload": receipt.get("payload"),
             "kid": receipt.get("kid"),
+            "local_signature_verification": local_signature,
         }
+    issuer_verdict = "VERIFIED" if valid else "NOT_VERIFIED"
+    if local_signature.get("verdict") == "VERIFIED":
+        final_signature_verdict = "VERIFIED"
+    elif issuer_verdict == "NOT_VERIFIED":
+        final_signature_verdict = "NOT_VERIFIED"
+    else:
+        final_signature_verdict = "UNKNOWN"
     return {
-        "verdict": "VERIFIED" if valid else "NOT_VERIFIED",
-        "reason": "Aethelforge's public verify_receipt tool accepted the receipt." if valid else "Aethelforge's public verify_receipt tool rejected the receipt.",
-        "verification_source": "Aethelforge public MCP verify_receipt tool",
-        "independent_verification": False,
+        "verdict": final_signature_verdict,
+        "reason": (
+            "Both local Ed25519 verification and the publisher's public verify_receipt tool accepted the receipt."
+            if local_signature.get("verdict") == "VERIFIED" and valid
+            else "Local Ed25519 verification accepted the signature under the published key."
+            if local_signature.get("verdict") == "VERIFIED"
+            else "Only the publisher's public verifier accepted the receipt; local signature verification remains UNKNOWN."
+            if valid
+            else "The publisher's public verify_receipt tool rejected the receipt."
+        ),
+        "verification_source": "local Ed25519 check plus publisher MCP corroboration",
+        "independent_verification": local_signature.get("verdict") == "VERIFIED",
         "issuer_verifier_http_status": status,
+        "issuer_verifier_verdict": issuer_verdict if status == 200 and valid is not None else "UNKNOWN",
+        "local_signature_verification": local_signature,
         "published_key_id_match": True,
         "protected_header": {"alg": receipt.get("alg"), "kid": receipt.get("kid")},
         "payload": receipt.get("payload"),
