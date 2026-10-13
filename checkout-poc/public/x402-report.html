@@ -9,6 +9,7 @@
 <p><a href="/api/demo_report">View a free public sample report (no payment)</a> · The sample uses one fixed public transaction; paid reports must be evaluated on their own inputs.</p>
 <p><a href="/api/receipt_verifier_self_test">Run the synthetic signed-receipt check (no payment)</a> · Tests signature, response digest, transaction binding, and missing trust keys. Uses generated test data, not a real payment or delivery.</p>
 <p><a href="/api/external_receipt_audit">Audit a public third-party receipt vector (no payment)</a> · Rechecks its Base transfer independently and separates test-key identity, raw response-body, and buyer-acceptance gaps.</p>
+<p><a href="/api/aethelforge_delivery_demo">Verify a public signed-delivery demo (no payment)</a> · Fetches a fixed public demo response and its signed receipt, checks the publisher key and any signed body-hash claim. This demo token is not an on-chain payment, so settlement remains UNKNOWN.</p>
 <section class="panel"><div class="muted">AUTOMATED SOFTWARE REPORT · FIXED EXPERIMENTAL PRICE</div><div class="price">$9.00 USD</div><p class="muted">Sandbox transactions use fake funds and are not revenue. Live checkout is disabled for this prototype. Do not enter private keys or secrets.</p></section>
 <section class="panel"><h2>Evidence inputs</h2><form id="case-form">
 <div class="field"><label for="transaction_hash">Base transaction hash</label><input id="transaction_hash" required pattern="0x[0-9a-fA-F]{64}" maxlength="66" value="0x77bd390b27324e279ee1e227ccb58386135a2c68fe135e46c2608f34877b4526"></div>
