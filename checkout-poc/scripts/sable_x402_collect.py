@@ -53,9 +53,11 @@ def iter_dicts(value: Any):
 
 
 def find_tx_record(value: Any, tx_hash: str) -> dict[str, Any] | None:
+    """Find a record whose transaction-identifying field exactly matches the requested hash."""
     tx = tx_hash.lower()
+    keys = ("tx", "tx_hash", "transaction_hash", "transaction", "hash")
     for item in iter_dicts(value):
-        if any(str(item.get(key, "")).lower() == tx for key in ("tx", "tx_hash", "transaction_hash", "transaction")):
+        if any(isinstance(item.get(key), str) and item[key].lower() == tx for key in keys):
             return item
     return None
 
@@ -264,7 +266,17 @@ def normalize_live_case(*, tx_hash: str, slug: str, expected_amount: str, recipi
             service = service_record
     if service is not None:
         service_tx = get_hash(service)
-        service = {"transaction_hash": service_tx, "endpoint": service.get("endpoint"), "price_usd": service.get("price_usd"), "valid": service_data.get("valid") if isinstance(service_data, dict) else service.get("valid"), "match_score": service_data.get("match_score") if isinstance(service_data, dict) else service.get("match_score"), "source_url": f"{SNAPSHOT_URL}?slug={urllib.parse.quote(slug)}&n=10", "independent_source": False}
+        root_valid = service_data.get("valid") if isinstance(service_data, dict) else None
+        root_match_score = service_data.get("match_score") if isinstance(service_data, dict) else None
+        service = {
+            "transaction_hash": service_tx,
+            "endpoint": service.get("endpoint"),
+            "price_usd": service.get("price_usd"),
+            "valid": root_valid if isinstance(root_valid, bool) else service.get("valid"),
+            "match_score": root_match_score if root_match_score is not None else service.get("match_score"),
+            "source_url": f"{SNAPSHOT_URL}?slug={urllib.parse.quote(slug)}&n=10",
+            "independent_source": False,
+        }
     delivery: dict[str, Any] = {"response_receipt": response_receipt, "downstream_readback": None}
     if not response_receipt:
         delivery["source_observation"] = "No paid endpoint was called and no response receipt was supplied to this collector."
