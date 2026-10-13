@@ -39,7 +39,7 @@ def collect_report(case: dict[str, str], fetcher: Callable[[str], Any] | None = 
         rpc_errors: list[str] = []
         for endpoint in BASE_RPC_URLS:
             try:
-                rpc_sources = fetch_base_rpc_evidence(case["transaction_hash"], endpoint, timeout=3.5)
+                rpc_sources = fetch_base_rpc_evidence(case["transaction_hash"], endpoint, timeout=1.75)
                 sources["chain_transaction"] = rpc_sources["chain_transaction"]
                 sources["token_transfers"] = rpc_sources["token_transfers"]
                 sources["chain_rpc_observation"] = rpc_sources["chain_rpc_observation"]
