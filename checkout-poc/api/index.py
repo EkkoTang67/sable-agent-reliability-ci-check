@@ -9,6 +9,7 @@ from api import demo_report as demo_report_route
 from api import receipt_verifier_self_test as receipt_verifier_self_test_route
 from api import external_receipt_audit as external_receipt_audit_route
 from api import aethelforge_delivery_demo as aethelforge_delivery_demo_route
+from api import evidence_bundle_audit as evidence_bundle_audit_route
 
 
 class handler(BaseHTTPRequestHandler):
@@ -28,6 +29,8 @@ class handler(BaseHTTPRequestHandler):
             return external_receipt_audit_route.handler.do_GET(self)
         if path == "/api/aethelforge_delivery_demo":
             return aethelforge_delivery_demo_route.handler.do_GET(self)
+        if path == "/api/evidence_bundle_audit":
+            return evidence_bundle_audit_route.handler.do_GET(self)
         if path in {"/api", "/api/"}:
             body = b'{"service":"SABLE x402 checkout preview","status":"route-dispatch-ready"}'
             self.send_response(200)
@@ -55,6 +58,8 @@ class handler(BaseHTTPRequestHandler):
             return external_receipt_audit_route.handler.do_POST(self)
         if path == "/api/aethelforge_delivery_demo":
             return aethelforge_delivery_demo_route.handler.do_POST(self)
+        if path == "/api/evidence_bundle_audit":
+            return evidence_bundle_audit_route.handler.do_POST(self)
         self.send_error(404)
 
     def log_message(self, format, *args):
