@@ -102,6 +102,10 @@ def _run_tests() -> dict[str, Any]:
         "expected": "VERIFIED",
         "actual": good["overall_verdict"],
         "component_results": {key: value["verdict"] for key, value in good["components"].items()},
+        "signature_detail": good["components"]["seller_signature"],
+        "request_detail": good["components"]["request_binding"],
+        "body_detail": good["components"]["response_body_integrity"],
+        "settlement_detail": good["components"]["on_chain_settlement"],
     })
 
     tampered = audit_bundle(_bundle(receipt, seller, BODY + b"tampered"), chain_loader=lambda tx: _evidence_for(receipt))
