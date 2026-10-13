@@ -48,10 +48,24 @@ def _run_live_vector_check() -> dict[str, Any]:
         vector_only_signer=VECTOR_SELLER,
     )
 
-    chain_test_passed = (
+    signature_and_settlement_passed = (
         signature.get("verdict") == "VERIFIED"
         and settlement.get("verdict") == "VERIFIED"
     )
+    # Overall status follows fail-closed semantics: a known signer/payee mismatch is
+    # NOT_VERIFIED even though this published test vector intentionally uses a test key.
+    known_component_verdicts = [
+        signature.get("verdict"),
+        identity_result.get("verdict"),
+        settlement.get("verdict"),
+    ]
+    if "NOT_VERIFIED" in known_component_verdicts:
+        overall = "NOT_VERIFIED"
+    elif not all(value == "VERIFIED" for value in known_component_verdicts):
+        overall = "UNKNOWN"
+    else:
+        # Response bytes and exact request URL are not present in the public vector.
+        overall = "UNKNOWN"
     return {
         "schema": "sable.x402.evidence-bundle-live-vector-test.v1",
         "test_mode": True,
@@ -75,8 +89,8 @@ def _run_live_vector_check() -> dict[str, Any]:
             receipt_url_hash=receipt["request"]["url_hash"],
             receipt_params_hash=receipt["request"]["params_hash"],
         ),
-        "chain_test_passed": chain_test_passed,
-        "overall_verdict": "UNKNOWN",
+        "signature_and_settlement_passed": signature_and_settlement_passed,
+        "overall_verdict": overall,
         "note": (
             "This is a read-only chain conformance check. Even if signature and settlement "
             "pass, the test-key identity mismatch and unavailable original response body "
@@ -102,7 +116,7 @@ class handler(BaseHTTPRequestHandler):
                     "test_mode": True,
                     "payment_submitted": False,
                     "chain_rpc_called": True,
-                    "chain_test_passed": False,
+                    "signature_and_settlement_passed": False,
                     "overall_verdict": "UNKNOWN",
                     "error_type": type(exc).__name__,
                 },
