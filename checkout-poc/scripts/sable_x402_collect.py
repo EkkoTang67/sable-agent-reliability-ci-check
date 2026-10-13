@@ -258,18 +258,30 @@ def normalize_live_case(*, tx_hash: str, slug: str, expected_amount: str, recipi
             settled_status = "success" if status_text in {"ok", "success", "confirmed"} else ("reverted" if status_text in {"error", "reverted", "failed"} else str(status or "unknown"))
             settlement = {"transaction_hash": chain_hash, "status": settled_status, "network": network, "recipient": recipient_of(transfer), "amount": amount, "asset": token.get("symbol"), "asset_contract": token_contract_of(transfer), "source_url": chain_data.get("source_url") or f"{BASE}/transactions/{tx_hash}", "independent_source": bool(chain_data.get("independent_source", True))}
     service = None
-    if service_data is not None:
-        latest = service_data.get("latest") if isinstance(service_data, dict) else None
-        if isinstance(latest, dict) and get_hash(latest) and get_hash(latest).lower() == tx_hash.lower():
-            service = latest
-        elif service_record is not None:
-            service = service_record
+    latest = service_data.get("latest") if isinstance(service_data, dict) else None
+    if isinstance(latest, dict) and get_hash(latest) and get_hash(latest).lower() == tx_hash.lower():
+        service = latest
+    elif service_record is not None:
+        service = service_record
+    elif isinstance(latest, dict):
+        # Preserve the latest advertised service metadata as context, but do not
+        # mis-bind it to this historical transaction.
+        service = {
+            "latest_transaction_hash": get_hash(latest),
+            "endpoint": latest.get("endpoint"),
+            "price_usd": latest.get("price_usd"),
+            "valid": latest.get("valid"),
+            "match_score": service_data.get("match_score") if isinstance(service_data, dict) else latest.get("match_score"),
+            "source_url": f"{SNAPSHOT_URL}?slug={urllib.parse.quote(slug)}&n=10",
+            "independent_source": False,
+        }
     if service is not None:
         service_tx = get_hash(service)
         root_valid = service_data.get("valid") if isinstance(service_data, dict) else None
         root_match_score = service_data.get("match_score") if isinstance(service_data, dict) else None
         service = {
             "transaction_hash": service_tx,
+            "latest_transaction_hash": service.get("latest_transaction_hash"),
             "endpoint": service.get("endpoint"),
             "price_usd": service.get("price_usd"),
             "valid": root_valid if isinstance(root_valid, bool) else service.get("valid"),
