@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-from api.aethelforge_delivery_demo import _response_hash_claims, _verify_jws
+from api.aethelforge_delivery_demo import _local_verify_embedded_receipt, _response_hash_claims, _verify_jws
 
 
 def b64url(raw: bytes) -> str:
@@ -65,6 +65,30 @@ class AethelforgeDeliveryDemoTests(unittest.TestCase):
         digest = "c" * 64
         claims = _response_hash_claims({"receipt": {"response": {"body_sha256": digest}}})
         self.assertEqual(claims, [{"path": "$.receipt.response.body_sha256", "value": digest}])
+
+
+    def test_embedded_receipt_signature_verifies_locally_against_published_jwk(self):
+        private_key = Ed25519PrivateKey.generate()
+        public_raw = private_key.public_key().public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        )
+        payload = {"id": "sample-1", "type": "x402.receipt", "resource": "demo"}
+        message = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        receipt = {
+            "alg": "EdDSA",
+            "kid": "aethelforge-test",
+            "payload": payload,
+            "signature": b64url(private_key.sign(message)),
+        }
+        jwks = {"keys": [{
+            "kty": "OKP", "crv": "Ed25519", "alg": "EdDSA", "use": "sig",
+            "kid": "aethelforge-test", "x": b64url(public_raw),
+        }]}
+        result = _local_verify_embedded_receipt(receipt, jwks)
+        self.assertEqual(result["verdict"], "VERIFIED")
+        self.assertTrue(result["independent_verification"])
+        self.assertIn("compact_json_payload_insertion_order", result["matching_serializations"])
 
 
 if __name__ == "__main__":
