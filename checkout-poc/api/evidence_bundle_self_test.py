@@ -10,13 +10,48 @@ from eth_account import Account
 from eth_account.messages import encode_typed_data
 
 from api.common import json_response, method_not_allowed, origin_is_allowed
-from api.evidence_bundle_audit import V03_TYPES, _typed_receipt, audit_bundle
+from api.evidence_bundle_audit import V03_TYPES, _typed_receipt, _verify_seller_signature, audit_bundle
 
 TX = "0x" + "77" * 32
 TOKEN = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"
 URL = "https://synthetic.invalid/v1/result?kind=demo"
 PARAMS = "{}"
 BODY = b'{"status":"complete","value":42}'
+
+# Public conformance fixture from StelarDigital/x402-receipts vectors/pass-settled-delivered.json.
+# This vector uses a vector-only seller key by design; the expected signer intentionally
+# differs from payment.payee. Only its signature is checked here, not its body or settlement.
+VECTOR_SELLER = "0xC49Adc1ef48fC1D237d55379Fef7F3142cE22468"
+VECTOR_RECEIPT = {
+    "scheme": "x402-receipts/v0",
+    "payment": {
+        "chain_id": 8453,
+        "tx_hash": "0xdeb5872c039a88ae37b66ae490c0c8da9b6a4c652d84494ddcc9a05211d6cc80",
+        "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "asset_address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+        "amount": "5000",
+        "payer": "0xe61Bd34fcEdF14E0b41B582166eed69E3a6deF89",
+        "payee": "0x32d711C66dD1AD0c42D0cFe48e58ee5f2dE7c243",
+    },
+    "request": {
+        "method": "GET",
+        "url_hash": "84d14f74996f93224e9e9db28ff4a39b5cc45b443486a3bb2c5bf0f3546ab7d8",
+        "params_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "ts": "2026-07-11T21:03:55Z",
+        "payment_requirements_sha256": "40f3423d4e602c7324d45d51cd273fb238266ee08fef7d9ace34132a7a9b5a2c",
+    },
+    "response": {
+        "status": 200,
+        "body_sha256": "5545e4424324ee42fd5b739544f462a47b81f122b02ec859af986e9316fadee4",
+        "content_type": "application/json",
+        "ts": "2026-07-11T21:03:55Z",
+        "latency_ms": 296,
+    },
+    "seller": {
+        "erc8004_agent_id": "erc8004:8453:0x32d711C66dD1AD0c42D0cFe48e58ee5f2dE7c243",
+        "sig": "0xcb4387fd51ca75996b20430239086803a8e88de8fa378acbfb95b2a384ffbe240e592d8d724fa9f5935465b791aa57fcb16563f25fe7e450adc2d6e512a2a73c1b",
+    },
+}
 
 
 def _digest(value: bytes) -> str:
@@ -57,7 +92,8 @@ def _make_receipt():
     domain, message, _primary_type = _typed_receipt(receipt, True)
     signable = encode_typed_data(domain_data=domain, message_types=V03_TYPES, message_data=message)
     signed = Account.sign_message(signable, private_key=seller.key)
-    receipt["seller"]["sig"] = signed.signature.hex()
+    signature_hex = signed.signature.hex()
+    receipt["seller"]["sig"] = signature_hex if signature_hex.startswith("0x") else "0x" + signature_hex
     return receipt, seller
 
 
@@ -106,6 +142,14 @@ def _run_tests() -> dict[str, Any]:
         "request_detail": good["components"]["request_binding"],
         "body_detail": good["components"]["response_body_integrity"],
         "settlement_detail": good["components"]["on_chain_settlement"],
+    })
+
+    vector_result = _verify_seller_signature(VECTOR_RECEIPT, VECTOR_SELLER)
+    tests.append({
+        "name": "upstream public x402-receipts v0.3 signature conformance vector",
+        "expected": "VERIFIED",
+        "actual": vector_result["verdict"],
+        "signature_detail": vector_result,
     })
 
     tampered = audit_bundle(_bundle(receipt, seller, BODY + b"tampered"), chain_loader=lambda tx: _evidence_for(receipt))
