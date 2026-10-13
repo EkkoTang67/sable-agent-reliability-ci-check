@@ -153,11 +153,41 @@ def _request_json(url: str, *, method: str, headers: dict[str, str], body: bytes
                 raise CheckoutError(502, "PROVIDER_RESPONSE_INVALID", "Payment provider returned an unexpected response shape.")
             return value
     except urllib.error.HTTPError as exc:
+        # Show only allow-listed PayPal diagnostic fields; never return raw provider
+        # bodies or credential material to the browser.
+        raw_error = ""
         try:
-            exc.read(1200).decode("utf-8", errors="replace")
+            raw_error = exc.read(1200).decode("utf-8", errors="replace")
         except Exception:
             pass
-        raise CheckoutError(502, "PAYPAL_API_ERROR", f"Payment provider rejected the request (HTTP {exc.code}).") from exc
+        safe_name = ""
+        safe_issue = ""
+        safe_debug_id = ""
+        try:
+            error_doc = json.loads(raw_error) if raw_error else {}
+            if isinstance(error_doc, dict):
+                candidate = error_doc.get("name") or error_doc.get("error") or ""
+                if isinstance(candidate, str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", candidate):
+                    safe_name = candidate
+                details = error_doc.get("details")
+                if isinstance(details, list) and details and isinstance(details[0], dict):
+                    issue = details[0].get("issue", "")
+                    if isinstance(issue, str) and re.fullmatch(r"[A-Za-z0-9_.-]{1,80}", issue):
+                        safe_issue = issue
+                debug_id = error_doc.get("debug_id", "")
+                if isinstance(debug_id, str) and re.fullmatch(r"[A-Za-z0-9_-]{1,80}", debug_id):
+                    safe_debug_id = debug_id
+        except (json.JSONDecodeError, TypeError, ValueError):
+            pass
+        if url.endswith("/v1/oauth2/token"):
+            stage = "PayPal Sandbox authentication"
+        else:
+            stage = "PayPal order API"
+        suffix = f", {safe_name}" if safe_name else ""
+        suffix += f", issue={safe_issue}" if safe_issue else ""
+        suffix += f", debug_id={safe_debug_id}" if safe_debug_id else ""
+        advice = " Verify the Client ID and Secret are from the same Sandbox app." if exc.code in {400, 401, 403} else ""
+        raise CheckoutError(502, "PAYPAL_API_ERROR", f"{stage} rejected the request (HTTP {exc.code}{suffix}).{advice}") from exc
     except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
         raise CheckoutError(502, "PAYPAL_API_UNAVAILABLE", f"Payment provider request failed: {type(exc).__name__}") from exc
 
