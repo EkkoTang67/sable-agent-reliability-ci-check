@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import base64
+import copy
 import hashlib
 from http.server import BaseHTTPRequestHandler
 from typing import Any
@@ -58,6 +59,15 @@ def _digest(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def _sign_receipt(receipt: dict[str, Any], seller: Any) -> dict[str, Any]:
+    domain, message, _primary_type = _typed_receipt(receipt, True)
+    signable = encode_typed_data(domain_data=domain, message_types=V03_TYPES, message_data=message)
+    signed = Account.sign_message(signable, private_key=seller.key)
+    signature_hex = signed.signature.hex()
+    receipt["seller"]["sig"] = signature_hex if signature_hex.startswith("0x") else "0x" + signature_hex
+    return receipt
+
+
 def _make_receipt():
     seller = Account.create()
     buyer = Account.create()
@@ -89,12 +99,7 @@ def _make_receipt():
         "buyer": {"countersig": None},
         "delivery": {"status": "delivered"},
     }
-    domain, message, _primary_type = _typed_receipt(receipt, True)
-    signable = encode_typed_data(domain_data=domain, message_types=V03_TYPES, message_data=message)
-    signed = Account.sign_message(signable, private_key=seller.key)
-    signature_hex = signed.signature.hex()
-    receipt["seller"]["sig"] = signature_hex if signature_hex.startswith("0x") else "0x" + signature_hex
-    return receipt, seller
+    return _sign_receipt(receipt, seller), seller
 
 
 def _evidence_for(receipt: dict[str, Any], *, amount: str | None = None, status: str = "success", confirmations: int = 4):
@@ -132,17 +137,26 @@ def _run_tests() -> dict[str, Any]:
     tests = []
     receipt, seller = _make_receipt()
 
-    good = audit_bundle(_bundle(receipt, seller), chain_loader=lambda tx: _evidence_for(receipt))
-    tests.append({
-        "name": "valid EIP-712 seller signature + exact body + exact request + matching settlement",
-        "expected": "VERIFIED",
-        "actual": good["overall_verdict"],
-        "component_results": {key: value["verdict"] for key, value in good["components"].items()},
-        "signature_detail": good["components"]["seller_signature"],
-        "request_detail": good["components"]["request_binding"],
-        "body_detail": good["components"]["response_body_integrity"],
-        "settlement_detail": good["components"]["on_chain_settlement"],
-    })
+    def run_case(name, expected, bundle, loader):
+        result = audit_bundle(bundle, chain_loader=loader)
+        tests.append({
+            "name": name,
+            "expected": expected,
+            "actual": result["overall_verdict"],
+            "component_results": {key: value["verdict"] for key, value in result["components"].items()},
+        })
+        return result
+
+    good = run_case(
+        "valid EIP-712 seller signature + exact body + exact request + matching settlement",
+        "VERIFIED",
+        _bundle(receipt, seller),
+        lambda tx: _evidence_for(receipt),
+    )
+    tests[-1]["signature_detail"] = good["components"]["seller_signature"]
+    tests[-1]["request_detail"] = good["components"]["request_binding"]
+    tests[-1]["body_detail"] = good["components"]["response_body_integrity"]
+    tests[-1]["settlement_detail"] = good["components"]["on_chain_settlement"]
 
     vector_result = _verify_seller_signature(VECTOR_RECEIPT, VECTOR_SELLER)
     tests.append({
@@ -175,6 +189,68 @@ def _run_tests() -> dict[str, Any]:
         "name": "wrong expected transaction hash",
         "expected": "NOT_VERIFIED",
         "actual": tx_result["overall_verdict"],
+    })
+
+    bad_signature_receipt = copy.deepcopy(receipt)
+    signature = bad_signature_receipt["seller"]["sig"]
+    final_nibble = "0" if signature[-1] != "0" else "1"
+    bad_signature_receipt["seller"]["sig"] = signature[:-1] + final_nibble
+    bad_signature_result = audit_bundle(
+        _bundle(bad_signature_receipt, seller),
+        chain_loader=lambda tx: _evidence_for(bad_signature_receipt),
+    )
+    tests.append({
+        "name": "tampered EIP-712 signature",
+        "expected": "NOT_VERIFIED",
+        "actual": bad_signature_result["overall_verdict"],
+        "component_results": {key: value["verdict"] for key, value in bad_signature_result["components"].items()},
+    })
+
+    wrong_amount_result = audit_bundle(
+        _bundle(receipt, seller),
+        chain_loader=lambda tx: _evidence_for(receipt, amount="49999"),
+    )
+    tests.append({
+        "name": "authoritative transfer amount differs from signed receipt",
+        "expected": "NOT_VERIFIED",
+        "actual": wrong_amount_result["overall_verdict"],
+        "settlement_detail": wrong_amount_result["components"]["on_chain_settlement"],
+    })
+
+    failed_tx_result = audit_bundle(
+        _bundle(receipt, seller),
+        chain_loader=lambda tx: _evidence_for(receipt, status="reverted"),
+    )
+    tests.append({
+        "name": "authoritative chain transaction is reverted",
+        "expected": "NOT_VERIFIED",
+        "actual": failed_tx_result["overall_verdict"],
+        "settlement_detail": failed_tx_result["components"]["on_chain_settlement"],
+    })
+
+    shallow_result = audit_bundle(
+        _bundle(receipt, seller),
+        chain_loader=lambda tx: _evidence_for(receipt, confirmations=1),
+    )
+    tests.append({
+        "name": "matching transfer has fewer than two confirmations",
+        "expected": "UNKNOWN",
+        "actual": shallow_result["overall_verdict"],
+        "settlement_detail": shallow_result["components"]["on_chain_settlement"],
+    })
+
+    mismatched_payee_receipt = copy.deepcopy(receipt)
+    mismatched_payee_receipt["payment"]["payee"] = Account.create().address
+    _sign_receipt(mismatched_payee_receipt, seller)
+    mismatched_payee_result = audit_bundle(
+        _bundle(mismatched_payee_receipt, seller),
+        chain_loader=lambda tx: _evidence_for(mismatched_payee_receipt),
+    )
+    tests.append({
+        "name": "valid receipt signature but recovered signer differs from payment.payee",
+        "expected": "NOT_VERIFIED",
+        "actual": mismatched_payee_result["overall_verdict"],
+        "component_results": {key: value["verdict"] for key, value in mismatched_payee_result["components"].items()},
     })
 
     def unavailable(_tx):
