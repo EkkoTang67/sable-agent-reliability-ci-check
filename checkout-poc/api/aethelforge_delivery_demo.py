@@ -105,6 +105,8 @@ def _response_hash_claims(value: Any, prefix: str = "$") -> list[dict[str, str]]
     names = {
         "body_sha256", "bodySha256", "body_hash", "bodyHash",
         "response_sha256", "responseSha256", "response_hash", "responseHash",
+        "response_body_sha256", "responseBodySha256", "content_sha256", "contentSha256",
+        "content_hash", "contentHash", "sha256",
     }
     found: list[dict[str, str]] = []
     if isinstance(value, dict):
@@ -214,6 +216,7 @@ def audit_demo() -> dict[str, Any]:
         "raw_response_base64": base64.b64encode(raw_body).decode("ascii"),
         "raw_response_utf8": body_text,
         "receipt_transport": receipt_header,
+        "receipt_jws": jws,
         "receipt_signature": signature_result,
         "body_binding": body_verdict,
         "settlement": {
@@ -222,7 +225,13 @@ def audit_demo() -> dict[str, Any]:
             "payment_submitted": False,
             "chain_transaction_hash": None,
         },
-        "overall_verdict": "VERIFIED" if signature_result.get("verdict") == "VERIFIED" and body_verdict.get("verdict") == "VERIFIED" else "UNKNOWN",
+        # Overall intentionally remains UNKNOWN because this demo token is not a settlement proof.
+        "signed_content_binding_verdict": (
+            "VERIFIED" if signature_result.get("verdict") == "VERIFIED" and body_verdict.get("verdict") == "VERIFIED"
+            else "NOT_VERIFIED" if signature_result.get("verdict") == "NOT_VERIFIED" or body_verdict.get("verdict") == "NOT_VERIFIED"
+            else "UNKNOWN"
+        ),
+        "overall_verdict": "UNKNOWN",
         "limitations": [
             "This is an external demo-format check, not an x402 paid request or a real settlement proof.",
             "A valid site-published key establishes signature authenticity relative to that site, not independent truth of the receipt's claims.",
