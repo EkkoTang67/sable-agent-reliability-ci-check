@@ -62,6 +62,125 @@ def _fetch(url: str, *, authorization: str | None = None) -> tuple[int, dict[str
         return response.status, {k.lower(): v for k, v in response.headers.items()}, raw, final_url
 
 
+def _post_json(url: str, payload: dict[str, Any]) -> tuple[int, Any]:
+    """POST only a bounded JSON-RPC verification request to the fixed public MCP host."""
+    encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=encoded,
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "User-Agent": "SABLE-read-only-receipt-demo/0.1",
+        },
+        method="POST",
+    )
+    opener = urllib.request.build_opener(_NoRedirect)
+    try:
+        response = opener.open(request, timeout=TIMEOUT_SECONDS)
+    except urllib.error.HTTPError as exc:
+        raw = exc.read(MAX_RESPONSE_BYTES + 1)
+        if len(raw) > MAX_RESPONSE_BYTES:
+            raise ValueError("MCP verifier response exceeded the 64 KB safety limit")
+        try:
+            value = json.loads(raw.decode("utf-8"))
+        except Exception:
+            value = {"unparsed": True}
+        return exc.code, value
+    with response:
+        if urlsplit(response.geturl()).hostname != "aethelforge.ai":
+            raise ValueError("MCP verifier redirected to a different host")
+        raw = response.read(MAX_RESPONSE_BYTES + 1)
+        if len(raw) > MAX_RESPONSE_BYTES:
+            raise ValueError("MCP verifier response exceeded the 64 KB safety limit")
+        return response.status, json.loads(raw.decode("utf-8"))
+
+
+def _find_verifier_result(value: Any) -> bool | None:
+    """Extract the issuer's explicit valid flag from a JSON-RPC/MCP tool response."""
+    if isinstance(value, dict):
+        if isinstance(value.get("valid"), bool):
+            return value["valid"]
+        if value.get("isError") is True:
+            return False
+        structured = value.get("structuredContent")
+        found = _find_verifier_result(structured) if structured is not None else None
+        if found is not None:
+            return found
+        content = value.get("content")
+        found = _find_verifier_result(content) if content is not None else None
+        if found is not None:
+            return found
+        for nested in value.values():
+            if isinstance(nested, str) and nested.strip().startswith("{"):
+                try:
+                    found = _find_verifier_result(json.loads(nested))
+                except Exception:
+                    found = None
+                if found is not None:
+                    return found
+            elif isinstance(nested, (dict, list)):
+                found = _find_verifier_result(nested)
+                if found is not None:
+                    return found
+    elif isinstance(value, list):
+        for nested in value:
+            found = _find_verifier_result(nested)
+            if found is not None:
+                return found
+    return None
+
+
+def _verify_embedded_receipt(receipt: Any, jwks: Any, key_status: int) -> dict[str, Any]:
+    """Use the issuer's public verify_receipt tool for its non-JWS receipt envelope."""
+    if not isinstance(receipt, dict) or not isinstance(receipt.get("payload"), dict):
+        return {"verdict": "NOT_VERIFIED", "reason": "Response receipt is not an object with a payload."}
+    if receipt.get("alg") != "EdDSA" or not isinstance(receipt.get("kid"), str) or not isinstance(receipt.get("signature"), str):
+        return {"verdict": "NOT_VERIFIED", "reason": "Embedded receipt is missing EdDSA algorithm, key ID, or signature."}
+    if key_status != 200 or not isinstance(jwks, dict):
+        return {"verdict": "UNKNOWN", "reason": f"Published JWKS unavailable or invalid (HTTP {key_status})."}
+    keys = jwks.get("keys")
+    matches = [item for item in keys if isinstance(item, dict) and item.get("kid") == receipt.get("kid")] if isinstance(keys, list) else []
+    if len(matches) != 1:
+        return {"verdict": "NOT_VERIFIED", "reason": "Receipt kid did not match exactly one published JWK.", "matching_jwk_count": len(matches)}
+    # The published site exposes its own verification tool for this envelope. Record
+    # that this is an issuer-side check, not an independent signature implementation.
+    status, verifier_response = _post_json(
+        "https://aethelforge.ai/mcp",
+        {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "tools/call",
+            "params": {
+                "name": "verify_receipt",
+                "arguments": {"receipt": receipt},
+            },
+        },
+    )
+    valid = _find_verifier_result(verifier_response)
+    if status != 200 or valid is None:
+        return {
+            "verdict": "UNKNOWN",
+            "reason": "The publisher verifier did not return a recognized boolean verification result.",
+            "issuer_verifier_http_status": status,
+            "issuer_verifier_shape": sorted(verifier_response.keys()) if isinstance(verifier_response, dict) else type(verifier_response).__name__,
+            "verification_source": "Aethelforge public MCP verify_receipt tool",
+            "independent_verification": False,
+            "payload": receipt.get("payload"),
+            "kid": receipt.get("kid"),
+        }
+    return {
+        "verdict": "VERIFIED" if valid else "NOT_VERIFIED",
+        "reason": "Aethelforge's public verify_receipt tool accepted the receipt." if valid else "Aethelforge's public verify_receipt tool rejected the receipt.",
+        "verification_source": "Aethelforge public MCP verify_receipt tool",
+        "independent_verification": False,
+        "issuer_verifier_http_status": status,
+        "published_key_id_match": True,
+        "protected_header": {"alg": receipt.get("alg"), "kid": receipt.get("kid")},
+        "payload": receipt.get("payload"),
+    }
+
+
 def _b64url_decode(value: str) -> bytes:
     if not isinstance(value, str) or not value or any(c not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=" for c in value):
         raise ValueError("invalid base64url field")
@@ -185,24 +304,30 @@ def audit_demo() -> dict[str, Any]:
 
     body_sha = hashlib.sha256(raw_body).hexdigest()
     receipt_header, jws = _find_compact_jws(headers, body_obj)
+    embedded_receipt = body_obj.get("receipt") if isinstance(body_obj, dict) and isinstance(body_obj.get("receipt"), dict) else None
     if status != 200:
         signature_result = {"verdict": "UNKNOWN", "reason": f"The public demo endpoint returned HTTP {status}, not 200."}
-    elif jws is None:
-        signature_result = {"verdict": "UNKNOWN", "reason": "The successful demo response did not expose a compact JWS receipt in a recognized response header or top-level JSON field."}
-    elif key_status != 200 or jwks is None:
+    elif jws is not None and (key_status != 200 or jwks is None):
         signature_result = {"verdict": "UNKNOWN", "reason": f"The demo's public JWKS was unavailable or invalid (HTTP {key_status})."}
-    else:
+    elif jws is not None:
         signature_result = _verify_jws(jws, jwks)
+    elif embedded_receipt is not None:
+        receipt_header = "body.receipt"
+        signature_result = _verify_embedded_receipt(embedded_receipt, jwks, key_status)
+    else:
+        signature_result = {"verdict": "UNKNOWN", "reason": "The successful demo response did not expose a recognized signed receipt."}
 
     claims = signature_result.get("payload") if isinstance(signature_result.get("payload"), dict) else {}
     hash_claims = _response_hash_claims(claims)
     matching_hash_claims = [claim for claim in hash_claims if claim["value"].lower().removeprefix("sha256:") == body_sha]
     if signature_result.get("verdict") == "VERIFIED" and matching_hash_claims:
-        body_verdict = {"verdict": "VERIFIED", "reason": "At least one hash claim inside the valid signed receipt equals SHA-256 of the exact raw HTTP response body.", "actual_body_sha256": body_sha, "matching_claims": matching_hash_claims}
+        body_verdict = {"verdict": "VERIFIED", "reason": "At least one hash claim inside the verified receipt equals SHA-256 of the exact raw HTTP response body.", "actual_body_sha256": body_sha, "matching_claims": matching_hash_claims}
     elif signature_result.get("verdict") == "VERIFIED" and hash_claims:
-        body_verdict = {"verdict": "NOT_VERIFIED", "reason": "The signed receipt contains response hash claims, but none match SHA-256 of the exact raw HTTP response body.", "actual_body_sha256": body_sha, "declared_hash_claims": hash_claims}
+        body_verdict = {"verdict": "NOT_VERIFIED", "reason": "The verified receipt contains response hash claims, but none match SHA-256 of the exact raw HTTP response body.", "actual_body_sha256": body_sha, "declared_hash_claims": hash_claims}
+    elif signature_result.get("verdict") == "VERIFIED" and not hash_claims:
+        body_verdict = {"verdict": "NOT_VERIFIED", "reason": "The receipt signature is valid, but its signed payload contains no recognized response-body digest; it does not bind the full HTTP response bytes.", "actual_body_sha256": body_sha, "declared_hash_claims": []}
     else:
-        body_verdict = {"verdict": "UNKNOWN", "reason": "A trusted, recognizable response-body digest claim was not available to compare against the exact raw bytes.", "actual_body_sha256": body_sha, "declared_hash_claims": hash_claims}
+        body_verdict = {"verdict": "UNKNOWN", "reason": "A trusted receipt or recognized response-body digest claim was not available to compare against the exact raw bytes.", "actual_body_sha256": body_sha, "declared_hash_claims": hash_claims}
 
     # Aethelforge explicitly describes this fixed bearer token as a demo substitute for
     # identity/mandate/access policy, not an x402 payment. Never infer a chain settlement.
