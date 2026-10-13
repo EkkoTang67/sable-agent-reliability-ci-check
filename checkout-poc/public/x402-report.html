@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>SABLE — x402 Evidence Report</title>
+<style>
+:root{color-scheme:dark;--bg:#080b10;--panel:#111722;--line:#283142;--fg:#f4f7fb;--muted:#aab6c8;--good:#9fddb8;--warn:#ffd58d;--bad:#ffb1b1}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#13233b 0%,var(--bg) 60%);color:var(--fg);font:16px/1.55 system-ui,sans-serif}main{max-width:800px;margin:auto;padding:32px 18px 72px}h1{font-size:clamp(34px,7vw,58px);line-height:1.03;margin:.6em 0}.muted{color:var(--muted);font-size:14px}.panel{background:#111722;border:1px solid var(--line);border-radius:18px;padding:22px;margin:18px 0}.price{font-size:40px;font-weight:850}.field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.field input{width:100%;background:#090e16;color:var(--fg);border:1px solid #39475c;border-radius:9px;padding:12px;font:inherit}button{border:0;border-radius:10px;padding:12px 16px;background:#e9eef7;color:#101620;font:inherit;font-weight:750;cursor:pointer}#status{white-space:pre-wrap;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px;background:#0b111a}#status[data-kind=warn]{color:var(--warn)}#status[data-kind=error]{color:var(--bad)}a{color:#d4e4ff}footer{color:var(--muted);font-size:13px}
+</style></head><body><main>
+<p class="muted">SABLE · PAYMENT → SERVICE RECORD → OUTCOME</p>
+<h1>Get a public x402 evidence report.</h1>
+<p>The software checks one Base transaction against public settlement, service-metadata, and block-explorer evidence, then returns a downloadable JSON report. Payment buys the report, not a positive verdict.</p>
+<section class="panel"><div class="muted">AUTOMATED SOFTWARE REPORT · FIXED EXPERIMENTAL PRICE</div><div class="price">$9.00 USD</div><p class="muted">Sandbox transactions use fake funds and are not revenue. Live checkout is disabled for this prototype. Do not enter private keys or secrets.</p></section>
+<section class="panel"><h2>Evidence inputs</h2><form id="case-form">
+<div class="field"><label for="transaction_hash">Base transaction hash</label><input id="transaction_hash" required pattern="0x[0-9a-fA-F]{64}" maxlength="66" value="0x77bd390b27324e279ee1e227ccb58386135a2c68fe135e46c2608f34877b4526"></div>
+<div class="field"><label for="slug">Service slug</label><input id="slug" required pattern="[a-z0-9][a-z0-9-]{0,63}" maxlength="64" value="feeds"></div>
+<div class="field"><label for="expected_amount">Expected native USDC amount</label><input id="expected_amount" required inputmode="decimal" pattern="[0-9]+(\.[0-9]+)?" value="0.05"></div>
+<div class="field"><label for="recipient">Expected recipient address</label><input id="recipient" required pattern="0x[0-9a-fA-F]{40}" maxlength="42" value="0x367F1b3D8Ca90D1e087481a9A40d585Bf3451a03"></div>
+<div class="field"><label for="endpoint">Expected paid endpoint path</label><input id="endpoint" required maxlength="190" value="/feeds/api/query"></div>
+<button type="submit">Validate inputs</button></form>
+<div id="status" role="status" aria-live="polite">Checking checkout configuration…</div><div id="paypal-buttons"></div>
+</section>
+<section class="panel"><h2>What this can prove</h2><p>Settlement and service metadata are separate evidence components. Actual delivery is VERIFIED only with a transaction-bound authoritative receipt or downstream readback. Missing evidence remains UNKNOWN.</p></section>
+<footer><p><a href="/terms.html">Terms</a> · <a href="/refunds.html">Refund policy</a> · <a href="/privacy.html">Privacy</a> · <a href="mailto:sable-verification@agentmail.to?subject=SABLE%20report%20support">Support</a></p><p>Policy pages are templates for this sandbox prototype and are not approved for live sales.</p></footer>
+</main>
+<script>
+(() => {
+const statusEl=document.getElementById('status'), form=document.getElementById('case-form'), btns=document.getElementById('paypal-buttons');
+const setStatus=(text,kind='')=>{statusEl.textContent=text;statusEl.dataset.kind=kind};
+const getCase=()=>({transaction_hash:document.getElementById('transaction_hash').value.trim(),slug:document.getElementById('slug').value.trim().toLowerCase(),expected_amount:document.getElementById('expected_amount').value.trim(),recipient:document.getElementById('recipient').value.trim(),asset:'USDC',endpoint:document.getElementById('endpoint').value.trim(),network:'eip155:8453'});
+async function post(path,data){const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',body:JSON.stringify(data)});const p=await r.json().catch(()=>({}));if(!r.ok)throw new Error(p.message||p.error||('HTTP '+r.status));return p}
+function deliver(payload){const report=payload.report;const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(report.case_id||'sable-report')+'.json';a.click();URL.revokeObjectURL(url);const c=report.components||{};setStatus('Report delivered: '+report.overall_verdict+'\nSettlement: '+(c.settlement?.verdict||'UNKNOWN')+'\nService metadata: '+(c.service_binding?.verdict||'UNKNOWN')+'\nDelivery: '+(c.delivery?.verdict||'UNKNOWN')+'\nA positive verdict is not promised.','warn')}
+form.addEventListener('submit',e=>{e.preventDefault();if(form.reportValidity())setStatus('Inputs are syntactically valid. Payment starts only after checkout is configured and a buyer approves the order.')});
+async function init(){try{const r=await fetch('/api/paypal/config',{cache:'no-store',credentials:'same-origin'}),c=await r.json();if(!r.ok||!c.enabled){setStatus('Checkout is disabled. Configuration gate: '+(c.reason||('HTTP '+r.status))+'. No payment can be taken by this deployment.','warn');return}
+setStatus(c.mode==='sandbox'?'PayPal Sandbox is configured. Sandbox activity is not revenue.':'Live mode unexpectedly enabled; stop and review configuration.','warn');
+const s=document.createElement('script'),q=new URLSearchParams({'client-id':c.client_id,currency:c.currency,intent:'capture',components:'buttons'});s.src='https://www.paypal.com/sdk/js?'+q.toString();
+s.onload=()=>{if(!window.paypal?.Buttons){setStatus('PayPal SDK did not load; checkout unavailable.','error');return}
+window.paypal.Buttons({style:{layout:'vertical',shape:'rect',label:'paypal'},createOrder:async()=>{if(!form.reportValidity())throw new Error('Complete all valid inputs first.');return (await post('/api/paypal/create_order',getCase())).orderID},onApprove:async d=>{try{const p=await post('/api/paypal/capture_order',{orderID:d.orderID,case:getCase()});deliver(p)}catch(err){setStatus('Payment/report status needs reconciliation: '+err.message+'. Do not pay again; keep the PayPal order reference: '+d.orderID,'error')}},onCancel:()=>setStatus('Checkout cancelled; no report delivered.','warn'),onError:()=>setStatus('Checkout error. Confirm existing order status before retrying; do not assume payment completed.','error')}).render('#paypal-buttons').catch(()=>setStatus('PayPal buttons could not be rendered.','error'))};
+s.onerror=()=>setStatus('PayPal SDK could not be loaded.','error');document.head.appendChild(s)
+}catch(e){setStatus('Could not load checkout configuration. No payment can be taken.','error')}}
+init();
+})();
+</script></body></html>
