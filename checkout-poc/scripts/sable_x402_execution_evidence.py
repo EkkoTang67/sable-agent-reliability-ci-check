@@ -174,6 +174,23 @@ def verify_execution_evidence(
     if str(payment.get("amount", "")) != expected_raw_amount:
         return _result("NOT_VERIFIED", "Receipt atomic amount does not match the expected token amount.", scope="payment_binding", expected_atomic_amount=expected_raw_amount, receipt_atomic_amount=payment.get("amount"))
 
+    method = request.get("method")
+    if not isinstance(method, str) or not method:
+        return _result("NOT_VERIFIED", "Receipt request.method is missing.", scope="receipt_structure")
+    for field in ("urlHash", "payloadHash"):
+        digest_value = request.get(field)
+        if not isinstance(digest_value, str) or not SHA256_RE.fullmatch(digest_value):
+            return _result("NOT_VERIFIED", f"Receipt request.{field} must have the form sha256:<64 lowercase hex characters>.", scope="receipt_structure")
+    nonce = request.get("clientNonce")
+    if not isinstance(nonce, str) or not 8 <= len(nonce) <= 64:
+        return _result("NOT_VERIFIED", "Receipt request.clientNonce must be a string of 8 to 64 characters.", scope="receipt_structure")
+    content_type = delivery.get("contentType")
+    if not isinstance(content_type, str) or not content_type:
+        return _result("NOT_VERIFIED", "Receipt delivery.contentType is missing.", scope="receipt_structure")
+    latency = delivery.get("latencyMs")
+    if not isinstance(latency, (int, float)) or isinstance(latency, bool) or latency < 0:
+        return _result("NOT_VERIFIED", "Receipt delivery.latencyMs must be a non-negative number.", scope="receipt_structure")
+
     status_code = delivery.get("statusCode")
     if not isinstance(status_code, int) or isinstance(status_code, bool) or status_code < 200 or status_code >= 300:
         return _result("NOT_VERIFIED", "Signed delivery status is not a successful 2xx HTTP response.", scope="delivery_claim", status_code=status_code)
