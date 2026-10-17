@@ -1,6 +1,7 @@
 # Feedback-to-Cash Loop v1.0
 
 Status: ACTIVE — minimum viable operating rule  
+Evidence quality is assessed with [Claim Confidence & Evidence Weighting v1.0](../decision-quality/CLAIM_CONFIDENCE_AND_EVIDENCE_WEIGHTING_V1.md).
 Budget: 0  
 System of record: GitHub Issues + this repository's version history  
 Purpose: convert real usage evidence into product, distribution, and payment decisions without adding a paid platform.
