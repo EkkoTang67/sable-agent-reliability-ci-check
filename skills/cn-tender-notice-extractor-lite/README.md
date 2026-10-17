@@ -30,7 +30,7 @@ Issues are public. Do not post personal information, account credentials, confid
 
 We use feedback to decide what to fix, what to test next, and whether the deeper decision product solves a real paid need. Installs, compliments, and expressions of interest are not counted as settled revenue.
 
-The operating rules are documented in [Feedback-to-Cash Loop v1.0](../../../docs/feedback/FEEDBACK_TO_CASH_LOOP_V1.md).
+The operating rules are documented in [Feedback-to-Cash Loop v1.0](https://github.com/EkkoTang67/sable-agent-reliability-ci-check/blob/main/docs/feedback/FEEDBACK_TO_CASH_LOOP_V1.md).
 
 ## Related paid product
 For a stricter final opportunity gate with GO/PARK/KILL/UNKNOWN decisions, detailed qualification rules, a JSON output schema, and regression examples, see China Tender Gate on SkillPay. Search for the exact product name in SkillPay. This Lite skill does not trigger purchases automatically.
