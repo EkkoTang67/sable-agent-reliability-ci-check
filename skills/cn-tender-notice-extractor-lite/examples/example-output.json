@@ -1,0 +1,59 @@
+{
+  "source": {
+    "source_type": "user_provided",
+    "url_or_reference": "No official URL supplied; fictional example",
+    "checked_at": "example only",
+    "current_status": "unknown",
+    "conflicts": []
+  },
+  "project": {
+    "name": "Example office furniture procurement (fictional)",
+    "project_id": null,
+    "buyer_or_agency": null,
+    "procurement_agent": null,
+    "budget": "CNY 800,000, user-provided and unverified",
+    "publication_date": null
+  },
+  "deadlines": {
+    "registration_deadline": null,
+    "document_access_deadline": null,
+    "clarification_deadline": null,
+    "bid_deadline": "2026-11-15, user-provided and unverified",
+    "opening_date": null,
+    "other_deadlines": []
+  },
+  "eligibility": [
+    {
+      "requirement": "Bidder must be an eligible registered enterprise legal person",
+      "short_quote": "fictional excerpt says natural persons are not accepted",
+      "section_or_page": "fictional excerpt; no official source",
+      "evidence_status": "user_provided_unverified"
+    }
+  ],
+  "participation_rules": {
+    "consortium_allowed": false,
+    "subcontract_allowed": null,
+    "transfer_allowed": null,
+    "referral_or_commission_terms": null
+  },
+  "costs": {
+    "document_fee": "CNY 300, user-provided and unverified",
+    "bid_bond": null,
+    "performance_bond": null,
+    "other_upfront_costs": []
+  },
+  "commercial_terms": {
+    "delivery_scope": "Office furniture, fictional excerpt",
+    "acceptance": null,
+    "invoice_requirements": "VAT special invoice mentioned in fictional excerpt, not verified",
+    "payment_schedule": null,
+    "warranty_or_retention": null
+  },
+  "unknowns": [
+    "Is there an official original notice and is it current?",
+    "What are the actual acceptance criteria?",
+    "What is the official payment schedule?"
+  ],
+  "next_check": "Locate and inspect the official original notice before any participation decision.",
+  "limitations": "Fictional example. Not a real opportunity or eligibility judgment."
+}
