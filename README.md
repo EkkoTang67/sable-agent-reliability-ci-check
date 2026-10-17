@@ -14,7 +14,7 @@ A success message is not the same as a proven outcome. SABLE binds one exact cla
 
 ## Feedback-to-Cash Loop
 
-We use a zero-budget feedback loop to distinguish attention, installation, verified real-world use, paid intent, and settled revenue. The operating rules are documented in [Feedback-to-Cash Loop v1.0](docs/feedback/FEEDBACK_TO_CASH_LOOP_V1.md). The goal is to make product and distribution decisions from evidence, not to maximize activity metrics.
+We use a zero-budget feedback loop to distinguish attention, installation, verified real-world use, paid intent, and settled revenue. The operating rules are documented in [Feedback-to-Cash Loop v1.0](docs/feedback/FEEDBACK_TO_CASH_LOOP_V1.md). The goal is to make product and distribution decisions from evidence, not to maximize activity metrics. Claim-level evidence strength is scored separately in [Claim Confidence & Evidence Weighting v1.0](docs/decision-quality/CLAIM_CONFIDENCE_AND_EVIDENCE_WEIGHTING_V1.md).
 
 For China Tender Notice Extractor Lite, use [the use-result/product-need form](https://github.com/EkkoTang67/sable-agent-reliability-ci-check/issues/new?template=feedback.yml) or [the error/important-omission form](https://github.com/EkkoTang67/sable-agent-reliability-ci-check/issues/new?template=bug_report.yml). Issues are public: do not post confidential tender documents, credentials, personal data, or customer secrets.
 
