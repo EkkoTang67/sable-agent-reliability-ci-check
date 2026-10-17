@@ -1,0 +1,76 @@
+name: "使用结果与需求反馈"
+description: "反馈真实使用结果、关键缺口或对付费决策产品的需求"
+title: "[反馈] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。**此 Issue 默认公开**，请勿填写个人信息、账号凭证、未公开投标文件、客户机密或其他敏感信息。请优先提供公开的官方公告链接、脱敏片段和可复核事实。提交反馈不代表购买承诺。
+  - type: dropdown
+    id: feedback_type
+    attributes:
+      label: 反馈类型
+      description: 选择最接近这次情况的一项
+      options:
+        - 已用于真实任务
+        - 发现错误或重要遗漏
+        - 输出正确但无法支持下一步决策
+        - 操作或输出难以使用
+        - 需要批量处理或重复工作流
+        - 想了解更完整的准入判断/付费方案
+        - 仅试用，尚无真实需求
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: 你当时要完成什么任务？
+      description: 用一两句话描述实际工作，不需要提供敏感背景。
+      placeholder: "例如：判断一份公开招标公告是否值得继续投入时间核查。"
+    validations:
+      required: true
+  - type: textarea
+    id: actual_result
+    attributes:
+      label: 实际结果是什么？
+      description: 说明哪些结果有用、没用、错误或仍然未知。如果还没核验，请直接写“未核验”。
+      placeholder: "请区分亲自核实的事实与推测。"
+    validations:
+      required: true
+  - type: input
+    id: public_source
+    attributes:
+      label: 公开官方来源链接（可选）
+      description: 只填写可公开访问的来源；不要上传保密文件。
+      placeholder: "https://..."
+    validations:
+      required: false
+  - type: textarea
+    id: missing_decision
+    attributes:
+      label: 还缺什么，才足以支持你的下一步决定？
+      description: 尽量具体；若没有，请写“没有”。
+      placeholder: "例如：需要核实供应商资格条款原文及对应页码。"
+    validations:
+      required: true
+  - type: dropdown
+    id: commercial_signal
+    attributes:
+      label: 你对更完整的决策判断产品的态度
+      description: 这是研究信号，不是购买承诺。
+      options:
+        - 现在没有付费需求
+        - 如果能解决上述缺口，愿意继续了解
+        - 希望先看清楚功能、价格和交付范围
+        - 我是潜在采购/预算负责人，愿意讨论具体范围
+        - 暂时无法判断
+    validations:
+      required: true
+  - type: textarea
+    id: follow_up
+    attributes:
+      label: 可复现步骤或补充信息（可选）
+      description: 不要贴出凭证、私人数据或完整的非公开招标文件。
+      placeholder: "输入类型、技能客户端、可重复的最小示例等。"
+    validations:
+      required: false
