@@ -1,6 +1,7 @@
 ---
 name: cn-tender-notice-extractor-lite
-description: Extract a Chinese procurement or tender notice into a structured, evidence-linked summary of official source, publication/change status, separate deadlines, bidder eligibility, fees/bonds, consortium/subcontract rules, acceptance, invoices, payment schedule, and unresolved fields. Does not issue the final GO/PARK/KILL decision.
+description: >-
+  Use when a user provides a Chinese procurement or tender notice and needs an evidence-linked extraction of official source and update status, separate deadlines, bidder eligibility, upfront fees and bonds, consortium or subcontract restrictions, acceptance, invoicing, payment terms, and unresolved fields. Preserve source references, conflicts, and unknowns; do not issue a final GO/PARK/KILL decision or legal opinion.
 version: 0.1.0
 license: LicenseRef-Limited-Install-and-Use
 language: zh-CN
