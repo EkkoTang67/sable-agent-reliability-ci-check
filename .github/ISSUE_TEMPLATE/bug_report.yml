@@ -1,0 +1,58 @@
+name: "错误或重要遗漏报告"
+description: "报告可复现的错误、漏掉的关键条款或来源核验问题"
+title: "[错误] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **此 Issue 默认公开。** 请勿提交未公开招标文件、客户机密、个人信息或凭证。请使用公开官方公告链接及最小化、脱敏后的示例。不要把尚未核验的推断描述成已确认事实。
+  - type: dropdown
+    id: error_type
+    attributes:
+      label: 错误类型
+      options:
+        - 漏掉资格/准入硬条件
+        - 截止时间混淆或提取错误
+        - 费用、保证金或付款条件错误
+        - 联合体、分包或转让规则错误
+        - 来源/更新/取消状态未正确识别
+        - 输出格式或结构错误
+        - 其他可复现问题
+    validations:
+      required: true
+  - type: input
+    id: official_url
+    attributes:
+      label: 公开官方公告链接
+      description: 若无可公开链接，请说明来源类型，不要上传非公开文件。
+      placeholder: "https://..."
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: 预期结果及依据
+      description: 尽量提供官方原文的短引用和页码/章节；无需整篇复制。
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际输出/问题
+      description: 仅贴出需要定位问题的最小脱敏片段。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 如何复现
+      description: 说明输入类型、步骤、使用的客户端，以及是否能重复出现。
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 发布前确认
+      options:
+        - label: 我确认本 Issue 不包含凭证、个人敏感信息、客户机密或未公开招标文件。
+          required: true
