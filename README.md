@@ -49,6 +49,8 @@ One existing workflow · one written hard constraint · up to 8 regression scena
 
 **[Read the exact scope, limitations and acceptance criteria](docs/buy/AGENT_CONSTRAINT_ACTION_BOUNDARY_CHECK_V1.md)**
 
+**[Preview the 8-case test matrix](docs/buy/AGENT_ACTION_BOUNDARY_TEST_MATRIX_V1.md)**
+
 **[Pay US$99 and start the pilot →](https://paypal.me/tang665/99USD)**
 
 PayPal note: `PRODUCT=AGENT_BOUNDARY_CHECK`. Scope fit and safe test boundary must be confirmed before execution. This offer has no customer purchase or revenue claimed yet.
