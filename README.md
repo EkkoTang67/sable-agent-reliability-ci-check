@@ -41,6 +41,20 @@ This checks the observations in the supplied fixture; it does not independently 
 
 **Your system says it worked. We check the real result.**
 
+### NEW — US$99 Agent Constraint & Action-Boundary Check
+
+For teams whose tool-using agent must obey one critical rule across turns before it can send messages, edit records, or trigger other external actions.
+
+One existing workflow · one written hard constraint · up to 8 regression scenarios · machine-readable results · evidence-linked PASS / FAIL / UNKNOWN report. Uses a buyer-authorized sandbox, mocked side-effect tools, or sanitized traces; no production actions.
+
+**[Read the exact scope, limitations and acceptance criteria](docs/buy/AGENT_CONSTRAINT_ACTION_BOUNDARY_CHECK_V1.md)**
+
+**[Pay US$99 and start the pilot →](https://paypal.me/tang665/99USD)**
+
+PayPal note: `PRODUCT=AGENT_BOUNDARY_CHECK`. Scope fit and safe test boundary must be confirmed before execution. This offer has no customer purchase or revenue claimed yet.
+
+---
+
 ### US$99 — Micro Closure
 
 One claim · one workflow · one authorized boundary · one bounded check · one evidence receipt.
