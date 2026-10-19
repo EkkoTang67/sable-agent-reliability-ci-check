@@ -55,3 +55,8 @@ Payment does not itself grant system access or authorize any action. Scope and t
 ## Evidence status
 
 This is a new paid pilot offer. No customer purchase, customer case study, or revenue from this offer is claimed. The first validation target is a real buyer willing to pay for this defined scope.
+
+
+## Public test matrix
+
+The eight candidate failure-mode tests and evidence required for each are listed in the [Agent Action-Boundary Regression Matrix](AGENT_ACTION_BOUNDARY_TEST_MATRIX_V1.md). It is a test plan, not a test result. Public issue reports inform the test design but are not represented as customer findings or proof of a current vulnerability in every framework/version.
