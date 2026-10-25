@@ -63,9 +63,11 @@ One claim · one workflow · one authorized boundary · one bounded check · one
 
 Use it for a narrow acceptance condition, payment/order/outcome binding, a single entitlement boundary, or another precise claim with a small evidence surface.
 
+**Stripe billing example:** if a payment, subscription, or credit balance must change exactly as intended, see the [Stripe Billing Failure-Path Preflight](docs/buy/STRIPE_BILLING_FAILURE_PATH_PREFLIGHT_V1.md) for the bounded scope, evidence limits, acceptance criteria, and Test-mode-only boundary.
+
 **[Pay US$99 and start →](https://paypal.me/tang665/99USD)**
 
-PayPal note: `PRODUCT=MICRO_CLOSURE` + a short claim/reference. No secrets or customer data.
+PayPal note: `PRODUCT=MICRO_CLOSURE` + a short claim/reference. For the Stripe-specific workflow, use `STRIPE_FAILURE_PATH_PREFLIGHT`. No secrets or customer data.
 
 ### US$299 — Decision Closure
 
