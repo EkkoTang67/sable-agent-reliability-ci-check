@@ -34,7 +34,7 @@ class SwarmRuntimeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             infile = root / "in.jsonl"
-            infile.write_text(json.dumps({"candidate_id":"x","mode":"niche_pain","source_url":"https://example.com"})+"\\n", encoding="utf-8")
+            infile.write_text(json.dumps({"candidate_id":"x","mode":"niche_pain","source_url":"https://example.com"})+"\n", encoding="utf-8")
             conn = swarm.connect(root / "state.db")
             try:
                 self.assertEqual(swarm.enqueue_file(conn, infile), 1)
@@ -70,7 +70,7 @@ class SwarmRuntimeTests(unittest.TestCase):
                 "economic_consequence": "repeat rework",
                 "evidence_url": "https://example.com/public-issue",
                 "buyer_action": "none",
-            }) + "\\n", encoding="utf-8")
+            }) + "\n", encoding="utf-8")
             conn = swarm.connect(db)
             try:
                 swarm.initialize(conn, 100)
