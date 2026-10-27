@@ -140,26 +140,34 @@ def screen_record(record: dict[str, Any]) -> dict[str, Any]:
             decision = "READY_FOR_SCOPED_ATTEMPT"
             next_action = "Check duplicate/competition status, estimate effort, then attempt only within a time cap."
     elif mode == "niche_pain":
-        for key in ("payer_role", "pain_statement", "economic_consequence", "evidence_url"):
+        required = ("payer_role", "pain_statement", "economic_consequence", "evidence_url")
+        for key in required:
             if record.get(key):
                 score += 2
             else:
                 reasons.append(f"{key}_missing")
         if record.get("observed_workaround"):
             score += 1
-        if record.get("buyer_action") in {"paid_pilot", "purchase", "budgeted_trial", "signed_commitment"}:
+        complete_pain_case = all(record.get(key) for key in required)
+        has_buyer_action = record.get("buyer_action") in {
+            "paid_pilot", "purchase", "budgeted_trial", "signed_commitment"
+        }
+        if reject:
+            decision = "REJECT"
+            next_action = "Do not spend on this candidate."
+        elif cost_unknown or not record.get("source_url", "").startswith("https://"):
+            decision = "HOLD"
+            next_action = "Verify the source and confirm zero upfront cost before advancing."
+        elif has_buyer_action and complete_pain_case:
             score += 4
             decision = "READY_FOR_PROTOTYPE"
             next_action = "Build the smallest prototype tied to that buyer action; cap time and spend."
-        elif all(record.get(key) for key in ("payer_role", "pain_statement", "economic_consequence", "evidence_url")):
+        elif complete_pain_case:
             decision = "VALIDATE_PAYER"
             next_action = "Seek one observable buyer action, not more generic opinions."
         else:
             decision = "HOLD"
             next_action = "Find primary evidence and identify the actual budget owner."
-        if reject:
-            decision = "REJECT"
-            next_action = "Do not spend on this candidate."
     else:
         decision = "HOLD"
         reasons.append("unknown_mode")
