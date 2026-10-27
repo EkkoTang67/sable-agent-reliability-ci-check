@@ -298,8 +298,25 @@ def run_one(db_path: Path, task_id: str, base_url: str, model: str, api_key: str
         log_event(conn, task_id, "TASK_STARTED", {"scout": scout["agent_id"], "auditor": auditor["agent_id"], "model": model})
         conn.commit()
         payload = json.loads(row["payload_json"])
-        scout_raw = call_model(base_url, model, api_key, prompt_for(scout["role"]), payload)
-        auditor_input = {"original_input": payload, "scout_analysis": scout_raw}
+        scout_input = {
+            "agent_profile": {
+                "agent_id": scout["agent_id"], "lane": scout["lane"],
+                "domain_focus": scout["domain"], "role": scout["role"],
+            },
+            "candidate": payload,
+        }
+        scout_raw = call_model(base_url, model, api_key, prompt_for(scout["role"]), scout_input)
+        auditor_input = {
+            "auditor_profile": {
+                "agent_id": auditor["agent_id"], "lane": auditor["lane"],
+                "domain_focus": auditor["domain"], "role": auditor["role"],
+            },
+            "original_input": payload,
+            "scout_agent_profile": {
+                "agent_id": scout["agent_id"], "domain_focus": scout["domain"], "role": scout["role"],
+            },
+            "scout_analysis": scout_raw,
+        }
         audit_raw = call_model(base_url, model, api_key, prompt_for("commercial_reality_auditor"), auditor_input)
         try:
             scout_result: Any = json.loads(scout_raw)
