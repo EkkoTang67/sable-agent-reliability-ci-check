@@ -85,6 +85,11 @@ class SwarmRuntimeTests(unittest.TestCase):
                 result = swarm.run_one(db, "candidate-1", "http://127.0.0.1:11434/v1", "unit-test-model", None)
             self.assertEqual(mocked.call_count, 2)
             self.assertNotEqual(result["scout_agent_id"], result["auditor_agent_id"])
+            scout_payload = mocked.call_args_list[0].args[4]
+            audit_payload = mocked.call_args_list[1].args[4]
+            self.assertEqual(scout_payload["agent_profile"]["agent_id"], result["scout_agent_id"])
+            self.assertTrue(scout_payload["agent_profile"]["domain_focus"])
+            self.assertEqual(audit_payload["auditor_profile"]["agent_id"], result["auditor_agent_id"])
             self.assertFalse(result["cash_received"])
             conn = swarm.connect(db)
             try:
