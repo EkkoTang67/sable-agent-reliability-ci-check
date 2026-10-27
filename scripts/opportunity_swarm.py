@@ -78,10 +78,13 @@ def screen_record(record: dict[str, Any]) -> dict[str, Any]:
     else:
         score += 2
 
-    upfront = record.get("upfront_cost", 0)
-    if not isinstance(upfront, (int, float)) or upfront > 0:
+    upfront = record.get("upfront_cost")
+    cost_unknown = not isinstance(upfront, (int, float))
+    if cost_unknown:
+        reasons.append("upfront_cost_unverified")
+    elif upfront > 0:
         reject = True
-        reasons.append("upfront_cost_or_unknown_cost")
+        reasons.append("upfront_cost_required")
     else:
         score += 1
 
@@ -126,7 +129,7 @@ def screen_record(record: dict[str, Any]) -> dict[str, Any]:
             decision = "REJECT"
             next_action = "Do not work; find another candidate."
         elif any(r in reasons for r in (
-            "missing_https_source", "task_status_unverified",
+            "missing_https_source", "task_status_unverified", "upfront_cost_unverified",
             "no_explicit_noncrypto_cash_reward", "acceptance_criteria_missing",
             "funding_not_confirmed", "payout_method_not_confirmed",
             "mainland_china_eligibility_not_confirmed",
