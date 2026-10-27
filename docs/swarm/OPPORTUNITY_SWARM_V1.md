@@ -1,22 +1,23 @@
-# Opportunity Swarm v1.0 — 10,000 logical pairs, two commercial engines
+# Opportunity Swarm v1.0 — 10,000 AI-agent identities, two commercial engines
 
 ## Purpose
 
-Build a swarm of **10,000 logical human–AI work units** that explores two complementary routes:
+Build a swarm with **10,000 registered AI-agent identities** split across two economic engines and an independent audit pool:
 
-1. **Prototype → cash:** find an explicit paid task or a buyer with a current purchase trigger; make the smallest deliverable that can pass the stated acceptance test; prove acceptance and settlement.
-2. **Niche pain → large upside:** identify a narrow, repeated, expensive failure in a real workflow; identify the payer and existing workaround; seek a buyer action; prototype only after evidence improves.
+- **4,500 prototype-to-cash scouts:** find funded, bounded cash tasks and define acceptance checks.
+- **4,500 niche-pain scouts:** discover repeated, costly workflow failures and design buyer-verifiable experiments.
+- **1,000 commercial auditors:** challenge claims, look for counterevidence, and check payer, budget, costs, competition, eligibility, and settlement.
 
-This is not a claim that 10,000 independent LLMs are running. The first version creates 10,000 dormant slots at zero model-call cost. Work slots activate only when evidence justifies additional cost. Ten thousand slots are inventory and allocation capacity, not ten thousand paid API sessions.
+The executable runtime is `scripts/swarm_runtime.py`. It stores agent identities, task queues, status, results, and event history in SQLite. Each executed task assigns a scout plus a distinct auditor and runs **two model calls** through an OpenAI-compatible endpoint. A scout result is not treated as fact; the audit stage can return HOLD or REJECT.
 
-## The unit of work: a pair, not a chatbot
+This is a real, model-backed execution path—not only a static manifest—but it does **not** claim 10,000 simultaneous LLM sessions. The 10,000 identities exist independently of model calls; work is activated through a queue with explicit concurrency and call limits. The default model endpoint is local Ollama. Remote inference is blocked unless the operator passes `--allow-remote`, because remote APIs may incur charges and transmit task data.
 
-Each pair has two opposing responsibilities:
+## The unit of work: scout + adversarial auditor
 
-- **Scout / builder:** discovers a task, workflow, or testable hypothesis; proposes an economical experiment.
-- **Commercial reality auditor:** tries to disprove the claim; checks the source, actual payer, budget trigger, acceptance standard, alternatives, competition, eligibility, costs, and settlement path.
+- **Scout:** discovers a task or workflow, forms a bounded hypothesis, and proposes a test.
+- **Commercial reality auditor:** attempts to disprove the hypothesis, separates evidence from inference, and enumerates unresolved facts.
 
-The auditor is not allowed to rubber-stamp the scout. A candidate without primary evidence remains unknown.
+The auditor is a separate registered agent. A candidate without primary evidence remains unknown. External contacts, security actions, payment operations, and production changes are not performed automatically.
 
 ## Two engines
 
@@ -67,9 +68,9 @@ A reply, star, install, demo request, PR submission, merged code without payment
 
 ## Scale without burning money
 
-- Generate 10,000 logical slots, balanced 50/50 between the two engines.
-- Cover 50 candidate verticals initially; distribute slots across the verticals so no single category consumes the whole swarm.
-- Keep every slot dormant by default. Do not call an LLM just because a slot exists.
+- Register 10,000 distinct agent IDs across the two scout lanes and audit pool.
+- Cover 50 candidate verticals; distribute agents across the verticals so no single category consumes the whole swarm.
+- The registry is idle by default. No LLM call happens during initialization; only explicitly queued tasks use model inference.
 - Use deterministic filters and cached evidence first; use free/manual research next; invoke model-assisted work only for candidates that pass a gate.
 - Keep a human approval gate for contacting third parties, running code, using customer data, signing agreements, spending money, and submitting work.
 - Do not automate account creation, fake identities, spam, unauthorized security testing, or circumvention of eligibility/region rules.
@@ -88,31 +89,64 @@ Immediately reject:
 
 Hold—not pass—when funding, payment route, eligibility, scope, or cost is unknown.
 
-## Runnable zero-cost prototype
+## Runnable agent system
 
-Requires Python 3.10+; no dependencies and no network calls.
+Requires Python 3.10+; runtime state uses SQLite from the Python standard library. Model inference needs a locally running OpenAI-compatible endpoint or a remote model API. The default endpoint is local Ollama.
 
-Generate the 10,000 logical slots:
-
-```bash
-python3 scripts/opportunity_swarm.py seed --count 10000 --out swarm-manifest.jsonl
-```
-
-Screen candidates from a JSONL file:
+### 1. Register 10,000 real agent identities (zero model calls)
 
 ```bash
-python3 scripts/opportunity_swarm.py screen \
-  --input examples/opportunity-candidates.sample.jsonl \
-  --out screened-candidates.jsonl
+python3 scripts/swarm_runtime.py init --count 10000 --db state/swarm.db
+python3 scripts/swarm_runtime.py status --db state/swarm.db
 ```
 
-Run regression checks:
+Expected registry: 4,500 prototype-cash scouts, 4,500 niche-pain scouts, and 1,000 commercial auditors.
+
+### 2. Discover public issue signals (network call only when explicitly invoked)
 
 ```bash
-python3 scripts/test_opportunity_swarm.py
+python3 scripts/swarm_runtime.py discover-github \
+  --query '"cash bounty" is:issue is:open' \
+  --mode prototype_cash --limit 20 --out state/cash-signals.jsonl
+
+python3 scripts/swarm_runtime.py discover-github \
+  --query 'manual workaround is:issue is:open' \
+  --mode niche_pain --limit 20 --out state/pain-signals.jsonl
 ```
 
-The sample candidates are intentionally synthetic. The script only checks supplied evidence; it does not independently verify URLs, find live jobs, execute code, contact buyers, or receive money.
+Public GitHub issue search is a **signal source**, not proof of a live reward, buyer, acceptance, eligibility, or payment. The current adapter imports the issue body and metadata; it does not read the full comment history or independently verify payout terms.
+
+### 3. Queue and run a small number of tasks
+
+```bash
+python3 scripts/swarm_runtime.py enqueue --input state/cash-signals.jsonl --db state/swarm.db
+python3 scripts/swarm_runtime.py enqueue --input state/pain-signals.jsonl --db state/swarm.db
+
+# Requires a model already installed and running in local Ollama:
+# Set this to the exact local model name you installed.
+export SWARM_MODEL="YOUR_INSTALLED_MODEL_NAME"
+python3 scripts/swarm_runtime.py run --db state/swarm.db \
+  --workers 1 --max-tasks 1 --max-llm-calls 2
+python3 scripts/swarm_runtime.py status --db state/swarm.db
+```
+
+Windows PowerShell equivalent for the model variable:
+```powershell
+$env:SWARM_MODEL = "YOUR_INSTALLED_MODEL_NAME"
+python scripts/swarm_runtime.py run --db state/swarm.db --workers 1 --max-tasks 1 --max-llm-calls 2
+```
+
+Each task uses at most two model calls: scout, then independent auditor. The runtime caps output length, defaults to one task at a time, and refuses remote inference unless `--allow-remote` is explicitly supplied. A remote API may be paid; free ChatGPT or DeepSeek web access does **not** itself provide a free API endpoint.
+
+### 4. Regression test
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+The tests cover 10,000 distinct registered IDs, lane distribution, queue de-duplication, two-agent execution, explicit remote-call opt-in, and non-payment claims. They use mocked model responses; they do not prove live model quality or real earnings.
+
+The older `scripts/opportunity_swarm.py` remains a lightweight deterministic screener. The runtime above is the model-backed execution path. Neither script independently proves a source, commits the operator to work, contacts buyers, nor receives money.
 
 ## Success metrics
 
