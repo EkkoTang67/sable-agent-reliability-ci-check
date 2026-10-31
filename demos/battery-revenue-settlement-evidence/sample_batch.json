@@ -1,0 +1,12 @@
+{
+  "batch_id":"SYNTH-BESS-2026-09-A",
+  "contract":{"asset_id":"BESS-DEMO-01","period":"2026-09","currency":"USD","contracted_mw":"10","required_intervals":4,"availability_target_pct":"98.0","base_availability_payment_usd":"10000.00","penalty_per_percentage_point_usd":"500.00","max_penalty_usd":"2000.00"},
+  "meter_intervals":[
+    {"interval_id":"I-001","asset_id":"BESS-DEMO-01","period":"2026-09","duration_hours":"1","available_mw":"10","quality":"VALID","source_ref":"meter://synthetic/001"},
+    {"interval_id":"I-002","asset_id":"BESS-DEMO-01","period":"2026-09","duration_hours":"1","available_mw":"10","quality":"VALID","source_ref":"meter://synthetic/002"},
+    {"interval_id":"I-003","asset_id":"BESS-DEMO-01","period":"2026-09","duration_hours":"1","available_mw":"9.8","quality":"VALID","source_ref":"meter://synthetic/003"},
+    {"interval_id":"I-004","asset_id":"BESS-DEMO-01","period":"2026-09","duration_hours":"1","available_mw":"9.2","quality":"VALID","source_ref":"meter://synthetic/004"}],
+  "invoice_lines":[{"invoice_line_id":"INV-L-01","asset_id":"BESS-DEMO-01","period":"2026-09","currency":"USD","amount":"10000.00"}],
+  "settlement_lines":[{"settlement_line_id":"STL-01","asset_id":"BESS-DEMO-01","period":"2026-09","currency":"USD","amount":"10000.00"}],
+  "payment_records":[{"payment_id":"PAY-01","asset_id":"BESS-DEMO-01","period":"2026-09","currency":"USD","amount":"10000.00"}]
+}
