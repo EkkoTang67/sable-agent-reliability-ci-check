@@ -51,6 +51,15 @@ One existing workflow · one written hard constraint · up to 8 regression scena
 
 **[Preview the 8-case test matrix](docs/buy/AGENT_ACTION_BOUNDARY_TEST_MATRIX_V1.md)**
 
+**[Run the local eight-case authorization harness](scripts/agent_authorization_harness.py)**
+
+```bash
+python3 scripts/agent_authorization_harness.py --test
+python3 scripts/agent_authorization_harness.py --out synthetic-agent-authorization-report.json
+```
+
+The harness is a local in-memory reference simulator only. Its PASS results do not establish that any real agent framework or customer deployment is safe; the concurrency lock is process-local, not distributed.
+
 **[Pay US$99 and start the pilot →](https://paypal.me/tang665/99USD)**
 
 PayPal note: `PRODUCT=AGENT_BOUNDARY_CHECK`. Scope fit and safe test boundary must be confirmed before execution. This offer has no customer purchase or revenue claimed yet.
