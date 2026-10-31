@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "evidence-workbench-report.v1",
+  "title": "SABLE Evidence Workbench Report v1",
+  "type": "object",
+  "required": ["report_schema_version", "workbench_version", "engagement_id", "domain", "buyer_rule_version", "input_sha256", "overall_verdict", "case_counts", "case_reports", "limitations"],
+  "properties": {
+    "report_schema_version": {"const": "evidence-workbench.report.v1"},
+    "workbench_version": {"type": "string"},
+    "engagement_id": {"type": "string"},
+    "domain": {"type": "string"},
+    "buyer_rule_version": {"type": "string"},
+    "input_sha256": {"type": "string", "minLength": 64, "maxLength": 64},
+    "overall_verdict": {"enum": ["PASS", "GAP", "UNKNOWN"]},
+    "case_counts": {"type": "object", "required": ["PASS", "GAP", "UNKNOWN"]},
+    "case_reports": {"type": "array"},
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
