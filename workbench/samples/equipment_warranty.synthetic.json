@@ -1,0 +1,37 @@
+{
+  "schema_version": "evidence-workbench.input.v1",
+  "engagement_id": "SYNTH-EQUIPMENT-WARRANTY-001",
+  "domain": "equipment_warranty",
+  "buyer_rule_version": "BUYER-DEMO-WARRANTY-RULES-0.1",
+  "cases": [
+    {
+      "case_id": "WARRANTY-001",
+      "case_type": "dealer_warranty",
+      "records": [
+        {"record_id": "case", "record_type": "dealer_claim", "source_ref": "synthetic://warranty/case-001", "fields": {"serial_number": "SER-DEMO-001", "delivery_date": "2026-01-10", "failure_date": "2026-07-01"}},
+        {"record_id": "delivery", "record_type": "delivery_record", "source_ref": "synthetic://warranty/delivery-001", "fields": {"serial_number": "SER-DEMO-001"}},
+        {"record_id": "install", "record_type": "installation_report", "source_ref": "synthetic://warranty/install-001", "fields": {"installation_date": "2026-01-12"}},
+        {"record_id": "service", "record_type": "service_report", "source_ref": "synthetic://warranty/service-001", "fields": {"serial_number": "SER-DEMO-001", "service_date": "2026-07-02", "work_order": "WO-DEMO-001"}}
+      ],
+      "checks": [
+        {"check_id": "W001-SERIAL-ID", "type": "same", "description": "Dealer claim serial matches delivery record serial.", "paths": [{"record_id": "case", "field": "serial_number"}, {"record_id": "delivery", "field": "serial_number"}]},
+        {"check_id": "W001-DELIVERY-INSTALL", "type": "date_order", "description": "Delivery date is not later than installation date.", "paths": [{"record_id": "case", "field": "delivery_date"}, {"record_id": "install", "field": "installation_date"}]},
+        {"check_id": "W001-FAILURE-SERVICE", "type": "date_order", "description": "Failure date is not later than service date.", "paths": [{"record_id": "case", "field": "failure_date"}, {"record_id": "service", "field": "service_date"}]},
+        {"check_id": "W001-WORK-ORDER", "type": "required", "description": "Service work-order reference is present.", "paths": [{"record_id": "service", "field": "work_order"}]}
+      ]
+    },
+    {
+      "case_id": "WARRANTY-002",
+      "case_type": "dealer_warranty",
+      "records": [
+        {"record_id": "case", "record_type": "dealer_claim", "source_ref": "synthetic://warranty/case-002", "fields": {"serial_number": "SER-DEMO-002", "delivery_date": "2026-02-10", "failure_date": "2026-08-01"}},
+        {"record_id": "delivery", "record_type": "delivery_record", "source_ref": "synthetic://warranty/delivery-002", "fields": {"serial_number": "SER-DEMO-002"}},
+        {"record_id": "install", "record_type": "installation_report", "source_ref": "synthetic://warranty/install-002", "fields": {"installation_date": "2026-02-12"}}
+      ],
+      "checks": [
+        {"check_id": "W002-SERIAL-ID", "type": "same", "description": "Dealer claim serial matches delivery record serial.", "paths": [{"record_id": "case", "field": "serial_number"}, {"record_id": "delivery", "field": "serial_number"}]},
+        {"check_id": "W002-FAILURE-SERVICE", "type": "date_order", "description": "Failure date is not later than service date.", "paths": [{"record_id": "case", "field": "failure_date"}, {"record_id": "service", "field": "service_date"}]}
+      ]
+    }
+  ]
+}
