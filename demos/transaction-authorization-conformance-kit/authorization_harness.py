@@ -225,6 +225,49 @@ class AuthorizationHarness:
             "policy_version": policy_version,
         }
 
+    def record_denial(
+        self,
+        *,
+        actor_id: str,
+        operation: str,
+        resource_id: str,
+        parameters: dict[str, Any],
+        denied_by: str,
+        reason: str,
+    ) -> dict[str, str]:
+        """Record an explicit approval denial without issuing an executable token."""
+        if not isinstance(denied_by, str) or not denied_by.strip():
+            raise ValueError("denied_by must be a non-empty string")
+        if not isinstance(reason, str) or not reason.strip():
+            raise ValueError("reason must be a non-empty string")
+        digest = _action_digest(actor_id, operation, resource_id, parameters)
+        timestamp = _iso(self._now_utc())
+        event_id = str(uuid.uuid4())
+        connection = self._connect()
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            self._append_event(
+                connection,
+                {
+                    "event": "APPROVAL_DENIED",
+                    "timestamp": timestamp,
+                    "event_id": event_id,
+                    "actor_id": actor_id,
+                    "operation": operation,
+                    "resource_id": resource_id,
+                    "action_digest": digest,
+                    "denied_by": denied_by,
+                    "reason": reason,
+                },
+            )
+            connection.commit()
+        except Exception:
+            connection.rollback()
+            raise
+        finally:
+            connection.close()
+        return {"verdict": "DENIED", "reason": reason, "event_id": event_id}
+
     def execute(
         self,
         *,
@@ -440,3 +483,16 @@ class AuthorizationHarness:
             }
             for row in rows
         ]
+
+
+def classify_independent_observation(
+    claimed_success: bool,
+    independent_observation: dict[str, Any] | None,
+) -> str:
+    """Do not treat an execution claim as proof when no independent receipt exists."""
+    if independent_observation is None:
+        return "UNKNOWN"
+    observed = independent_observation.get("effect_observed") is True
+    if claimed_success:
+        return "PASS" if observed else "FAIL"
+    return "FAIL" if observed else "PASS"
