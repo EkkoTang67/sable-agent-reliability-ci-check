@@ -11,7 +11,7 @@ This repository demo is intentionally local-only. It uses synthetic invoice/paym
 Requires Python 3.10+ and only the Python standard library.
 
 ~~~bash
-python3 -m unittest -v test_authorization_harness.py
+python3 -m unittest -v test_authorization_harness.py test_agent_boundary_scenarios.py
 python3 run_demo.py
 ~~~
 
@@ -22,6 +22,22 @@ The demo shows three outcomes:
 3. Replaying the same approval is denied as APPROVAL_ALREADY_CONSUMED.
 
 The tests also cover actor mismatch, expired approvals, 12 concurrent attempts against one approval, token hashing at rest, append-only audit rows, audit-chain verification, and executor failure.
+
+
+## Eight agent-action boundary scenarios
+
+The SQLite-backed core is also exercised by `test_agent_boundary_scenarios.py`:
+
+1. **AB-01 Explicit denial** — records the denial in the audit chain and confirms no protected effect occurs.
+2. **AB-02 Approver unavailable** — no approval is issued; the protected action fails closed.
+3. **AB-03 Alternate tool route** — a second adapter route still requires the same host authorization boundary.
+4. **AB-04 Guard storage unavailable** — an unavailable authorization store prevents the executor from running.
+5. **AB-05 Mixed tool batch/order** — a protected write remains denied regardless of whether a read-only operation runs before or after it.
+6. **AB-06 Expiry and tampering** — expired approvals and changed action parameters are denied.
+7. **AB-07 Concurrent one-time approval** — twelve competing attempts produce one authorized sandbox execution.
+8. **AB-08 Claimed success without independent observation** — the result is UNKNOWN until an independent observation exists.
+
+AB-03 models the alternate route entering the same host guard; it does not prove that arbitrary tools in an external agent runtime cannot bypass that guard. All eight scenarios remain local reference tests and must be adapted to a buyer-authorized target environment before making deployment claims.
 
 ## What is bound to an approval
 
