@@ -1,0 +1,40 @@
+{
+  "schema_version": "evidence-workbench.input.v1",
+  "engagement_id": "SYNTH-CARGO-PREFLIGHT-001",
+  "domain": "cargo_claims",
+  "buyer_rule_version": "BUYER-DEMO-CARGO-RULES-0.1",
+  "cases": [
+    {
+      "case_id": "CARGO-001",
+      "case_type": "damage_claim",
+      "records": [
+        {"record_id": "claim", "record_type": "claim_register", "source_ref": "synthetic://cargo/claim-001", "fields": {"shipment_id": "BL-DEMO-1001", "claimed_amount": "12500.00", "loss_date": "2026-09-10"}},
+        {"record_id": "bol", "record_type": "bill_of_lading", "source_ref": "synthetic://cargo/bol-001", "fields": {"shipment_id": "BL-DEMO-1001"}},
+        {"record_id": "invoice", "record_type": "commercial_invoice", "source_ref": "synthetic://cargo/invoice-001", "fields": {"invoice_amount": "12500.00"}},
+        {"record_id": "notice", "record_type": "carrier_notice", "source_ref": "synthetic://cargo/notice-001", "fields": {"notice_date": "2026-09-12"}},
+        {"record_id": "survey", "record_type": "survey_report", "source_ref": "synthetic://cargo/survey-001", "fields": {"survey_reference": "SURVEY-DEMO-01"}}
+      ],
+      "checks": [
+        {"check_id": "C001-SHIPMENT-ID", "type": "same", "description": "Claim shipment ID matches bill of lading.", "paths": [{"record_id": "claim", "field": "shipment_id"}, {"record_id": "bol", "field": "shipment_id"}]},
+        {"check_id": "C001-CLAIM-VALUE", "type": "numeric_equal", "description": "Claimed amount matches invoice amount under demo rule.", "tolerance": "0.00", "paths": [{"record_id": "claim", "field": "claimed_amount"}, {"record_id": "invoice", "field": "invoice_amount"}]},
+        {"check_id": "C001-LOSS-NOTICE-DATE", "type": "date_order", "description": "Loss date is not later than carrier notice date.", "paths": [{"record_id": "claim", "field": "loss_date"}, {"record_id": "notice", "field": "notice_date"}]},
+        {"check_id": "C001-SURVEY-REFERENCE", "type": "required", "description": "Survey reference is present.", "paths": [{"record_id": "survey", "field": "survey_reference"}]}
+      ]
+    },
+    {
+      "case_id": "CARGO-002",
+      "case_type": "shortage_claim",
+      "records": [
+        {"record_id": "claim", "record_type": "claim_register", "source_ref": "synthetic://cargo/claim-002", "fields": {"shipment_id": "BL-DEMO-2002", "claimed_amount": "4000.00", "loss_date": "2026-09-15"}},
+        {"record_id": "bol", "record_type": "bill_of_lading", "source_ref": "synthetic://cargo/bol-002", "fields": {"shipment_id": "BL-DEMO-2999"}},
+        {"record_id": "invoice", "record_type": "commercial_invoice", "source_ref": "synthetic://cargo/invoice-002", "fields": {"invoice_amount": "4000.00"}},
+        {"record_id": "notice", "record_type": "carrier_notice", "source_ref": "synthetic://cargo/notice-002", "fields": {"notice_date": "2026-09-16"}}
+      ],
+      "checks": [
+        {"check_id": "C002-SHIPMENT-ID", "type": "same", "description": "Claim shipment ID matches bill of lading.", "paths": [{"record_id": "claim", "field": "shipment_id"}, {"record_id": "bol", "field": "shipment_id"}]},
+        {"check_id": "C002-CLAIM-VALUE", "type": "numeric_equal", "description": "Claimed amount matches invoice amount under demo rule.", "tolerance": "0.00", "paths": [{"record_id": "claim", "field": "claimed_amount"}, {"record_id": "invoice", "field": "invoice_amount"}]},
+        {"check_id": "C002-LOSS-NOTICE-DATE", "type": "date_order", "description": "Loss date is not later than carrier notice date.", "paths": [{"record_id": "claim", "field": "loss_date"}, {"record_id": "notice", "field": "notice_date"}]}
+      ]
+    }
+  ]
+}
