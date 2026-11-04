@@ -360,3 +360,33 @@ Maintain an **Information-to-Decision Ledger**: question → source → extracte
 ### 14.4 Access, licensing and integrity
 
 Use free public sources first. Do not bypass paywalls, access controls, confidentiality, privacy restrictions or licensing terms. Do not buy datasets or subscriptions until a concrete decision requires them and a low-cost validation shows that expected value exceeds total cost. Preserve source dates, versions, citations and data-use restrictions. Never scrape or reuse personal or confidential information without a lawful basis and authorization.
+
+
+## 15. Existing Ekko Brain OS asset reconciliation
+
+Do not create a parallel book-processing queue. Reuse the existing Library assets and their state machine:
+
+- `Ekko_500_Originals_P0_RunQueue_v1.0_Complete.md`: the active 20-work P0 queue, Work/Edition identity, L0-L8 extraction protocol, E0-E5 evidence levels, five cross-book research clusters, and reality-validation requirement.
+- `Ekko_Asset_Registry_v1.2.md`: the current asset-state index and BOOK-level asset record.
+- `Ekko_Knowledge_Graph_v1.0.md`: canonical world-model nodes and typed relationships.
+- `Ekko_COO_Long_Term_State.md` and `Ekko_Project_State_v1.0.md`: strategic priority, current projects, and the constraint that original-text absorption must serve real decisions and cash-flow work.
+
+### Reconciliation note
+The inspected Library has a state discrepancy for Ray Dalio's *Principles*: the P0 queue labels P0-01 INDEXED, while Asset Registry v1.2 records BOOK-001 / K-014 as MODELLED and its update note says a first BOOK-level pass was completed. The safe reconciled state is **MODELLED, not DEEPLY_ABSORBED and not VALIDATED** until the Work/Edition record and E3+ source evidence are reconciled. Do not silently overwrite either record; log the discrepancy and update the canonical registry through a reviewed change.
+
+The Library also contains a *The Mom Test* cyber-diary describing a first evidence-bounded book node based on bibliographic details, public table of contents, and limited author-provided teaching material; it explicitly says the full book text was not obtained. Treat it as PARTIAL_TEXT / SOURCE_NEEDED, not full-book absorption.
+
+### Money-adjacent queue overlay
+The broad P0 20-book queue remains the strategic foundation. Add a **money-adjacent overlay** that prioritizes the relevant existing works and additional titles from Library modules 01, 03, 04, 05, 08, 09, 10, 11, 12 and 14. This overlay is a view over the same canonical Work/Edition records, not a second copy of books or a replacement P0 queue.
+
+Recommended first comparison cluster:
+- *纳瓦尔宝典* ↔ *巴菲特致股东的信* ↔ *聪明的投资者* ↔ *投资最重要的事* ↔ *国富论* ↔ *经济学原理*
+- *好战略，坏战略* ↔ *竞争战略* ↔ *竞争优势* ↔ *博弈论* ↔ *博弈与信息* ↔ *不对称优势*
+- *从0到1* ↔ *精益创业* ↔ *创新者的窘境* ↔ *妈妈测试* ↔ *精益数据分析*
+- *反脆弱* ↔ *黑天鹅* ↔ *超级预测* ↔ *噪声* ↔ *系统之美* ↔ *规模*
+- *国家为什么会失败* ↔ *国富论* ↔ *资本论* ↔ *现代世界体系* ↔ *政治秩序的起源* ↔ *权力的转移*
+- *卓有成效的管理者* ↔ *管理的实践* ↔ *丰田生产方式* ↔ *从优秀到卓越* ↔ *创新者的解答*
+
+For every comparison cluster, identify disagreements and different units of analysis (individual, firm, industry, state, financial market, civilization). Never force the authors into one synthetic doctrine when their premises conflict.
+
+The existing 20-book P0 queue and registry are the source of truth for book status. The money-adjacent overlay changes retrieval priority only; it does not imply that any listed original text is present or absorbed.
