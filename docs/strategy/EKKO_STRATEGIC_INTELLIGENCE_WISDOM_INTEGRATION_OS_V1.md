@@ -281,3 +281,82 @@ The desired progression is not merely labor → income. It is:
 > Explore widely. Verify narrowly. Commit deliberately. Learn from reality. Preserve the upside. Protect survival. Convert wisdom into better decisions, better economic positions, and durable ownership.
 
 Theory proposes bets. Human and machine intelligence generate and challenge hypotheses. Reality decides.
+
+
+## 14. Global high-signal information source atlas
+
+The system should not try to read the whole internet. It should identify a small number of source classes that reveal real economic behavior, then query them against a defined question.
+
+### 14.1 Primary evidence before commentary
+
+**A. Money, ownership, corporate control**
+- Public-company annual reports, audited statements, earnings calls, investor presentations, material contracts, debt covenants, restructuring and insolvency filings.
+- Securities regulators and exchange disclosure systems (for example, SEC EDGAR for U.S. issuers).
+- Corporate registries and official beneficial-ownership records where lawfully public.
+- Use to map revenue concentration, cash conversion, capital expenditure, liabilities, customer concentration, segment economics, acquisitions, supplier dependence and management incentives.
+
+**B. Procurement, subcontracting and buyer intent**
+- SAM.gov contracting opportunities, awards and subcontract reports: https://sam.gov/contracting
+- Open Contracting Partnership Data Registry, which indexes public procurement datasets from more than 100 publishers: https://data.open-contracting.org/
+- National, state, municipal, port, utility, university and multilateral development-bank procurement portals; award notices, bid tabs, amendments, vendor lists and contract registers.
+- Use to distinguish announced budgets, actual awards, scope, prime contractor, subcontract rules, award status, deadlines and procurement eligibility. A public contract is not proof that a prime will subcontract to us.
+
+**C. Macro, financial structure and capital flows**
+- BIS statistics and working papers: https://www.bis.org/statistics/ and https://www.bis.org/publications/working-paper
+- IMF data and publications: https://www.imf.org/en/Data
+- World Bank Data: https://data.worldbank.org/
+- OECD Data: https://data.oecd.org/
+- Federal Reserve Economic Data (FRED): https://fred.stlouisfed.org/
+- Use to detect credit stress, liquidity conditions, interest-rate regimes, cross-border flows, productivity, industrial output, labor shifts and systemic imbalances. Macro correlations do not establish a specific buyer's budget.
+
+**D. Firm-level economics, productivity and research**
+- NBER Working Papers: https://www.nber.org/papers (valuable early research; working papers are circulated for discussion and are not automatically peer-reviewed or policy recommendations).
+- American Economic Association Data Resources: https://www.aeaweb.org/about-aea/committees/economic-statistics/data-resources
+- Global Macro Database paper/data trail: https://www.nber.org/papers/w33714
+- National statistical agencies, central-bank research, academic replication files and open research repositories.
+- Use to test causal claims, productivity effects, firm heterogeneity, market power, labor substitution, financing constraints and long-run historical patterns. Check methods, sample, identification and replication.
+
+**E. Trade, industrial structure and supply chains**
+- UN Comtrade: https://comtradeplus.un.org/
+- WTO statistics and tariff/trade databases: https://www.wto.org/english/res_e/statis_e/data_pub_e.htm
+- National customs/statistics data, port throughput, shipping schedules, commodity exchanges, standards bodies and industry regulators.
+- Use to find trade concentration, input dependencies, tariff changes, bottlenecks, supplier-country shifts, price shocks and cross-border exposure. Trade data is often delayed and does not directly reveal individual contract terms.
+
+**F. Technology and future production**
+- Patent offices and patent-family databases; standards organizations; technical preprints and peer-reviewed journals; public grant awards; clinical-trial registries where relevant; product release notes; open-source repositories and maintainer discussions.
+- Use to identify capability inflections, technical bottlenecks, standards formation, implementation costs, licensing constraints and where technical performance fails to translate into commercial adoption.
+
+**G. Failure, disputes and hidden liabilities**
+- Court judgments, bankruptcy/insolvency filings, regulator enforcement actions, safety notices, recall databases, public audit reports, inspector-general reports, procurement protests and company postmortems.
+- Use to discover the cost of failure, recurring process gaps, liability allocation, fraud patterns, hidden constraints and unmet assurance needs. Allegations are not findings; distinguish claims, evidence, judgment and appeal status.
+
+**H. Human and practitioner intelligence**
+- Operators, buyers, procurement officers, project managers, implementers, field technicians, auditors, suppliers, former executives, researchers and domain specialists.
+- Prefer first-hand accounts tied to a specific workflow, date, economic event and observable artifact. Ask what they personally saw, what they controlled, what they could authorize, what failed, who paid, and what records would verify the claim.
+- Record role, incentives, proximity to the event, memory limitations, conflicts, selection effects and whether independent sources corroborate the account.
+
+### 14.2 Source selection rule
+
+For each question, select the smallest source set that can resolve the decision:
+1. **Primary record** for what happened (filing, award, contract, dataset, court decision, system record).
+2. **Independent analysis** for interpretation (academic study, regulator analysis, technical evaluation).
+3. **Practitioner evidence** for tacit workflow details and implementation friction.
+4. **Counter-source** that could disprove the thesis.
+5. **Direct buyer confirmation** for procurement authority, budget, eligibility, outsourcing and payment.
+
+Do not treat search ranking, social virality, analyst consensus, a famous founder's claim, or an AI-generated synthesis as primary evidence.
+
+### 14.3 High-value information is defined by decision impact
+
+An information item is high value only if it can:
+- Change a strategic choice, timing, price, risk allocation or entry point;
+- Reveal a buyer, payer, budget owner, procurement route or hard deadline;
+- Expose a bottleneck, dependency, hidden liability or bypass path;
+- Change the estimated probability or downside of an outcome;
+- Establish a reusable asset, standard, data advantage, distribution channel or ownership right.
+
+Maintain an **Information-to-Decision Ledger**: question → source → extracted claim → source state → counterevidence → affected decision → expected value of information → next test → result. Archive low-impact facts without letting them consume active attention.
+
+### 14.4 Access, licensing and integrity
+
+Use free public sources first. Do not bypass paywalls, access controls, confidentiality, privacy restrictions or licensing terms. Do not buy datasets or subscriptions until a concrete decision requires them and a low-cost validation shows that expected value exceeds total cost. Preserve source dates, versions, citations and data-use restrictions. Never scrape or reuse personal or confidential information without a lawful basis and authorization.
