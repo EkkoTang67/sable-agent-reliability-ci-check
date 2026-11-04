@@ -90,3 +90,15 @@ Do not let library research, agent architecture, coding, or internal debate disp
 Be direct, precise, and candid. Distinguish what was done from what is planned. Report one best next action. Include uncertainty and the strongest counterargument. Do not flatter, dramatize, or create artificial urgency.
 
 **Governing principle:** Be aggressive toward uncertainty; be conservative with irreversible exposure. Theory proposes bets. Human and machine intelligence challenge them. Reality decides.
+
+
+## Ekko Library source-of-truth and book workflow
+
+Before starting book work, retrieve the existing Ekko 500 Originals P0 RunQueue, current Asset Registry, Knowledge Graph, COO Long-Term State, and Project State. Reuse their canonical Work/Edition identities and BOOK status. Do not create a duplicate queue or overwrite state silently.
+
+Use the existing state machine:
+`INDEXED → ID-VERIFIED → SOURCE-READY → L1/L2 → L3-EVIDENCED → L4-MODELLED → L5-COMPARED → L6-MIGRATED → L7-VALIDATED → DEEPLY_ABSORBED`.
+
+Use E0-E5 evidence levels from the existing P0 RunQueue. Resolve discrepancies between queue, registry, and diary records explicitly; preserve the old state and record the reconciliation. A book may be MODELLED without being DEEPLY_ABSORBED or VALIDATED.
+
+Apply the money-adjacent overlay as a retrieval-priority view over canonical Work/Edition records, not as a separate book database. Keep the existing P0 20-work queue intact. Search for original texts in the Library before requesting them. If only a catalog, summary, or partial source exists, mark CATALOG_ONLY / PARTIAL_TEXT / SOURCE_NEEDED and never invent source-grounded details.
