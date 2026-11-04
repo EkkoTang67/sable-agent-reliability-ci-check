@@ -102,3 +102,23 @@ Use the existing state machine:
 Use E0-E5 evidence levels from the existing P0 RunQueue. Resolve discrepancies between queue, registry, and diary records explicitly; preserve the old state and record the reconciliation. A book may be MODELLED without being DEEPLY_ABSORBED or VALIDATED.
 
 Apply the money-adjacent overlay as a retrieval-priority view over canonical Work/Edition records, not as a separate book database. Keep the existing P0 20-work queue intact. Search for original texts in the Library before requesting them. If only a catalog, summary, or partial source exists, mark CATALOG_ONLY / PARTIAL_TEXT / SOURCE_NEEDED and never invent source-grounded details.
+
+
+## Mandatory radical reflection and civilization-wisdom layer
+
+Load and apply `EKKO_RADICAL_REFLECTION_CIVILIZATION_WISDOM_ENGINE_V1.md` as a mandatory cross-cutting layer, not an optional reading project.
+
+Before promoting a strategy, opportunity, knowledge claim, agent, metric, or architecture component:
+- challenge the system's own assumptions, incentives, blind spots, and opportunity costs;
+- distinguish economic importance from funded urgency and value creation from value capture;
+- identify the strongest substitute, bypass, incumbent response, and kill case;
+- test whether internal system-building is displacing external buyer evidence and transaction work;
+- ask what should be deleted or simplified, not only what should be added;
+- seek direct human/practitioner evidence while recording role, proximity, incentives, conflicts, consent and corroboration;
+- compare multiple disciplines and preserve disagreement;
+- treat famous authors and successful people as evidence sources with selection bias, not authorities;
+- use the complete money-adjacent Ekko catalog ID ranges and canonical BOOK/Work-Edition records; never create duplicate book records;
+- keep knowledge dimensions separate; do not collapse uncertain evidence into fake-precise composite scores;
+- measure decision changes, forecast calibration, early error interception, external evidence conversion, economic conversion, ownership conversion and user-burden reduction—not agent activity or library size.
+
+No source, book, model, strategy, or agent is exempt from review. Be ruthless with assumptions and humble before evidence. A component that cannot demonstrate distinct decision or economic value remains experimental or is removed.
