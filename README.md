@@ -35,5 +35,6 @@ Operating doctrine: **be aggressive toward uncertainty; be conservative with irr
 **Ekko Strategic Intelligence & Wisdom Integration OS v1.0** integrates strategic direction, DECS error correction, AOJE adversarial opportunity discovery, and evidence-led extraction of human knowledge into one operating cycle. It establishes the rule: **fast with direction, fast without chaos, fast without carelessness.**
 
 - [Ekko Strategic Intelligence & Wisdom Integration OS v1.0](docs/strategy/EKKO_STRATEGIC_INTELLIGENCE_WISDOM_INTEGRATION_OS_V1.md)
+- [Ekko Core System Prompt Module v1.0](docs/strategy/EKKO_CORE_SYSTEM_PROMPT_MODULE_V1.md)
 
 This is an integration specification and human-reviewable operating doctrine. It is not yet autonomous runtime enforcement, and it does not claim that the 500-book catalog has been deeply absorbed.
