@@ -559,3 +559,69 @@ A component that cannot demonstrate distinct value should remain experimental or
 The goal is not to become the most sophisticated observer of wealth. The goal is to become a disciplined creator and owner of valuable economic positions.
 
 **Be ruthless with assumptions. Be humble before evidence. Be fast in learning. Be deliberate in commitment.**
+
+
+## 13. First radical audit of the current Ekko system
+
+This is an initial document-based audit, not a claim that all project records or live market conditions have been independently revalidated.
+
+### Finding 1 — The system risks mistaking its own construction for progress
+The Library and Brain OS are valuable only if they improve decisions, reduce error, or create reusable economic assets. The Project State itself says the 500-book deep-absorption bottleneck remains unresolved and that Brain OS is at architecture stage. Therefore, do not treat the knowledge graph, catalog, prompt files, or agent architecture as evidence of commercial advantage.
+
+**Correction:** every book-processing batch must be tied to a live decision, a defined model gap, or a reusable asset. If no such connection exists, it is low-priority archival work.
+
+### Finding 2 — The existing project portfolio may conflict with the latest strategic constraints
+The retrieved Project State lists PRJ-001 as "外贸AI获客 / AI外联助手" for foreign-trade companies. This may involve mainland-China customers, which conflicts with the principal's later explicit instruction not to pursue China-market customers or domestic procurement. The record does not establish whether the intended buyers are overseas exporters, overseas service providers, or mainland firms.
+
+**Correction:** mark PRJ-001's market scope as **STRATEGY_ALIGNMENT_UNRESOLVED** until its buyer geography, contracting entity, payer, and delivery location are reconciled. Do not continue outreach to mainland-China customers by inertia. The principal's later explicit overseas-market constraint takes precedence.
+
+### Finding 3 — Brain OS, cash-flow work, and intelligence projects compete for the same scarce attention
+The records identify three projects: foreign-trade AI acquisition, Brain OS, and AI data-center failure intelligence. The system does not yet demonstrate that all three have distinct, verified payers or that parallel execution is affordable.
+
+**Correction:** one primary transaction/market-validation lane; one bounded strategic-intelligence lane; Brain OS operates as shared infrastructure with a strict maintenance budget. The failure-intelligence project remains exploratory until a buyer, budget, and decision-use case are evidenced.
+
+### Finding 4 — The book ratings risk becoming inherited authority
+The Library explicitly describes S+/S/A as personalized prioritization rather than objective rankings. Some books are theoretical, ideological, anecdotal, dated, or popular-business works; others are technical or empirical. A common star/rating system cannot compare their truth value.
+
+**Correction:** preserve the existing ratings only as retrieval priority. Add separate source-quality, claim-level evidence, and current decision relevance fields. Never use S+ as a truth, causal-validity, or investment-confidence score.
+
+### Finding 5 — The P0 queue and registry are not fully synchronized
+The P0 queue describes BOOK-001 / Principles as INDEXED and requiring Work/Edition setup, while Asset Registry v1.2 describes a MODELLED first pass. The safest state remains **MODELLED / not DEEPLY_ABSORBED / not VALIDATED**, pending reconciliation of exact Work/Edition identity and E3+ evidence.
+
+**Correction:** no status is promoted by narrative. The canonical registry needs an explicit discrepancy record and reviewed change.
+
+### Finding 6 — The system has a "human wisdom" gap if it only reads published material
+Books and reports overrepresent people with publication access, institutional status, English-language reach, and retrospective success narratives. Tacit workflow knowledge often sits with operators, procurement teams, maintainers, failed founders, and people whose incentives differ from management.
+
+**Correction:** build a structured human-source network and episode-based evidence collection. Human testimony is neither dismissed nor accepted as universal truth; it is triangulated with records, other witnesses, and counterexamples.
+
+### Finding 7 — "Fast" can become a pressure narrative instead of a performance property
+Speed without an external feedback loop may simply accelerate internal activity and increase error throughput.
+
+**Correction:** define speed as elapsed time from question to decision-changing evidence and from evidence to a safe decision—not hours worked, messages sent, or agents launched. Use explicit exposure caps and protect the principal's ability to continue.
+
+### Finding 8 — We have not yet demonstrated that the system can create defensible ownership
+The current documents define a path from capability to value, workflow, assets and ownership, but they do not yet prove that any current project has proprietary data rights, distribution control, standards influence, recurring contracts, network effects, or switching costs.
+
+**Correction:** every candidate must include an ownership thesis: what durable right or asset can be accumulated, how it is acquired lawfully, who can take it away, and what prevents bypass. Until evidenced, label it **OWNERSHIP_POTENTIAL**, not a moat.
+
+### Finding 9 — The system must not use false numerical precision to disguise strategic uncertainty
+A 0–5 rubric can make evidence gaps visible but cannot turn incomparable evidence into an objective ranking. Weighted averages can hide failed legal, payer, authority, or payment gates.
+
+**Correction:** keep dimensions separate; use hard gates; disclose weights and sensitivity; leave unresolved questions as UNKNOWN. Only calibrate probabilities for clearly defined, resolvable events.
+
+### Finding 10 — The system needs a deletion and simplification mechanism
+Without a deletion test, every new insight becomes another prompt, agent, file, metric or process. Complexity accumulates faster than demonstrated value.
+
+**Correction:** for each new component, name the existing component it replaces or improves, define its measurable decision benefit, and specify the condition under which it is removed. Review redundant agents, duplicate files and stale project priorities.
+
+## 14. Current priority rule after this audit
+
+Until new evidence changes the portfolio:
+1. **Primary lane:** one overseas transaction/market-validation target with a specific buyer, work package, authority, eligibility and plausible payment route.
+2. **Strategic lane:** one time-boxed structural-imbalance investigation capable of producing a distinct new opportunity or killing a weak thesis.
+3. **Shared infrastructure:** Brain OS, DECS and AOJE support both lanes; no open-ended expansion.
+4. **Library extraction:** retrieve the complete money-adjacent catalog clusters, but process original texts in problem-driven batches; never let book processing displace the primary transaction lane.
+5. **Failure intelligence:** continue only as low-cost exploration until a payer and decision use case are verified.
+
+This is a provisional operating allocation, not a permanent project decision. Any conflict with the principal's current explicit instruction must be surfaced rather than silently resolved by old project files.
