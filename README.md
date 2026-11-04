@@ -189,7 +189,7 @@ For consequential change, SABLE asks:
 
 **What changed? What caused it? Who authorized it? What consequence followed? What evidence survives the next replacement?**
 
-This principle does not replace the commercial gate. It gives SABLE a stable core while the shell evolves.
+This principle does not replace the commercial gate. It gives the system a stable core while the shell evolves.
 
 See [SABLE Continuity Principle — Hard Override v1.0](docs/SABLE_CONTINUITY_PRINCIPLE_HARD_OVERRIDE_V1.md).
 
@@ -214,6 +214,7 @@ EVIDENCE RECEIPT
 ```
 
 Current temporal operators include:
+
 - same-intent retry
 - same-payload replay
 - duplicate callback
@@ -222,6 +223,7 @@ Current temporal operators include:
 - timeout followed by retry
 
 Current invariant families include:
+
 - exactly-once effect
 - effect-ledger uniqueness
 - field equality
@@ -282,7 +284,7 @@ SABLE can be used inside an existing CI/release boundary:
 
 The receipt binds the declared claim, execution result, temporal evidence, provenance-related fields, and hashes.
 
-The top-level verdict distinguishes a failed assertion from an evidence/execution gap:
+The top-level verdict now distinguishes a failed assertion from an evidence/execution gap:
 
 **VERIFIED** — the declared verification completed successfully.
 
@@ -307,6 +309,7 @@ python3 scripts/sable_evidence_gate.py \
 ```
 
 Evidence strength is also exposed as an **Evidence Assurance Level**:
+
 - **E1** — bounded action + verification.
 - **E2** — E1 + before/after observations.
 - **E3** — E2 + verified temporal invariant.
@@ -318,13 +321,14 @@ See [SABLE Evidence Quality Standard v1.1](docs/SABLE_EVIDENCE_QUALITY_STANDARD_
 
 ## Decision-Critical UNKNOWN Rescue v1.0
 
-SABLE has a distinct **Decision Rescue** layer for moments when a real economic decision is blocked by one unresolved UNKNOWN.
+SABLE now has a distinct **Decision Rescue** layer for moments when a real economic decision is blocked by one unresolved UNKNOWN.
 
 The commercial question is not “who needs verification?” It is:
 
 > **Who must decide something consequential now, but cannot safely move money, goods, access, acceptance, payout, retry, or close because the current evidence is insufficient?**
 
 Decision Rescue modes:
+
 - **PROVE_RELEASE** — can money, escrow, goods, access, or a deployment be released?
 - **PROVE_REFUND** — did the refund actually reach the intended economic state?
 - **PROVE_RETRY** — is it safe to retry or charge again without a duplicate effect?
@@ -335,16 +339,16 @@ Decision Rescue modes:
 
 Run the deterministic qualification gate:
 
-~~~bash
+```bash
 python3 scripts/sable_decision_rescue_gate.py \
   --file examples/decision-rescue-refund.json
-~~~
+```
 
 It returns **KILL / ROUTE_TO_PAYER / NOT_PAYABLE_NOW / PAYABLE_NOW**.
 
 A target must establish:
 
-~~~text
+```text
 REAL ECONOMIC EVENT
         ↓
 CURRENT DECISION
@@ -364,21 +368,27 @@ NON-BYPASSABLE
 PAYER + PAYMENT AUTHORITY
         ↓
 PAYABLE NOW
-~~~
+```
 
-The bypass test rejects cases that can reasonably be delayed, verified internally, accepted as risk, or worked around.
+The bypass test explicitly rejects cases that can reasonably be delayed, verified internally, accepted as risk, or worked around.
 
 ### $99 Decision Rescue
 
-The default cold-start offer is **$99 Decision Rescue — one real, bounded, decision-critical UNKNOWN.**
+The default cold-start offer is now:
+
+> **$99 Decision Rescue — one real, bounded, decision-critical UNKNOWN.**
 
 Lead with the decision, not the architecture:
-- Can this refund be closed?
-- Can this money be released?
-- Is it safe to charge again?
-- Can finance close this item today?
 
-SABLE returns **VERIFIED / NOT_VERIFIED / UNKNOWN** with evidence.
+> **Can this refund be closed?**
+
+> **Can this money be released?**
+
+> **Is it safe to charge again?**
+
+> **Can finance close this item today?**
+
+SABLE then returns **VERIFIED / NOT_VERIFIED / UNKNOWN** with evidence.
 
 The architecture remains the mechanism. **The blocked decision is the product.**
 
@@ -386,7 +396,7 @@ See [SABLE Decision Rescue v1.0](docs/SABLE_DECISION_RESCUE_V1.md).
 
 ## Commercial gate
 
-SABLE rejects common false positives:
+SABLE's commercial system rejects the common false positives:
 
 ```text
 DETECTED
@@ -402,15 +412,19 @@ PAYABLE-NOW
 PAID
 ```
 
-A reply is not payment. An approval is not payment. An invoice is not payment. A promise is not payment.
+A reply is not payment.
+An approval is not payment.
+An invoice is not payment.
+A promise is not payment.
 
 **R3 means verifiable funds received by the seller.**
+
 
 ## Commercial Decision Closure Gate v1.0
 
 A technical UNKNOWN is not automatically a commercial opportunity.
 
-Before a commercial ask, SABLE can require this chain:
+Before a commercial ask, SABLE can now require an explicit chain:
 
 ```text
 CURRENT DECISION
@@ -433,21 +447,25 @@ PAYMENT PATH
 ```
 
 The machine gate returns:
-- **KILL** — the decision chain is incomplete or the UNKNOWN can reasonably be bypassed.
-- **ROUTE_TO_PAYER** — the decision is real, but payer or payment authority is unconfirmed.
-- **NOT_PAYABLE_NOW** — the payer chain exists, but payment cannot execute now.
-- **PAYABLE_NOW** — the target is ready for one explicit payment ask.
+
+**KILL** — the decision chain is incomplete or the UNKNOWN can reasonably be bypassed.
+
+**ROUTE_TO_PAYER** — the decision is real, but payer or payment authority is unconfirmed.
+
+**NOT_PAYABLE_NOW** — the payer chain exists, but payment cannot execute now.
+
+**PAYABLE_NOW** — the target is ready for one explicit payment ask.
 
 Run:
 
-~~~bash
+```bash
 python3 scripts/sable_commercial_decision_gate.py \
   --file examples/commercial-decision-closure.json
-~~~
+```
 
 To make commercial readiness a hard precondition for an Evidence Gate run:
 
-~~~bash
+```bash
 python3 scripts/sable_evidence_gate.py \
   --claim "One authorized action produces exactly one financial effect" \
   --boundary "authorized staging workflow" \
@@ -455,17 +473,18 @@ python3 scripts/sable_evidence_gate.py \
   --verify "./verify-check.sh" \
   --commercial-decision examples/commercial-decision-closure.json \
   --require-commercial-decision-closure
-~~~
+```
 
-The Evidence Gate receipt records commercial qualification and explicit context. **It never infers PAID or R3.**
+The Evidence Gate receipt records the commercial qualification and explicit context. **It never infers PAID or R3.**
 
 See [SABLE Commercial Decision Closure v1.0](docs/SABLE_COMMERCIAL_DECISION_CLOSURE_V1.md).
 
+
 ## Perception–Reality Gap
 
-SABLE closes **Perception–Reality Gaps**: cases where a user, agent, or interface perceives a consequential state that does not match authoritative observed reality.
+SABLE also closes **Perception–Reality Gaps**: cases where a user, agent, or interface perceives a consequential state that does not match the authoritative observed reality.
 
-```text
+```
 PERCEIVED / DECLARED STATE
         ↓
 CONSEQUENTIAL ACTION
@@ -475,17 +494,26 @@ AUTHORITATIVE OBSERVATION
 VERIFIED / NOT_VERIFIED / UNKNOWN
 ```
 
-An explicitly authorized, isolated test may introduce a bounded false-success or ambiguous-success signal to measure whether the decision layer verifies reality instead of trusting the signal. It is never authorization to deceive uninvolved users or mutate production systems without explicit approval.
+An explicitly authorized, isolated test may introduce a bounded false-success or ambiguous-success signal to measure whether the decision layer verifies reality instead of trusting the signal.
+
+Run the gate:
+
+~~~bash
+python3 scripts/sable_perception_reality_gate.py \
+  --file examples/perception-reality-refund.json
+~~~
 
 See [SABLE PERCEPTION–REALITY GAP v1.0](docs/SABLE_PERCEPTION_REALITY_GAP_v1.0.md).
 
+The test is never authorization to deceive uninvolved users or mutate production systems without explicit approval.
+
 ## Mispricing Hunt
 
-**Mispriced certainty** is a consequential claim treated as proven without evidence sufficient to close the decision.
+**Mispriced certainty** is now a first-class SABLE target: a consequential claim treated as proven without evidence sufficient to close the decision.
 
-See [SABLE MISPRICING HUNT v1.0](docs/SABLE_MISPRICING_HUNT_V1.md).
+See [SABLE MISPRICING HUNT v1.0](docs/SABLE_MISPRICING_HUNT_v1.0.md).
 
-Run:
+Run the deterministic gate:
 
 ~~~bash
 python3 scripts/sable_mispricing_gate.py --file examples/mispricing-hunt-replay-payment.json
@@ -495,7 +523,7 @@ The gate ranks targets but never infers PAID or R3.
 
 ## Existing payment commitment gate
 
-The commercial system prioritizes opportunities where money is already committed and a required closure remains unresolved.
+The commercial system now gives highest priority to opportunities where the money is already committed and a required closure is still missing.
 
 ```text
 PAYMENT-COMMITTED
@@ -515,44 +543,63 @@ ASSIGNED
 PAID
 ```
 
-The target is an existing contract, paid order, approved budget, acceptance gate, customer delivery obligation, release/settlement condition, or payout mechanism with a remaining evidence/verification closure.
+This is intentionally different from creating a new purchase. The target is an existing contract, paid order, approved budget, acceptance gate, customer delivery obligation, release/settlement condition, or existing payout mechanism with a remaining evidence/verification closure.
 
-Run:
+Run the gate against an opportunity record:
 
 ~~~bash
 python3 scripts/sable_payment_commitment_gate.py \
   --file examples/existing-payment-commitment.json
 ~~~
 
-The gate rejects opportunities that cannot establish both an existing payment commitment and an unresolved obligation. It never infers PAID or R3 from interest, approval, an invoice, a promise, or a payment attempt.
+The gate hard-kills opportunities that cannot establish both an **existing payment commitment** and an **unresolved obligation**. It never infers PAID or R3 from interest, approval, an invoice, a promise, or a payment attempt.
 
 ## Why this exists
 
-A team can claim a fix worked, show a green test, or end in the expected state. None necessarily proves that the history of the consequential action stayed inside the declared economic or authorization invariant.
+The practical problem is simple:
 
-SABLE closes that UNKNOWN with an independently observed, bounded evidence trail.
+A team can claim that a fix worked.
+A team can show a green test.
+A system can end in the expected state.
+
+None of those necessarily proves that the **history** of the consequential action stayed inside the declared economic or authorization invariant.
+
+SABLE is designed to close that specific UNKNOWN with an independently observed, bounded evidence trail.
 
 ## Technical depth
 
-The core implementation is a provider-agnostic **Temporal Economic Integrity Engine** combining economic state machines, temporal invariants, idempotency/replay analysis, authorization boundaries, event ordering, reconciliation-aware observation, adversarial sequence generation, and evidence receipts.
+The core implementation is a provider-agnostic **Temporal Economic Integrity Engine**.
 
-The architecture exists to execute a concrete closure. **The architecture is not the product.**
+It combines:
+
+- economic state machines
+- temporal invariants
+- idempotency/replay analysis
+- authorization boundaries
+- event ordering
+- reconciliation-aware observation
+- adversarial sequence generation
+- evidence receipts
+
+The architecture exists to execute a concrete closure.
+**The architecture is not the product.**
 
 ### v4.2 temporal provenance hardening
 
-SABLE retains observed_at_utc in parsed observations and can reject traces whose timestamps move backward. The authorization_effect_binding invariant checks that observed economic effects are bound to the same declared authorization identity.
+SABLE now retains `observed_at_utc` in parsed observations and can reject traces whose timestamps move backward. The new `authorization_effect_binding` invariant checks that observed economic effects are bound to the same declared authorization identity, not merely that an effect happened after some authorization state.
 
-See [the synthetic temporal authorization-binding trace](examples/temporal-authorization-binding.json).
+See [`examples/temporal-authorization-binding.json`](examples/temporal-authorization-binding.json) for a complete synthetic trace.
+
 
 ## Public proof + support surface
 
-SABLE treats every real build as two linked assets:
+SABLE now treats every real build as two linked assets:
 
 **Decision Proof** — evidence that closes the buyer's consequential UNKNOWN.
 
 **Builder Proof** — public, inspectable evidence that SABLE itself is being built.
 
-The semantic kernel:
+The semantic kernel stays stable:
 
 ```text
 CLAIM
@@ -570,20 +617,69 @@ VERDICT
 EVIDENCE
 ```
 
-The evidence receipt can carry explicit decision context: live decision, decision owner, critical UNKNOWN, claim, verdict, and decision record. Context is explicit input; SABLE does not invent deadlines, losses, authority, or commercial importance.
+The evidence receipt can also carry an explicit **decision context**:
 
-When publication is authorized, SABLE can expose real working code, technical experiments, evidence artifacts, research notes, failures/corrections, measurable milestones, and source commits. Synthetic examples remain labeled synthetic. Private customer data, credentials, secrets, unauthorized traces, fabricated traction, and unsupported claims do not belong in the public surface.
+```text
+LIVE DECISION
+  ↓
+DECISION OWNER
+  ↓
+CRITICAL UNKNOWN
+  ↓
+CLAIM
+  ↓
+VERIFIED / NOT_VERIFIED / UNKNOWN
+  ↓
+DECISION RECORD
+```
+
+For a decision-complete run:
+
+```bash
+python3 scripts/sable_evidence_gate.py \
+  --claim "Replay does not create a second entitlement" \
+  --boundary "authorized staging tenant" \
+  --action "./run-replay.sh" \
+  --verify "./verify-entitlement.sh" \
+  --decision-event "release sign-off" \
+  --decision-owner "release approver" \
+  --critical-unknown "whether replay preserves exactly-one entitlement" \
+  --decision-consequence "release may be approved or blocked" \
+  --require-decision-context \
+  --out sable-evidence-receipt.json
+```
+
+Decision context is explicit input, not an inference. SABLE will not invent deadlines, losses, authority, or commercial importance.
+
+### Build in public
+
+When publication is authorized, SABLE can expose real:
+
+- working code;
+- technical experiments;
+- evidence artifacts;
+- research notes;
+- failures and corrections;
+- measurable milestones;
+- source commits.
+
+Synthetic examples remain clearly labeled as synthetic. Private customer data, credentials, secrets, unauthorized traces, fabricated traction, and unsupported claims do not belong in the public surface.
 
 ### Support SABLE
 
-SABLE is discoverable by people who may want to support the project rather than buy a specific closure.
+SABLE is also discoverable by people who may want to support the project rather than buy a specific closure.
 
-**Who:** an independent builder building SABLE.  
-**What:** evidence infrastructure for proving consequential actions produced the claimed effect.  
-**Proof:** public source code, executable gates, receipts, experiments, and documented failures/corrections.  
+**Who:** an independent builder building SABLE.
+
+**What:** an evidence infrastructure for proving consequential actions actually produced the claimed effect.
+
+**Proof:** public source code, executable gates, receipts, experiments, and documented failures/corrections.
+
+**Why:** keep turning real UNKNOWNs into independently checkable evidence.
+
 **Use of support:** development, compute, hosting, testing infrastructure, and continued public building.
 
-**[Choose an amount and support SABLE](https://paypal.me/tang665)**
+**Support:** [Choose an amount and support SABLE →](https://paypal.me/tang665)
 
 Support is voluntary. A supporter does not become a customer, sponsor, grantor, or investor unless that is the actual relationship.
 
@@ -621,21 +717,36 @@ SABLE operates as one commercial system with four functions plus one cross-cutti
 4. **T4 — REALITY / ANTI-SELF-DECEPTION CONTROL:** veto unsupported commercial states and enforce R3 truth.
 
 The current commercial branches are:
+
 - **Branch 1 — Decision Closure**
 - **Branch 2 — AI Buyer Readiness**
 
 The cross-cutting **Alliance Leverage Layer** increases trusted access to current economic events, buyers, payers, decision owners, and lawful evidence boundaries. It is not a separate product or sales pipeline.
 
-Alliance priority: **A2 Introducer → A3 Economic Gate → A4 Payment Bridge**
+Alliance priority:
+**A2 Introducer → A3 Economic Gate → A4 Payment Bridge**
 
-Alliance value is measured by movement toward: **buyer access → payer access → payable-now → settled funds**
+Alliance value is measured by movement toward:
+**buyer access → payer access → payable-now → settled funds**
 
 See [SABLE Alliance Leverage Layer — Hard Override v1.0](docs/SABLE_ALLIANCE_LEVERAGE_LAYER_HARD_OVERRIDE_V1.md).
 
-Both branches share the same proof kernel and the same R3 gate. See [SABLE Four-Thread Execution OS v1.0](docs/SABLE_FOUR_THREAD_EXECUTION_OS_V1.md) and [SABLE AI Buyer Readiness v1.0](docs/SABLE_AI_BUYER_READINESS_V1.md).
+Both branches share the same proof kernel and the same R3 gate.
 
-The operating loop is **T1 ↔ Alliance → T2 → T3 → T4 → shared ledger → T1**. Alliance may enter or accelerate any point but cannot bypass T4 or the R3 gate. This is a loop, not four independent pipelines.
+See [SABLE Four-Thread Execution OS v1.0](docs/SABLE_FOUR_THREAD_EXECUTION_OS_V1.md) and [SABLE AI Buyer Readiness v1.0](docs/SABLE_AI_BUYER_READINESS_V1.md).
 
-When the next R3 does not yet exist, resource priority is: **CASH → PROOF → REALITY CONTROL → CONTEXT COMPOUNDING**.
+The operating loop is:
 
-R3 remains the only commercial truth: **stranger buyer + lawful/authorized transaction + actual settled funds received + verifiable payment evidence**.
+**T1 ↔ Alliance → T2 → T3 → T4 → shared ledger → T1**
+
+Alliance may enter or accelerate any point in the loop but cannot bypass T4 or the R3 gate.
+
+This is a loop, not four independent pipelines.
+
+When the next R3 does not yet exist, resource priority is:
+
+**CASH → PROOF → REALITY CONTROL → CONTEXT COMPOUNDING**
+
+R3 remains the only commercial truth:
+
+**stranger buyer + lawful/authorized transaction + actual settled funds received + verifiable payment evidence**
