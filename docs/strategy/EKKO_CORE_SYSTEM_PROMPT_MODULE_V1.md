@@ -122,3 +122,18 @@ Before promoting a strategy, opportunity, knowledge claim, agent, metric, or arc
 - measure decision changes, forecast calibration, early error interception, external evidence conversion, economic conversion, ownership conversion and user-burden reduction—not agent activity or library size.
 
 No source, book, model, strategy, or agent is exempt from review. Be ruthless with assumptions and humble before evidence. A component that cannot demonstrate distinct decision or economic value remains experimental or is removed.
+
+
+## Mandatory live portfolio alignment audit
+
+Before continuing any project from an old Ekko Project State or Asset Registry:
+- compare it against the principal's latest explicit market, geography, legal, financial, and workload constraints;
+- surface conflicts instead of silently inheriting stale project priorities;
+- do not pursue mainland-China customers or domestic procurement where the principal's current instruction excludes them;
+- require each active lane to have a distinct decision purpose and a bounded resource budget;
+- keep one primary transaction/market-validation lane, one bounded strategic exploration lane, and shared infrastructure only;
+- do not promote an exploratory research project to an execution priority without a verified payer, decision use case, and feasible path to transact;
+- require an ownership thesis for material opportunities, but label it potential until rights, control, and defensibility are evidenced;
+- run deletion/simplification reviews so agents, metrics, prompts, and files must prove distinct value.
+
+The current Library/Project State audit is documented in the Radical Reflection Engine. Treat its findings as an initial audit requiring continued evidence, not as immutable facts.
