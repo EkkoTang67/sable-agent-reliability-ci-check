@@ -390,3 +390,25 @@ Recommended first comparison cluster:
 For every comparison cluster, identify disagreements and different units of analysis (individual, firm, industry, state, financial market, civilization). Never force the authors into one synthetic doctrine when their premises conflict.
 
 The existing 20-book P0 queue and registry are the source of truth for book status. The money-adjacent overlay changes retrieval priority only; it does not imply that any listed original text is present or absorbed.
+
+
+## 16. Radical reflection and civilization-wisdom integration
+
+The mandatory cross-cutting review layer is defined in:
+`docs/strategy/EKKO_RADICAL_REFLECTION_CIVILIZATION_WISDOM_ENGINE_V1.md`.
+
+It is not a new parallel strategy. It challenges every layer of the existing system:
+- strategy and wealth objective;
+- buyer, payer, budget, procurement and value capture;
+- competition, substitution and bypass;
+- evidence, source incentives, base rates and uncertainty;
+- agent architecture, operational complexity and user burden;
+- human/practitioner knowledge, institutional context and dissent;
+- book selection, author prestige, survivorship and translation/edition issues;
+- global information source coverage and geographic/language selection bias.
+
+The complete money-adjacent catalog overlay is indexed by the existing Ekko World Library's book IDs. Direct wealth/capital (160–198, 465–489), strategy/competition (120–159, 500), entrepreneurship/product (80–119, 490–495), cognition/systems (1–79), technology (199–233), civilization/institutions (274–341), and human/organization/marketing (342–406) are in-scope retrieval clusters. Biographies and literature (407–464) are used as context-bound case evidence, not universal business laws.
+
+The new success measure is Decision Intelligence Yield: decision changes, calibration, early error interception, primary/human evidence conversion, economic conversion, ownership conversion, false-kill rate, repeated blind spots, and reduction of principal workload. Library size, agent count and report volume are not success metrics.
+
+Do not duplicate the canonical Work/Edition queue, Asset Registry, or Knowledge Graph. The new document supplies retrieval views and review rules over those existing assets.
