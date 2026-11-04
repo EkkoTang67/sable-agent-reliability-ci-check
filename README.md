@@ -29,3 +29,11 @@ DECS governs decisions across the AI operating system; it complements the existi
 - [Adversarial Opportunity & Judgment Engine v1.0](docs/decision-quality/ADVERSARIAL_OPPORTUNITY_JUDGMENT_ENGINE_V1.md)
 
 Operating doctrine: **be aggressive toward uncertainty; be conservative with irreversible exposure.**
+
+## Ekko Strategic Intelligence & Wisdom Integration OS
+
+**Ekko Strategic Intelligence & Wisdom Integration OS v1.0** integrates strategic direction, DECS error correction, AOJE adversarial opportunity discovery, and evidence-led extraction of human knowledge into one operating cycle. It establishes the rule: **fast with direction, fast without chaos, fast without carelessness.**
+
+- [Ekko Strategic Intelligence & Wisdom Integration OS v1.0](docs/strategy/EKKO_STRATEGIC_INTELLIGENCE_WISDOM_INTEGRATION_OS_V1.md)
+
+This is an integration specification and human-reviewable operating doctrine. It is not yet autonomous runtime enforcement, and it does not claim that the 500-book catalog has been deeply absorbed.
